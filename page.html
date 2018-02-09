@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>DataGrid UI</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		
+		<!-- LINKS JS/CSS -->
+		<script type='text/javascript' src='tools/init_tools.js'></script>
+		<script type='text/javascript' src='tools/xlsx_saver.js'></script>
+		<script type='text/javascript' src='tools/FileSaver.js'></script>
+		<script type='text/javascript' src='tools/jszip.js'></script>
+
+		<link rel="stylesheet" href="dg_ui/datagrid_ui.css"/>
+		<script type='text/javascript' src='dg_ui/datagrid_ui.js'></script>
+
+		<link rel="stylesheet" href="menu_ui/menu_ui.css"/>
+		<script type='text/javascript' src='menu_ui/menu_ui.js'></script>
+
+		<link rel="stylesheet" href="table_ui/table_ui.css"/>
+		<script type='text/javascript' src='table_ui/table_ui.js'></script>
+
+		<link rel="stylesheet" href="window_ui/window_ui.css"/>
+		<script type='text/javascript' src='window_ui/window_ui.js'></script>
+
+		<link rel="stylesheet" href="layout_ui/layout_ui.css"/>
+		<script type='text/javascript' src='layout_ui/layout_ui.js'></script>
+
+		<link rel="stylesheet" href="tree_ui/tree_ui.css"/>
+		<script type='text/javascript' src='tree_ui/tree_ui.js'></script>
+
+		<link rel="stylesheet" href="tab_ui/tab_ui.css"/>
+		<script type='text/javascript' src='tab_ui/tab_ui.js'></script>
+
+
+  		<script src= "https://code.jquery.com/jquery-3.1.1.min.js"></script>	
+		<script type='text/javascript' src='start.js'></script>
+
+	</head>
+	<body >
+		
+		<style type="text/css">
+		body {
+			padding: 0; margin: 0;
+			width: 100%; height: 100%;
+			position: absolute; background: #EFF7FF;
+			overflow: hidden;
+		}
+		.but {
+			width: 			50px;
+			height: 		30px;
+			position: 		absolute;
+			top:			Calc(100% - 40px);
+		}
+		.block {
+			
+			-webkit-user-select:	none;
+			-moz-user-select:		none;
+			-ms-user-select: 		none;
+			width: 			Calc(100% - 20px);
+			height: 		Calc(100% - 160px);
+			position: 		absolute;
+			top:			10px;
+			left:			10px;
+			display: 		inline-block;
+		}
+		.first {
+			position: absolute;
+			margin: 0;
+			padding: 0;
+			float: left;
+			overflow: auto;
+
+		}
+		.second {
+			background: white;
+			box-sizing: border-box;
+			border: 1px solid #aaa;
+			position: absolute;
+			margin: 0;
+			padding: 0;
+			overflow: auto;
+
+		}
+		body {
+			font-family: -apple-system,BlinkMacSystemFont,Roboto,Open Sans,Helvetica Neue,sans-serif;
+			-webkit-user-select:	none;
+			-moz-user-select:		none;
+			-ms-user-select: 		none;
+		}
+		.default-img {
+			background-image: 		url(tree_ui/img/minus.png);
+		}
+		</style>
+		<!-- TABLE -->
+
+		<div class="block">	
+			<div class="first">
+				<div  class="second">
+				</div>
+				<div class="second">
+				</div>
+			</div>
+			<div class="first" id='bor' >
+			</div>
+		</div>
+
+		<input id='inputze' type="text"	style='left: 20px; top:	Calc(100% - 40px); position: absolute;'>
+
+		<button class='but' style='left: 200px' id="fds">1ds</button>
+		<button class='but' style='left: 260px' id="sds">2ds</button>
+		<button class='but' style='left: 320px' onclick="xlsx()">export</button>
+
+		<input id='size' type="text"	style='left: 20px; top:	Calc(100% - 80px); position: absolute;' value="1">
+		<button class='but' style='left: 200px; top:	Calc(100% - 80px);' onclick="set()">set</button>
+		<button class='but' id='t1' style='left: 260px; background: green; top:	Calc(100% - 80px);' onclick="t1()">t1</button>
+		<button class='but' id='t2' style='left: 320px; background: green; top:	Calc(100% - 80px);' onclick="t2()">t2</button>
+		<button class='but' id='t3' style='left: 380px; background: green; top:	Calc(100% - 80px);' onclick="t3()">t3</button>
+		<button class='but' id='t4' style='left: 440px; background: green; top:	Calc(100% - 80px);' onclick="t4()">t4</button>
+		<button class='but' id='or' style='left: 500px; background: green; top:	Calc(100% - 80px);' onclick="or()">ori</button>
+		<button class='but' id='hr' style='left: 560px; background: red; top:	Calc(100% - 80px);' onclick="hr()">hr</button>
+		<button class='but' id='hc' style='left: 620px; background: red; top:	Calc(100% - 80px);' onclick="hc()">hc</button>
+
+
+	</body>
+</html>

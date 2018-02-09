@@ -1,0 +1,12 @@
+.layout-separator {
+	position: absolute;		display: inline-block;
+	margin: 0;				padding: 0;	
+}
+.layout-splitter {
+	box-sizing: border-box;		position: absolute;
+	border: 1px solid #1f5c7a;	background: #39c;
+
+	margin: 0;					padding: 0;
+	z-index: 8;					opacity: 0.7;
+	display: inline-block;
+}
