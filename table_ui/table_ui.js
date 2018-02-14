@@ -1226,12 +1226,9 @@ function table_ui(options){
 			c.font = size.ttext + "px " + size.font;
 
 			s.cols = [];					s.rows = [];
-			for(var i = 0; i < iTable.c; i++){	if((s.lp[i] >= s.l && s.lp[i] <= (s.l + s.vw)) || (s.lp[i + 1] >= s.l && s.lp[i + 1] <= (s.l + s.vw)))	s.cols.push(i);	}
-			for(var i = 0; i < iTable.r; i++){	if((s.tp[i] >= s.t && s.tp[i] <= (s.t + s.vh)) || (s.tp[i + 1] >= s.t && s.tp[i + 1] <= (s.t + s.vh)))	s.rows.push(i); }
+			for(var i = 0; i < iTable.c; i++){	if((s.lp[i] >= s.l && s.lp[i] <= (s.l + s.vw)) || (s.lp[i + 1] >= s.l && s.lp[i + 1] <= (s.l + s.vw)) || (s.lp[i] <= s.l && s.lp[i + 1] >= s.l + s.vw))	s.cols.push(i);	}
+			for(var i = 0; i < iTable.r; i++){	if((s.tp[i] >= s.t && s.tp[i] <= (s.t + s.vh)) || (s.tp[i + 1] >= s.t && s.tp[i + 1] <= (s.t + s.vh)) || (s.tp[i] <= s.t && s.tp[i + 1] >= s.t + s.vh))	s.rows.push(i); }
 
-			if(s.cols.length == 0){ for(var i = 0; i < iTable.c; i++){	if( s.lp[i + 1] >= (s.l + s.vw)){	s.cols.push(i);	break; } } }
-			if(s.rows.length == 0){ for(var i = 0; i < iTable.r; i++){	if( s.tp[i + 1] >= (s.t + s.vh)){	s.rows.push(i);	break; } } }
-		
 			s.rows.forEach(function(i){
 				s.cols.forEach(function(j){
 					if(!iTop.branches[j].visible || !iSide.branches[i].visible)		return;
@@ -1254,26 +1251,16 @@ function table_ui(options){
 				});
 			});
 			c.fillStyle = '#555';
-			s.rows.forEach(function(i){			if(iSide.branches[i].line)	c.fillRect(0, s.tp[i + 1] - 1 - s.t, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), 1);		});
-			s.cols.forEach(function(i){			if(iTop.branches[i].line)	c.fillRect(s.lp[i + 1] - 1 - s.l, 0, 1, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh));		});
 
-			c.setLineDash([4, 2])
-			c.beginPath();
-			c.strokeStyle = '#555';
-			c.fillStyle = '#fff';
-			s.rows.forEach(function(i){			if(!iSide.branches[i].visible){
-				c.fillRect(0, s.tp[i + 1] - 1 - s.t, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), 1);
-				c.moveTo(0, s.tp[i + 1] - 0.5 - s.t);
-				c.lineTo(((s.vw > s.lp.last()) ? s.lp.last() : s.vw), s.tp[i + 1] - 0.5  - s.t);
-				c.stroke();	}});
-			s.cols.forEach(function(i){			if(!iTop.branches[i].visible){
-				c.fillRect(s.lp[i + 1] - 1 - s.l, 0, 1, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh));
-				c.moveTo(s.lp[i + 1] - 0.5 - s.l, 0);
-				c.lineTo(s.lp[i + 1] - 0.5 - s.l, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh));
-				c.stroke();	}});
-			
-			c.setLineDash([]);
-			c.fillStyle = '#F1F1F1';			c.fillRect(0, s.vh, s.vw + 18, 18);	c.fillRect(s.vw, 0, 18, s.vh);
+			s.rows.forEach(function(i){			
+				if(!iSide.branches[i].visible)		drawDashLine(c, '#555', '#fff', 0, s.tp[i + 1] - 0.5 - s.t, (s.vw > s.lp.last()) ? s.lp.last() : s.vw, s.tp[i + 1] - 0.5 - s.t);	
+				else if(iSide.branches[i].line)		c.fillRect(0, s.tp[i + 1] - 1 - s.t, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), 1);
+			});
+			s.cols.forEach(function(i){
+				if(!iTop.branches[i].visible)		drawDashLine(c, '#555', '#fff', s.lp[i + 1] - 0.5 - s.l, 0, s.lp[i + 1] - 0.5 - s.l, (s.vh > s.tp.last()) ? s.tp.last() : s.vh);
+				else if(iTop.branches[i].line){		c.fillRect(s.lp[i + 1] - 1 - s.l, 0, 1, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh)); }
+			});			
+			c.fillStyle = '#F1F1F1';				c.fillRect(0, s.vh, s.vw + 18, 18);	c.fillRect(s.vw, 0, 18, s.vh);
 
 			c.fillStyle = '#aaa'
 			if(s.lp.last() > s.vw){
@@ -1289,9 +1276,8 @@ function table_ui(options){
 				c.fillStyle = '#333';
 			} else scroll.h = {};
 
-			c.beginPath();
-			c.moveTo( 11, s.vh + 5);			c.lineTo( 7, s.vh + 9);				c.lineTo( 11, s.vh + 13);			c.fill();
-			c.moveTo( s.vw - 11, s.vh + 5);		c.lineTo( s.vw - 7, s.vh + 9);		c.lineTo( s.vw - 11, s.vh + 13);	c.fill();
+			drawCircuit(c, null, [ [ 11, s.vh + 5], [ 7, s.vh + 9], [ 11, s.vh + 13] ]);
+			drawCircuit(c, null, [ [ s.vw - 11, s.vh + 5], [ s.vw - 7, s.vh + 9], [ s.vw - 11, s.vh + 13] ]);
 
 			c.fillStyle = '#aaa';
 			if(s.tp.last() > s.vh){
@@ -1307,9 +1293,8 @@ function table_ui(options){
 				c.fillStyle = '#333';
 			} else scroll.v = {};
 
-			c.beginPath();
-			c.moveTo( s.vw + 5, 11);			c.lineTo( s.vw + 9, 7);				c.lineTo( s.vw + 13, 11);			c.fill();
-			c.moveTo( s.vw + 5, s.vh - 11);		c.lineTo( s.vw + 9, s.vh - 7);		c.lineTo( s.vw + 13, s.vh - 11);	c.fill();
+			drawCircuit(c, null, [ [ s.vw + 5, 11], [ s.vw + 9, 7], [ s.vw + 13, 11] ]);
+			drawCircuit(c, null, [ [ s.vw + 5, s.vh - 11], [ s.vw + 9, s.vh - 7], [ s.vw + 13, s.vh - 11] ]);
 
 			c.fillStyle = '#aaa';				c.fillRect( 0, s.vh - 1, s.vw, 1 );	c.fillRect( s.vw - 1, 0, 1, s.vh );
 		}
@@ -1327,7 +1312,12 @@ function table_ui(options){
 
 			s.cols.forEach( function(j){		for(var i = 0; i < iTop.r; i++) { 
 				var cell = iTop.visual[i][j];
-				if(!cell.visible || cell.displayed) continue;
+				if(cell.displayed) continue;
+				if(!cell.visible){
+					drawDashLine(c, '#000', '#f1f1f1', s.lp[cell.j.last() + 1] - 0.5 - s.l, iTop.tp[cell.i[0]], s.lp[cell.j.last() + 1] - 0.5 - s.l, iTop.tp[cell.i.last() + 1]  );
+					continue;
+				}
+
 				else cell.displayed = true;
 
 				if(cell.hover)			c.fillStyle = back[0];
@@ -1346,16 +1336,12 @@ function table_ui(options){
 				} else	{
 					if(cell != sort.top.cell){	cell.textArray.forEach( function(item){ 	c.fillText(item.text,((s.lp[cell.j[0]] - s.l) + cell.width/2), iTop.tp[cell.i[0]] + item.position); } );
 					} else {					cell.textArray.forEach( function(item){		c.fillText(item.text,((s.lp[cell.j[0]] - s.l) + cell.width/2 - 5), iTop.tp[cell.i[0]] + item.position); } );
-						var type = sort.top.type;
-						if(type == 0 && cell.base)	type = 3;
 
+						var type = (sort.top.type == 0 && cell.base) ? 3 : sort.top.type;
 						var y = iTop.tp[cell.i[0]] + Math.round(cell.height/2),	x = s.lp[cell.j.last() + 1] - s.l - 6;
-						c.fillStyle = defaultBack.sort[type];
-						c.beginPath();
 
-						if(sort.top.direction){		c.moveTo( x - 4, y - 3);	c.lineTo( x, y + 3);	c.lineTo( x + 4, y - 3);
-						} else {					c.moveTo( x - 4, y + 3);	c.lineTo( x, y - 3);	c.lineTo( x + 4, y + 3);	}
-						c.fill();
+						if(sort.side.direction)		drawCircuit(c, defaultBack.sort[type], [ [ x - 4, y - 3], [ x, y + 3], [ x + 4, y - 3] ]);
+						else						drawCircuit(c, defaultBack.sort[type], [ [ x - 4, y + 3], [ x, y - 3], [ x + 4, y + 3] ]);
 					}
 				}
 			}});
@@ -1377,7 +1363,11 @@ function table_ui(options){
 
 			s.rows.forEach( function(i){		for(var j = 0; j < iSide.c; j++) {
 				var cell = iSide.visual[i][j];
-				if(!cell.visible || cell.displayed) continue;
+				if(cell.displayed) continue;
+				if(!cell.visible){
+					drawDashLine(c, '#000', '#f1f1f1', iSide.lp[cell.j[0]], s.tp[cell.i.last() + 1] - 0.5 - s.t, iSide.lp[cell.j.last() + 1], s.tp[cell.i.last() + 1] - 0.5 - s.t );
+					continue;
+				}
 				else cell.displayed = true;
 
 				if(cell.hover)			c.fillStyle = back[0];
@@ -1389,15 +1379,11 @@ function table_ui(options){
 				if(cell.j.last() + 1 == iSide.c){
 					cell.textArray.forEach( function(item){ c.fillText(item.text, iSide.lp[cell.j[0]] + 2, (s.tp[cell.i[0]] - s.t) + item.position); } );
 					if(cell == sort.side.cell){
-						var type = sort.side.type;
-						if(type == 0 && cell.base)	type = 3;
-
+						var type = (sort.side.type == 0 && cell.base) ? 3 : sort.side.type;
 						var x = iSide.lp[cell.j.last() + 1] - 9, y = s.tp[cell.i[0]] + Math.round(cell.height/2) - s.t;
-						c.fillStyle = defaultBack.sort[type];
-						c.beginPath();
-						if(sort.side.direction){	c.moveTo( x , y - 5);		c.lineTo( x + 6, y);		c.lineTo( x, y + 5);
-						} else {					c.moveTo( x + 6, y - 5);	c.lineTo( x , y);			c.lineTo( x + 6, y + 5);	}
-						c.fill();
+
+						if(sort.side.direction)		drawCircuit(c, defaultBack.sort[type], [ [ x, y - 5], [ x + 6, y], [ x, y + 5] ]);
+						else						drawCircuit(c, defaultBack.sort[type], [ [ x + 6, y - 5], [ x, y], [ x + 6, y + 5] ]);
 					}
 				}
 			}});
@@ -1441,6 +1427,27 @@ function table_ui(options){
 		}
 
 		this.all = function(){				display.table();			display.top();			display.side();		}
+
+		function drawDashLine(c, color, background, x1, y1, x2, y2){
+			c.beginPath();
+			c.setLineDash([])
+			c.strokeStyle = background;
+			c.moveTo(x1, y1);
+			c.lineTo(x2, y2);
+			c.stroke();
+			c.setLineDash([4, 2])
+			c.strokeStyle = color;
+			c.moveTo(x1, y1);
+			c.lineTo(x2, y2);
+			c.stroke();
+		}
+		function drawCircuit(c, color, path){
+			c.beginPath();
+			if(color)	c.fillStyle = color;
+			c.moveTo( path[0][0], path[0][1]);
+			for(var i = 1; i < path.length; i++)	c.lineTo( path[i][0] , path[i][1]);
+			c.fill();
+		}
 	}
 	var scroll = new function(){
 		this.v = {}; //vertical

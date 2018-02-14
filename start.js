@@ -71,9 +71,9 @@ function new_function(){
 			return true;
 		},
 		newPage: function(){
-			let container = tools.createHTML({tag: 'div', className: 'tbu-default'});
-			let table = new table_ui({parent: container, table: { side: dataSet.side[1], top: dataSet.top[1], table: dataSet.cells[1]  } })
-			let t = otab.addTabs([{name: 'table', title: 'title', content: container, close: true }]);
+			var container = tools.createHTML({tag: 'div', className: 'tbu-default'});
+			var table = new table_ui({parent: container, table: { side: dataSet.side[1], top: dataSet.top[1], table: dataSet.cells[1]  } })
+			var t = otab.addTabs([{name: 'table', title: 'title', content: container, close: true }]);
 			t[0].table = table;
 		} } } );
 */
@@ -90,7 +90,7 @@ function new_function(){
 	
 //	document.body.onclick = sss();
 
-/*	let mas = [3, 4, 2, 5, 1, 2, 5, 6, 8, 9, 5, 4, 3, 5, 6, 4];
+/*	var mas = [3, 4, 2, 5, 1, 2, 5, 6, 8, 9, 5, 4, 3, 5, 6, 4];
 	qs(mas, 0, mas.length - 1);
 */
 /*
@@ -104,16 +104,16 @@ function sss(){ return function(e){ alert('asdadas'); return false; } }
 
 function qs(a, s, e){
 	if(s < e){
-		let p = partition(a, s, e);
-		console.log(a.join(', '))
+		var p = partition(a, s, e);
+		console.log(a.join(', '));
 		qs(a,s,p - 1);
 		qs(a,p,e);
 	}
 }
 function partition(a, s, e){
-	let pivot = a[Math.round(s + Math.random()*(e - s))];
-	let i = s;
-	let j = e;
+	var pivot = a[Math.round(s + Math.random()*(e - s))];
+	var i = s;
+	var j = e;
 	while(i <= j){
 		while(a[i] < pivot)		i++;
 		while(a[j] > pivot)		j--;
@@ -140,61 +140,61 @@ function sds(event){
 
 
 function set(){
-	let newSize = parseFloat(document.getElementById('size').value);
+	var newSize = parseFloat(document.getElementById('size').value);
 	tau.change({scale: newSize });
 }
 
 function t1(){
 	displayed[0] = !displayed[0];
-	let button = document.getElementById('t1');
+	var button = document.getElementById('t1');
 	button.style.background = (displayed[0]) ? 'green' : 'red';
 	tau.change({showType: displayed});
 }
 function t2(){
 	displayed[1] = !displayed[1];
-	let button = document.getElementById('t2');
+	var button = document.getElementById('t2');
 	button.style.background = (displayed[1]) ? 'green' : 'red';
 	tau.change({showType: displayed});
 }
 function t3(){
 	displayed[2] = !displayed[2];
-	let button = document.getElementById('t3');
+	var button = document.getElementById('t3');
 	button.style.background = (displayed[2]) ? 'green' : 'red';
 	tau.change({showType: displayed});
 }
 function t4(){
 	displayed[3] = !displayed[3];
-	let button = document.getElementById('t4');
+	var button = document.getElementById('t4');
 	button.style.background = (displayed[3]) ? 'green' : 'red';
 	tau.change({showType: displayed});
 }
 function t4(){
 	displayed[3] = !displayed[3];
-	let button = document.getElementById('t4');
+	var button = document.getElementById('t4');
 	button.style.background = (displayed[3]) ? 'green' : 'red';
 	tau.change({showType: displayed});
 }
 function or(){
 	setting.orientation = !setting.orientation;
-	let button = document.getElementById('or');
+	var button = document.getElementById('or');
 	button.style.background = (setting.orientation) ? 'green' : 'red';
 	tau.change({orientation: setting.orientation});
 }
 function hr(){
 	setting.hideRow = !setting.hideRow;
-	let button = document.getElementById('hr');
+	var button = document.getElementById('hr');
 	button.style.background = (setting.hideRow) ? 'green' : 'red';
 	tau.change({hideRow: setting.hideRow});
 }
 function hc(){
 	setting.hideCol = !setting.hideCol;
-	let button = document.getElementById('hc');
+	var button = document.getElementById('hc');
 	button.style.background = (setting.hideCol) ? 'green' : 'red';
 	tau.change({hideCol: setting.hideCol});
 }
 
 function xlsx(){
-	let b = tau.xlsxExport({side: true, top: true, color: true});
+	var b = tau.xlsxExport({side: true, top: true, color: true});
 	console.log(b);
 	object_to_xlsx( {descPrefix: ['1','2','3','4','5','6','7'], TOC: true, annotation: true, background: true}, [{description: ['first string', 'second string', 'third string', 'fourth string', 'fifth string'], annotation: 'annotation'}, {description: ['first string', 'second string', 'third string', 'fourth string', 'fifth string'], object: b, annotation: 'annotation'}] );
 }

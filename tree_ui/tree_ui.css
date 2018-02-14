@@ -7,6 +7,7 @@
 .tu-content 		{		position: relative;	}
 .tu-viewport:focus	{		outline: none;			border: none;	}
 .tu-item {
+    display: -ms-flex;
 	position: absolute;		display: flex;
 	overflow: hidden;		box-sizing: border-box;
 	border-radius: 3px;		width: 100%;
@@ -51,5 +52,5 @@
 .tu-FolderOpen		{	background-image: url(img/openfl.png); }
 .tu-FolderClose		{	background-image: url(img/closefl.png); }
 
-.tu-expand		{	display: block;	height: 100%;	flex-shrink: 0;		background-position: center center;		background-repeat: no-repeat;	width: 20px;}
-.tu-caption		{	display: block;	height: 100%;	flex-shrink: 0;		background-position: 1px center;		background-repeat: no-repeat;	cursor: default;}
+.tu-expand		{	display: block;	height: 100%;	-ms-flex-shrink: 0;	flex-shrink: 0;	background-position: center center;		background-repeat: no-repeat;	width: 20px;}
+.tu-caption		{	display: block;	height: 100%;	-ms-flex-shrink: 0;	flex-shrink: 0;	background-position: 1px center;		background-repeat: no-repeat;	cursor: default;}
