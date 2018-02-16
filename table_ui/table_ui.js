@@ -80,7 +80,7 @@ function table_ui(options){
 	link.setSort = function(options){			sort.sortAll(options);				}
 	link.getSort = function(){					return sort.getSort();				}
 	link.getSetting = function(){				return tools.cloneObject(setting);	}
-	link.focus = function(){					main.html.focus();						}
+	link.focus = function(){					main.html.focus();					}
 	link.getSelected = function(){
 		var cells = [];
 		select.table.forEach(function(item){ cells.push(item.obj);});
@@ -207,7 +207,7 @@ function table_ui(options){
 				for(var i = 0; i < display.s.rows.length; i++){
 					var ni = display.s.rows[i];
 					for(var j = 0; j < iSide.c; j++){
-						if(!iSide.visual[ni][j].visible || e.ctrlKey) continue;
+						if(!iSide.visual[ni][j].visible || e.ctrlKey)	continue;
 	
 						var top    = display.s.tp[ iSide.visual[ni][j].i[0] ],		bottom = display.s.tp[ iSide.visual[ni][j].i.last() + 1 ];
 						var left   = iSide.lp[ iSide.visual[ni][j].j[0] ],			right  = iSide.lp[ iSide.visual[ni][j].j.last() + 1 ];
@@ -522,7 +522,6 @@ function table_ui(options){
 					if(functions.keyDown)				functions.keyDown(e, link);		
 					tools.stopProp(e);		return false;
 				}
-
 			},
 			up: function(e){
 				if(!e.shiftKey && select.shift1st){		select.shift = false;		display.table();	}
@@ -531,7 +530,6 @@ function table_ui(options){
 				if(e.shiftKey && select.shift1st){		select.shift = false;		display.table(); 	}
 			},
 			select: function(h, v){
-
 				if(h == -1 && select.shift2nd[0] != 0)						select.shift2nd[0] -= 1;
 				else if(h == 1 && select.shift2nd[0] != iTable.c - 1)		select.shift2nd[0] += 1;
 				if(v == -1 && select.shift2nd[1] != 0)						select.shift2nd[1] -= 1;
@@ -571,13 +569,11 @@ function table_ui(options){
 					if( select.table[i].j[0] < fj )			fj = select.table[i].j[0];
 					if( select.table[i].j[0] > lj )			lj = select.table[i].j[0];
 				}
-				if(select.table.length == 0){	fi = 0;		fj = 0;	}
+				if(select.table.length == 0){				fi = 0;		fj = 0;	}
 				if(select.side.length != 0){				cj = iSide.c;
-					for(var i = 0; i < select.side.length; i++){	if(select.side[i].j.last() < cj)	cj = select.side[i].j.last();	}
-				}
+					for(var i = 0; i < select.side.length; i++){	if(select.side[i].j.last() < cj)	cj = select.side[i].j.last();	}		}
 				if(select.top.length != 0){					ci = iTop.r;
-					for(var i = 0; i < select.top.length; i++){		if(select.top[i].i.last() < ci)		ci = select.top[i].i.last();	}
-				}
+					for(var i = 0; i < select.top.length; i++){		if(select.top[i].i.last() < ci)		ci = select.top[i].i.last();	}		}
 			} else {
 				fi = 0; li = iTable.r - 1;
 				fj = 0; lj = iTable.c - 1;
@@ -610,8 +606,7 @@ function table_ui(options){
 			for(var i = 0; i < iSide.r; i++){	for(var j = 0; j < iSide.c; j++)	 iSide.visual[i][j].export = true;	}
 	
 			for(var i = fi; i <= li; i++){
-				if( !iSide.branches[i].visible )				continue;
-	
+				if( !iSide.branches[i].visible )				continue;	
 				if(!options.split){
 					for(var j = cj; j < iSide.c; j++){
 						var cell = iSide.visual[i][j];
@@ -1254,15 +1249,14 @@ function table_ui(options){
 
 			s.rows.forEach(function(i){			
 				if(!iSide.branches[i].visible)		drawDashLine(c, '#555', '#fff', 0, s.tp[i + 1] - 0.5 - s.t, (s.vw > s.lp.last()) ? s.lp.last() : s.vw, s.tp[i + 1] - 0.5 - s.t);	
-				else if(iSide.branches[i].line)		c.fillRect(0, s.tp[i + 1] - 1 - s.t, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), 1);
-			});
+				else if(iSide.branches[i].line)		c.fillRect(0, s.tp[i + 1] - 1 - s.t, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), 1);			});
 			s.cols.forEach(function(i){
 				if(!iTop.branches[i].visible)		drawDashLine(c, '#555', '#fff', s.lp[i + 1] - 0.5 - s.l, 0, s.lp[i + 1] - 0.5 - s.l, (s.vh > s.tp.last()) ? s.tp.last() : s.vh);
-				else if(iTop.branches[i].line){		c.fillRect(s.lp[i + 1] - 1 - s.l, 0, 1, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh)); }
-			});			
-			c.fillStyle = '#F1F1F1';				c.fillRect(0, s.vh, s.vw + 18, 18);	c.fillRect(s.vw, 0, 18, s.vh);
+				else if(iTop.branches[i].line)		c.fillRect(s.lp[i + 1] - 1 - s.l, 0, 1, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh)); 			});
 
+			c.fillStyle = '#F1F1F1';				c.fillRect(0, s.vh, s.vw + 18, 18);	c.fillRect(s.vw, 0, 18, s.vh);
 			c.fillStyle = '#aaa'
+
 			if(s.lp.last() > s.vw){
 				scroll.h.w = ((( s.vw - 36 )*( s.vw ))/s.lp.last() > 20) ? (( s.vw - 36 )*( s.vw ))/s.lp.last() : 20;
 				scroll.h.l = ((( s.vw - 36 - scroll.h.w)*( s.l ))/(s.lp.last() - s.vw )) + 18;
@@ -1317,8 +1311,7 @@ function table_ui(options){
 					drawDashLine(c, '#000', '#f1f1f1', s.lp[cell.j.last() + 1] - 0.5 - s.l, iTop.tp[cell.i[0]], s.lp[cell.j.last() + 1] - 0.5 - s.l, iTop.tp[cell.i.last() + 1]  );
 					continue;
 				}
-
-				else cell.displayed = true;
+				cell.displayed = true;
 
 				if(cell.hover)			c.fillStyle = back[0];
 				else if(cell.select)	c.fillStyle = back[1];
@@ -1368,7 +1361,7 @@ function table_ui(options){
 					drawDashLine(c, '#000', '#f1f1f1', iSide.lp[cell.j[0]], s.tp[cell.i.last() + 1] - 0.5 - s.t, iSide.lp[cell.j.last() + 1], s.tp[cell.i.last() + 1] - 0.5 - s.t );
 					continue;
 				}
-				else cell.displayed = true;
+				cell.displayed = true;
 
 				if(cell.hover)			c.fillStyle = back[0];
 				else if(cell.select)	c.fillStyle = back[1];

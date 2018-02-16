@@ -44,7 +44,6 @@ function tab_ui(options){
 		self_parent.removeChild(self_content);
 
 		tabs = undefined;								functions = undefined;
-
 		self_header = undefined;						self_parent = undefined;
 		setting = undefined;							self_content = undefined;
 		pageTab = undefined;							searchTab = undefined;

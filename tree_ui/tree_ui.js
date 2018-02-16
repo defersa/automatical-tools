@@ -5,8 +5,8 @@ function tree_ui(options){
 	var vector; //list of items with expand
 	var timer;
 
-	var html_content; //background container
-	var html_viewport; //viewport container
+	var substrate; //background container
+	var viewport; //viewport container
 
 	var setting;
 	var functions;
@@ -40,12 +40,12 @@ function tree_ui(options){
 		link.change(options);
 	}
 	link.remove = function(){
-		tools.destroyHTML(html_viewport);
+		tools.destroyHTML(viewport);
 		parent = undefined;			tree = undefined;
 		vector = undefined;			setting = undefined;
 		functions = undefined;		window.removeEventListener("resize", display.display);
 
-		html_viewport = undefined;	html_content = undefined;
+		viewport = undefined;		substrate = undefined;
 	}
 	link.change = function(options){
 		if(!options)									options = {};
@@ -85,10 +85,10 @@ function tree_ui(options){
 		}
 		var newTop = item.position - 10;
 
-		if(place == 1)					newTop += - Math.round(html_viewport.clientHeight/2) + 10;
-		else if(place == 2)				newTop += - html_viewport.clientHeight + 40;
+		if(place == 1)					newTop += - Math.round(viewport.clientHeight/2) + 10;
+		else if(place == 2)				newTop += - viewport.clientHeight + 40;
 
-		html_viewport.scrollTop = newTop;	}
+		viewport.scrollTop = newTop;	}
 	link.addItems = function(objects, parent, position){
 		if(!Array.isArray(objects))															objects = [objects];
 		if(parent == undefined)																parent = tree;
@@ -142,9 +142,9 @@ function tree_ui(options){
 
 		display.generate();	}
 
-	link.focus = function()					{	html_viewport.focus(); }
-	link.getScroll = function()				{	return html_viewport.scrollTop; }
-	link.setScroll = function(size)			{	html_viewport.scrollTop = size; }
+	link.focus = function()					{	viewport.focus(); }
+	link.getScroll = function()				{	return viewport.scrollTop; }
+	link.setScroll = function(size)			{	viewport.scrollTop = size; }
 
 	function cItem(item, parent){ //class Item
 		var iitem			= this; //inner Item
@@ -216,8 +216,8 @@ function tree_ui(options){
 				} else return;
 			}
 
-			var top = html_viewport.scrollTop;
-			var bot = html_viewport.scrollTop + html_viewport.clientHeight;
+			var top = viewport.scrollTop;
+			var bot = viewport.scrollTop + viewport.clientHeight;
 
 			if(kc == 38 || kc == 40){
 				var new_index = (kc == 38) ? (current.item.index - 1) : (current.item.index + 1);
@@ -241,8 +241,8 @@ function tree_ui(options){
 				
 				if(select.items.length == 1 && !e.ctrlKey)							events.singleClick(select.items[0]);
 				if(select.items.length > 1 && !e.ctrlKey)							events.customSelect(e);
-				if(current.item.position < top)										html_viewport.scrollTop = current.item.position - 10;
-				if( (current.item.position + setting.height + 1) > bot)		html_viewport.scrollTop = current.item.position + setting.height - html_viewport.clientHeight + 10;
+				if(current.item.position < top)										viewport.scrollTop = current.item.position - 10;
+				if( (current.item.position + setting.height + 1) > bot)		viewport.scrollTop = current.item.position + setting.height - viewport.clientHeight + 10;
 			}
 
 			if( (kc == 37 || kc == 39) && !e.ctrlKey ){
@@ -251,7 +251,7 @@ function tree_ui(options){
 					else if(current.item.parent != tree){
 						current.set(current.item.parent);
 						select.removeAll();					select.add(current.item);
-						if(current.item.position < top)		html_viewport.scrollTop = current.item.position - 10;
+						if(current.item.position < top)		viewport.scrollTop = current.item.position - 10;
 					}
 				} else if(current.item.expand === false)	current.item.changeExpand(true);
 			}
@@ -259,10 +259,10 @@ function tree_ui(options){
 			if(kc == 13 && typeof functions.doubleClick == 'function')				functions.doubleClick(current.item);
 			if(e.ctrlKey && kc == 65)						select.addAll();
 
-			if(kc == 36)									html_viewport.scrollTop = 0;
-			if(kc == 35)									html_viewport.scrollTop = html_content.clientHeight;
-			if(kc == 33)									html_viewport.scrollTop += -html_viewport.clientHeight*0.7;
-			if(kc == 34)									html_viewport.scrollTop += html_viewport.clientHeight*0.7;
+			if(kc == 36)									viewport.scrollTop = 0;
+			if(kc == 35)									viewport.scrollTop = substrate.clientHeight;
+			if(kc == 33)									viewport.scrollTop += -viewport.clientHeight*0.7;
+			if(kc == 34)									viewport.scrollTop += viewport.clientHeight*0.7;
 			
 			if( (e.ctrlKey && (kc == 90 || kc == 88 || kc == 67 || kc == 86 || kc == 83 || kc == 70 || (kc >= 37 && kc <= 40))) || kc == 46 ){
 				if(typeof functions.keyDown == 'function')	functions.keyDown(e, current.item, link);
@@ -306,6 +306,7 @@ function tree_ui(options){
 
 			var item = tools.closest(e.target, 'tu-item');	
 			if(typeof functions.doubleClick == 'function' && item)	functions.doubleClick(item.item);
+			viewport.focus();
 		},
 		singleClick: function(item){
 			if(timer){
@@ -313,9 +314,11 @@ function tree_ui(options){
 			}
 			if(typeof functions.singleClick == 'function'){
 				timer = setTimeout(function() {
-			   		timer = null;									functions.singleClick(item);					
+					timer = null;
+					functions.singleClick(item);
 				}, 500); 
 			}
+			viewport.focus();
 		},
 		customSelect: function(e){
 			var array = select.getSorted(tree);
@@ -342,14 +345,14 @@ function tree_ui(options){
 					var itemsHeight = getHeight(item);
 					var itemPosition = item.position;
 
-					if(html_viewport.scrollTop + html_viewport.offsetHeight < itemsHeight + itemPosition){
-						if(html_viewport.offsetHeight < itemsHeight)		html_viewport.scrollTop = itemPosition;
-						else												html_viewport.scrollTop = itemPosition + itemsHeight - html_viewport.offsetHeight + Math.round(setting.height*0.5);
+					if(viewport.scrollTop + viewport.offsetHeight < itemsHeight + itemPosition){
+						if(viewport.offsetHeight < itemsHeight)		viewport.scrollTop = itemPosition;
+						else												viewport.scrollTop = itemPosition + itemsHeight - viewport.offsetHeight + Math.round(setting.height*0.5);
 					}
 				}
 			} 				
 
-			html_viewport.focus();
+			viewport.focus();
 			tools.stopProp(e);								return false;
 		}
 	}
@@ -362,8 +365,8 @@ function tree_ui(options){
 		show: function(options){
 			setting.show = options.show;
 
-			if(setting.show)							parent.appendChild(html_viewport);
-			else											fragment.appendChild(html_viewport);
+			if(setting.show)							parent.appendChild(viewport);
+			else											fragment.appendChild(viewport);
 		},
 		defaultExpand: function(options){
 			if(options.defaultExpand)						setting.defaultExpand = true;
@@ -379,7 +382,7 @@ function tree_ui(options){
 			if(options.functions.drop != undefined)			functions.drop = options.functions.drop;
 		},
 		viewport: function(){
-			html_viewport = tools.createHTML({tag: 'div', className: 'tu-viewport',	onscroll: display.display, tabIndex: 0, 
+			viewport = tools.createHTML({tag: 'div', className: 'tu-viewport',	onscroll: display.display, tabIndex: 0, 
 											onmousedown: select.sMouseDown,
 											ondblclick: events.doubleClick,
 											onkeydown: events.keyDown,
@@ -388,11 +391,11 @@ function tree_ui(options){
 											oncontextmenu: events.rightClick,
 											onclick: select.sOnClick	});
 
-			html_viewport.ondragover = dragdrop.over;				html_viewport.ondragleave = dragdrop.leave;
-			html_viewport.ondragenter = dragdrop.enter;				html_viewport.ondrop  = dragdrop.drop;
-			html_viewport.ondragend = dragdrop.end;					window.addEventListener("resize", display.display);
+			viewport.ondragover = dragdrop.over;				viewport.ondragleave = dragdrop.leave;
+			viewport.ondragenter = dragdrop.enter;				viewport.ondrop  = dragdrop.drop;
+			viewport.ondragend = dragdrop.end;					window.addEventListener("resize", display.display);
 
-			html_content = tools.createHTML({tag: 'div', className: 'tu-content', parent: html_viewport});
+			substrate = tools.createHTML({tag: 'div', className: 'tu-content', parent: viewport});
 		}
 	}
 
@@ -421,19 +424,19 @@ function tree_ui(options){
 			for(var i = 0; i < vector.length; i++)			vector[i].index = undefined;
 
 			vector = [];									display.items = [];
-			html_content.style.height = (createVector(tree.children, 0, 0) + 1) * setting.height + 'px';
-			html_content.style.lineHeight = setting.height + 'px';
-			html_content.innerHTML = '';					display.display();
+			substrate.style.height = (createVector(tree.children, 0, 0) + 1) * setting.height + 'px';
+			substrate.style.lineHeight = setting.height + 'px';
+			substrate.innerHTML = '';					display.display();
 		}
 
 		this.display = function(){
 			var nItems = []; //new showed items
 
-			if(window.customDrag != undefined)				window.customDrag.coord = html_content.getBoundingClientRect();
+			if(window.customDrag != undefined)				window.customDrag.coord = substrate.getBoundingClientRect();
 			
-			if(html_viewport.offsetHeight == 0)				return;
-			var top = html_viewport.scrollTop;
-			var bot = html_viewport.offsetHeight + top;
+			if(viewport.offsetHeight == 0)				return;
+			var top = viewport.scrollTop;
+			var bot = viewport.offsetHeight + top;
 			if(top == bot)									return;
 
 
@@ -453,7 +456,7 @@ function tree_ui(options){
 		this.showItem = function(item){
 			if(item.html != undefined) 			display.hideItem(item);
 
-			item.html = tools.createHTML({tag: 'div', className: 'tu-item', parent: html_content, style: ('height: ' + (setting.height + 1) + 'px; top: ' + item.position + 'px;') });
+			item.html = tools.createHTML({tag: 'div', className: 'tu-item', parent: substrate, style: ('height: ' + (setting.height + 1) + 'px; top: ' + item.position + 'px;') });
 			item.html.item = item; 
 
 			item.html.expand = tools.createHTML({tag: 'div', className: 'tu-expand', parent: item.html});
@@ -571,24 +574,24 @@ function tree_ui(options){
 				}
 			}
 			if(!e.shiftKey && !e.ctrlKey)				events.singleClick(item);
-			if(select.items.length > 1)				events.customSelect(e);
+			if(select.items.length > 1)					events.customSelect(e);
 		}
 
 		this.sMouseDown = function(e){
 			var dragging = tools.closest(e.target, 'tu-select') || tools.closest(e.target, 'tu-caption');
-			var coords = html_viewport.getBoundingClientRect();
+			var coords = viewport.getBoundingClientRect();
 
 			if(e.which != 1 || dragging)																						return;
-			if(e.pageX - coords.left >= html_viewport.clientWidth && e.pageX - coords.left <= html_viewport.offsetWidth)		return;
+			if(e.pageX - coords.left >= viewport.clientWidth && e.pageX - coords.left <= viewport.offsetWidth)		return;
 
-			self = {event: e, padding: html_content.getBoundingClientRect() };
+			self = {event: e, padding: substrate.getBoundingClientRect() };
 
 			window.addEventListener("mousemove", sMouseMove);
 			window.addEventListener("mouseup", sMouseUp);
 		}
 		function sMouseMove(e){
 			if((Math.abs(e.pageX - self.event.pageX) > 3 || Math.abs(e.pageY - self.event.pageY) > 3) && !self.moved){
-				self.rectangle = tools.createHTML({tag: 'div', className: 'tu-rectangle', parent: html_content});
+				self.rectangle = tools.createHTML({tag: 'div', className: 'tu-rectangle', parent: substrate});
 				tools.startBackdrop({cursor: 'default'});
 				self.moved = true;
 			}
@@ -606,6 +609,7 @@ function tree_ui(options){
 
 				self.rectangle.style.cssText = 'left: ' + fX + 'px; width: ' + (lX - fX) + 'px; top: ' + fY + 'px; height: ' + (lY - fY) + 'px;';
 			}
+			viewport.focus();
 		}
 		function sMouseUp(e){
 			if(self.moved){
@@ -636,7 +640,7 @@ function tree_ui(options){
 
 			self = undefined;
 			if(select.items.length > 1)					events.customSelect(e);
-			html_viewport.focus();
+			viewport.focus();
 			window.removeEventListener("mousemove", sMouseMove);
 			window.removeEventListener("mouseup", sMouseUp);
 		}
@@ -702,7 +706,7 @@ function tree_ui(options){
 				}				
 				display.generate();
 
-				if(found.length == 0)	setting.nf = tools.createHTML({tag: 'div', innerHTML: ('Items with "' + text + '" not founded!'), style: 'color: #444;',parent: html_content });
+				if(found.length == 0)	setting.nf = tools.createHTML({tag: 'div', innerHTML: ('Items with "' + text + '" not founded!'), style: 'color: #444;',parent: substrate });
 
 			} else {
 				if(setting.searched){
@@ -790,8 +794,8 @@ function tree_ui(options){
 			}
 
 			var items = getOnlyLastItems(tree);					setUndrop(items);
-			var htmlAvatar = tools.createHTML({tag: 'div', className: 'tu-avatar', parent: html_content, innerHTML: getAvatar(items)});
-			var htmlDrop = tools.createHTML({tag: 'div', className: 'tu-drop-close', parent: html_content});
+			var htmlAvatar = tools.createHTML({tag: 'div', className: 'tu-avatar', parent: substrate, innerHTML: getAvatar(items)});
+			var htmlDrop = tools.createHTML({tag: 'div', className: 'tu-drop-close', parent: substrate});
 
 			if(typeof functions.drag == 'function')				var text = functions.drag(e, items, link);
 			else												var text = 'null';
@@ -869,11 +873,11 @@ function tree_ui(options){
 		this.enter = function(e){
 			if(window.customDrag){
 				if(window.customDrag.output == undefined){
-					window.customDrag.coord = html_content.getBoundingClientRect();
+					window.customDrag.coord = substrate.getBoundingClientRect();
 					window.customDrag.type = -1;
 					window.customDrag.output = link;
-					html_content.appendChild(window.customDrag.drop);
-					html_viewport.focus();
+					substrate.appendChild(window.customDrag.drop);
+					viewport.focus();
 				}
 			}
 		}
@@ -882,7 +886,7 @@ function tree_ui(options){
 			var output = tools.closest(document.elementFromPoint(e.pageX, e.pageY), 'tu-viewport');
 
 			if(window.customDrag){
-				if(output != html_viewport){
+				if(output != viewport){
 					window.customDrag.output = undefined;
 					window.customDrag.drop.style.display = 'none';
 				}
