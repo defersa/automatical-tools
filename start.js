@@ -65,19 +65,6 @@ function new_function(){
 			}
 		}}, size: { corner: {w: [40, 200]} }});
 
-/*	otab = new tab_ui({parent: document.getElementsByClassName('first')[1], functions: {
-		remove: function(t){
-			t.table.remove();
-			return true;
-		},
-		newPage: function(){
-			var container = tools.createHTML({tag: 'div', className: 'tbu-default'});
-			var table = new table_ui({parent: container, table: { side: dataSet.side[1], top: dataSet.top[1], table: dataSet.cells[1]  } })
-			var t = otab.addTabs([{name: 'table', title: 'title', content: container, close: true }]);
-			t[0].table = table;
-		} } } );
-*/
-
 	document.body.oncontextmenu = function(e){
 		var right = menu_ui({x: e.pageX, y: e.pageY, tree: [ {text: 'first', icon: 'default-img', func: function(e){alert('asfd');}, text2: 'That text is in text2' }, {text: 'second', icon: 'default-img', disabled: true}, {text: 'new branch', icon: 'default-img', check: true}, , {text: 'thrid', children: [ {text: 'first'}, {text: 'second'}, {text: 'thrid', children: [ {text: 'first'}, {text: 'second'}, ,{text: 'thrid', children: [ {text: 'first'}, {text: 'second'}]}]}]}, {text: 'fourth', children: [ {text: 'first'}, ,{text: 'second'}]} ] });
 		return false;
@@ -87,6 +74,8 @@ function new_function(){
 	console.log(thirdTree.getScroll());
 	tau.setTable( dataSet.top[1], dataSet.side[1], dataSet.cells[1]);
 	tau.focus();
+
+	var ccb = new combobox_ui({parent: document.getElementById('ccb') });
 	
 //	document.body.onclick = sss();
 
@@ -125,11 +114,6 @@ function partition(a, s, e){
 	}
 	return i;
 }
-
-
-
-
-
 
 function fds(e){
 	tau.setTable( dataSet.top[0], dataSet.side[0], dataSet.cells[0]);
