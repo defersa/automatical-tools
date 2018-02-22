@@ -71,7 +71,7 @@ function window_ui(options){
 	this.remove = function(){
 		if(setting.show){
 			if(setting.modal)	modal.parentNode.removeChild(modal);
-			else		main_window.parentNode.removeChild(main_window);
+			else				main_window.parentNode.removeChild(main_window);
 		}
 		sides = undefined;		corners = undefined;
 		resize = undefined;		parent = undefined;

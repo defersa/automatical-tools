@@ -65,18 +65,20 @@ function new_function(){
 			}
 		}}, size: { corner: {w: [40, 200]} }});
 
-	document.body.oncontextmenu = function(e){
+/*	document.body.oncontextmenu = function(e){
 		var right = menu_ui({x: e.pageX, y: e.pageY, tree: [ {text: 'first', icon: 'default-img', func: function(e){alert('asfd');}, text2: 'That text is in text2' }, {text: 'second', icon: 'default-img', disabled: true}, {text: 'new branch', icon: 'default-img', check: true}, , {text: 'thrid', children: [ {text: 'first'}, {text: 'second'}, {text: 'thrid', children: [ {text: 'first'}, {text: 'second'}, ,{text: 'thrid', children: [ {text: 'first'}, {text: 'second'}]}]}]}, {text: 'fourth', children: [ {text: 'first'}, ,{text: 'second'}]} ] });
 		return false;
 	}
+*/
 	thirdTree.focus();
 	thirdTree.setScroll(1400);
 	console.log(thirdTree.getScroll());
 	tau.setTable( dataSet.top[1], dataSet.side[1], dataSet.cells[1]);
 	tau.focus();
 
-	var ccb = new combobox_ui({parent: document.getElementById('ccb') });
-	
+	window.ccb = new combobox_ui({parent: document.getElementById('ccb'), tree: [ {text: '----'}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon'}, { text: 'second', icon: 'tu-TableIcon'}, { text: 'third', icon: 'tu-TableIcon'}] });
+	console.log(window.ccb.getSelected());
+
 //	document.body.onclick = sss();
 
 /*	var mas = [3, 4, 2, 5, 1, 2, 5, 6, 8, 9, 5, 4, 3, 5, 6, 4];
@@ -89,7 +91,6 @@ function new_function(){
 	dg.set_table(top_h, side_h, cells);
 */
 }
-function sss(){ return function(e){ alert('asdadas'); return false; } } 
 
 function qs(a, s, e){
 	if(s < e){
