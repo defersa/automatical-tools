@@ -24,7 +24,7 @@ function window_ui(options){
 	var min_icon	= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 24 24" xml:space="preserve"><style type="text/css">.wu-button .fill {fill: transparent;}.wu-button .cross{fill: #d7ebf5;}.wu-button:hover  .cross{fill: #FFFFFF;}.wu-button:hover  .fill {fill: #297aa3;}.wu-button:active .cross{fill: #FFFFFF;}.wu-button:active .fill {fill: #1f5c7a;}.wu-button .fill, .wu-button .cross, .wu-button:hover .cross, .wu-button:hover .fill, .wu-button:active .cross, .wu-button:active .fill { -webkit-transition: .3s;-moz-transition: .3s;transition: .3s; }</style><g class="fill"><path d="M 0,0 L 24,0 L 24,24 L 0,24 L 0,0 z" /></g><g class="cross"><path d="M 5,10 L 15,10 L 15,18 L 5,18 L 5,12 L 6,12 L 6,17 L 14,17 L 14,12 L 5,12 L 5,10 z" /><path d="M 8,6 L 19,6 L 19,14 L 16,14 L 16,13 L 18,13 L 18,8 L 10,8 L 10,9 L 9,9 L 9,6 z" /></g></svg>';
 	var quest_icon	= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 24 24" xml:space="preserve"><style type="text/css">.wu-button .fill {fill: transparent;}.wu-button .cross{fill: #d7ebf5;}.wu-button:hover  .cross{fill: #FFFFFF;}.wu-button:hover  .fill {fill: #297aa3;}.wu-button:active .cross{fill: #FFFFFF;}.wu-button:active .fill {fill: #1f5c7a;}.wu-button .fill, .wu-button .cross, .wu-button:hover .cross, .wu-button:hover .fill, .wu-button:active .cross, .wu-button:active .fill { -webkit-transition: .3s;-moz-transition: .3s;transition: .3s; }</style><g class="fill"><path d="M 0,0 L 24,0 L 24,24 L 0,24 L 0,0 z" /></g><g class="cross"><path d="M 8,10 C 8,7.5 9.5,6 12,6 C 14.5,6 16,7.5 16,10	L 16,10.25	C 16,10.75 16,11.5 14.5,12.5	Q 13,13.5 13,14.5		L 13,15	L 11,15 	L 11,14	Q 11,13 12.5,12	Q 14,11 14,10	C 14,8.75 13.25,8 12,8	C 10.75,8 10,8.75 10,10	 z" /><path d="M 11,16 L 13,16 L 13,18 L 11,18 L 11,16 z" /></g></svg>';
 
-	this.create = function(options){
+	link.create = function(options){
 		if(main_window != undefined) this.remove();
 
 		//verification of input data and assignment default value
@@ -35,6 +35,7 @@ function window_ui(options){
 		if(options.left == undefined)		options.left  = 'center';
 		if(options.top == undefined)		options.top = 'center';
 
+		if(options.enterKey == undefined)	options.enterKey = true;
 		if(options.footer == undefined)		options.footer = true;
 		if(options.ok == undefined)			options.ok = false;
 		if(options.apply == undefined)		options.apply = true;
@@ -68,7 +69,7 @@ function window_ui(options){
 
 		this.change(options);
 	}
-	this.remove = function(){
+	link.remove = function(){
 		if(setting.show){
 			if(setting.modal)	modal.parentNode.removeChild(modal);
 			else				main_window.parentNode.removeChild(main_window);
@@ -83,12 +84,13 @@ function window_ui(options){
 		fragment = document.createDocumentFragment();
 		setting = {};
 	}
-	this.change = function(options){
+	link.change = function(options){
 		if(options.parent != undefined)			self_change.change_parent(options);
 		if(options.footer != undefined)			self_create.footer(options);			
 		if(options.footer != undefined)			link.container.style.bottom =  ( (options.footer)? '51' : '3' ) + 'px';
 		if(options.resize != undefined)			self_create.resize(options);
 		if(options.footerContent != undefined)	self_change.change_footer_content(options);
+		if(options.enterKey != undefined)		setting.enterKey = options.enterKey;
 	
 		if(options.ok != undefined || options.close != undefined || options.cancel != undefined 
 			|| options.apply != undefined || options.customButtons != undefined)															self_create.footer_button(options);
@@ -106,8 +108,12 @@ function window_ui(options){
 		
 		if(setting.show)	self_change.apply_position();
 	}
-	this.getOptions = function(){
+	link.getOptions = function(){
 		return tools.cloneObject(setting);
+	}
+	link.hasFocus = function(){
+		if(document.activeElement == main_window)	return true;
+		else										return false;
 	}
 
 	var self_events = {
@@ -116,11 +122,10 @@ function window_ui(options){
 			if(typeof functions.keyDown == 'function')	functions.keyDown(e, link);
 			else {
 				if(e.keyCode == 27 && (buttons.picCancel || buttons.cancel) ) onclick.cancel_button();
-/*				if(e.keyCode == 13){
-					if(setting.ok) 		onclick.ok_button();
+				if(e.keyCode == 13 && setting.enterKey){
+					if(setting.ok) 			onclick.ok_button();
 					else if(setting.apply)	onclick.apply_button();
 				}
-*/
 			}
 
 			if (e.ctrlKey && ((e.keyCode == 37 || e.which == 37) || (e.keyCode == 39 || e.which == 39)) && setting.modal){
@@ -561,5 +566,5 @@ function window_ui(options){
 
 	if(!options)
 		options = {};	
-	this.create(options);
+	link.create(options);
 }

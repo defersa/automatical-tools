@@ -56,9 +56,9 @@ function menu_ui(options){
 		var item = tools.closest(e.target, 'mui-item');
 		if(item){
 			if(item.func){
-				item.func();
 				if(main.close) main.close();
 				close();
+				item.func();
 			}
 		}
 	}

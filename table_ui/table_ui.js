@@ -34,7 +34,7 @@ function table_ui(options){
 
 
 		main = {	html: creating.parent(),	iCorner: creating.corner(),		iTable: creating.table(),	iSide: creating.side(),	iTop: creating.top() };
-		size = {	corner: { w: [], h: [] },	table: { w: [], h: [] },  w: 50, h: 20, text: 13, font: 'sans-serif', scale: 1 };
+		size = {	corner: { w: [], h: [] },	table: { w: [], h: [] },  w: 50, h: 20, text: 13, font: 'sans-serif', scale: 2 };
 		functions = {};							setting = { showType: [true, true, true], size: size };
 
 		window.addEventListener("resize", display.generate);
@@ -67,7 +67,6 @@ function table_ui(options){
 		if( options.round != undefined)			set.round(options);
 		if( options.functions != undefined)		set.functions(options);
 		if( options.size != undefined)			set.size(options);
-		if( options.scale != undefined)			set.scale(options);
 
 		if( options.table != undefined)			create.setTable( options.table.top, options.table.side, options.table.table);
 
@@ -162,47 +161,27 @@ function table_ui(options){
 			if(options.size.h)				size.h = options.size.h;
 			if(options.size.text)			size.text = options.size.text;
 			if(options.size.font)			size.font = options.size.font;
-			iTable.ctx.font = Math.round( size.text * size.scale ) + "px " + size.font;
+			iTable.ctx.font = size.text + "px " + size.font;
 			size.dot				= iTable.ctx.measureText('.').width;
 			size.numeral			= iTable.ctx.measureText('0').width;
 			size.percent			= iTable.ctx.measureText('%').width;
 			size.sharp				= iTable.ctx.measureText('#').width;
-			size.minh = Math.round( size.text * size.scale ) + 4;
-			size.ttext = Math.round( size.text * size.scale );
+			size.minh = size.text + 4;
+			size.ttext = size.text;
 			size.minw = Math.floor(iTable.ctx.measureText('Abcd').width) + 6;
 		},
-		scale: function(options){
-			var nscale = options.scale;
+		scale: function(value){
+			return value*size.scale;
+		},
 
-			iTop.branches.forEach(	function(item){ item.dw = Math.round(item.dw * ( nscale / size.scale )); } );
-			iSide.branches.forEach(	function(item){ item.dh = Math.round(item.dh * ( nscale / size.scale )); } );
-
-			for(var i = 0; i < iTop.dh.length; i++){	iTop.dh[i] = Math.round(iTop.dh[i] * ( nscale / size.scale ));}
-			for(var i = 0; i < iSide.dw.length; i++){	iSide.dw[i] = Math.round(iSide.dw[i] * ( nscale / size.scale ));}
-		
-			if(Array.isArray(iTop.d) && Array.isArray(iSide.w) ){
-				for(var i = 0; i < iTop.d.length; i++){		iTop.d[i] = Math.round(iTop.d[i] * ( nscale / size.scale ));}
-				for(var i = 0; i < iSide.w.length; i++){	iSide.w[i] = Math.round(iSide.w[i] * ( nscale / size.scale ));}
-			}
-		
-			size.corner.w.forEach(	function(item){ item = Math.round(item * ( nscale / size.scale )); } );
-			size.corner.h.forEach(	function(item){ item = Math.round(item * ( nscale / size.scale )); } );
-
-			size.table.w.forEach(	function(item){ item = Math.round(item * ( nscale / size.scale )); } );
-			size.table.h.forEach(	function(item){ item = Math.round(item * ( nscale / size.scale )); } );
-
-			size.scale = nscale;
-
-			set.size({ size: {corner: {}, table: {}} });
-		}
 	}
 	var events = {
 		move: {
 			side: function(e){
-				var x = e.pageX - iSide.coords.left;
-				var y = e.pageY - iSide.coords.top + display.s.t;
+				var x = set.scale(e.pageX - iSide.coords.left);
+				var y = set.scale(e.pageY - iSide.coords.top + display.s.t);
 
-				if(display.s.vh < e.pageY - iSide.coords.top){ iSide.html.style.cursor = 'default'; return; }
+				if(display.s.vh < set.scale(e.pageY - iSide.coords.top)){ iSide.html.style.cursor = 'default'; return; }
 	
 				for(var i = 0; i < display.s.rows.length; i++){
 					var ni = display.s.rows[i];
@@ -227,10 +206,10 @@ function table_ui(options){
 				iSide.html.style.cursor = 'default';
 			},
 			top: function(e){
-				var x = e.pageX - iTop.coords.left + display.s.l;
-				var y = e.pageY - iTop.coords.top;
+				var x = set.scale(e.pageX - iTop.coords.left + display.s.l);
+				var y = set.scale(e.pageY - iTop.coords.top);
 
-				if(display.s.vw < e.pageX - iTop.coords.left){ iTop.html.style.cursor = 'default'; return; }
+				if(display.s.vw < set.scale(e.pageX - iTop.coords.left)){ iTop.html.style.cursor = 'default'; return; }
 	
 				for(var i = 0; i < display.s.cols.length; i++){
 					var ni = display.s.cols[i];
@@ -256,7 +235,9 @@ function table_ui(options){
 				iTop.html.style.cursor = 'default';
 			},
 			corn: function(e){
-				var x = e.pageX - iSide.coords.left,	y = e.pageY - iTop.coords.top,		s = display.s;
+				var x = set.scale(e.pageX - iSide.coords.left);
+				var y = set.scale(e.pageY - iTop.coords.top);
+				var s = display.s;
 	
 				if( s.y - 3 <= y && y <= s.y + 1 && s.x - 3 <= x && x <= s.x + 1 || e.ctrlKey){			iCorner.html.style.cursor = 'se-resize';	return;	}
 				if( s.y - 3 <= y && y <= s.y + 1 && x < s.x && x > 0 || e.ctrlKey){						iCorner.html.style.cursor = 'n-resize';		return;	}
@@ -265,8 +246,8 @@ function table_ui(options){
 				iCorner.html.style.cursor = 'default';			return;
 			},
 			table: function(e){
-				var x = e.pageX - iTable.coords.left;
-				var y = e.pageY - iTable.coords.top;
+				var x = set.scale(e.pageX - iTable.coords.left);
+				var y = set.scale(e.pageY - iTable.coords.top);
 				if( display.s.vw < x && x < display.s.vw + 18 && y > display.s.vh - 18 && y < display.s.vh && !display.s.corn.b){		display.s.corn.b = true;	display.table();	return false; };
 				if( display.s.vw < x && x < display.s.vw + 18 && y < 18  && !display.s.corn.t){											display.s.corn.t = true;	display.table();	return false; };
 				if( !(display.s.vw < x && x < display.s.vw + 18 && y > display.s.vh - 18 && y < display.s.vh) && display.s.corn.b){		display.s.corn.b = false;	display.table();	return false; };
@@ -281,7 +262,10 @@ function table_ui(options){
 		down: {
 			corn: function(e){
 				if(e.which != 1) return;
-				var x = e.pageX - iSide.coords.left,	y = e.pageY - iTop.coords.top,	s = display.s;
+
+				var x = set.scale(e.pageX - iSide.coords.left);
+				var y = set.scale(e.pageY - iTop.coords.top);
+				var s = display.s;
 	
 				if( s.y - 3 <= y && y <= s.y + 1 && s.x - 3 <= x && x <= s.x + 1  || e.ctrlKey){		resize.corner.down( e, 1, 1);	return;	}
 				if( s.y - 3 <= y && y <= s.y + 1 && x < s.x && x > 0 || e.ctrlKey){						resize.corner.down( e, 1, 0);	return;	}
@@ -299,8 +283,8 @@ function table_ui(options){
 			},
 			table: function(e){
 				if(e.which != 1) return;
-				var x = e.pageX - iTable.coords.left;
-				var y = e.pageY - iTable.coords.top;
+				var x = set.scale(e.pageX - iTable.coords.left);
+				var y = set.scale(e.pageY - iTable.coords.top);
 	
 				if( display.s.vw > x && display.s.vh < y && e.which == 1){				scroll.hdown(e, iTable.coords);	return;	}
 				if( display.s.vh > y && display.s.vw < x && e.which == 1){				scroll.vdown(e, iTable.coords);	return;	}
@@ -316,8 +300,8 @@ function table_ui(options){
 			},
 			side: function(e){
 				if(e.which != 1) return;
-				var x = e.pageX - iSide.coords.left;
-				var y = e.pageY - iSide.coords.top + display.s.t;
+				var x = set.scale(e.pageX - iSide.coords.left);
+				var y = set.scale(e.pageY - iSide.coords.top + display.s.t);
 	
 				for(var i = 0; i < display.s.rows.length; i++){
 					var ni = display.s.rows[i];
@@ -332,7 +316,7 @@ function table_ui(options){
 						if( right - 3 <= x && x <= right + 1  && y < bottom && y > top ){				resize.side.down(e, iSide.visual[ni][j], 0, 1);		return;	}
 					}
 				}
-				y = e.pageY - iSide.coords.top;
+				y = set.scale(e.pageY - iSide.coords.top);
 	
 				var s = display.s;
 				if( y < ((s.vh > s.tp.last()) ? s.tp.last() : s.vh)){	select.cSide.down(e);	
@@ -344,23 +328,25 @@ function table_ui(options){
 			},
 			top: function(e){
 				if(e.which != 1) return;
-				var x = e.pageX - iTop.coords.left + display.s.l;
-				var y = e.pageY - iTop.coords.top;
+				var x = set.scale(e.pageX - iTop.coords.left + display.s.l);
+				var y = set.scale(e.pageY - iTop.coords.top);
 	
 				for(var i = 0; i < display.s.cols.length; i++){
 					var ni = display.s.cols[i];
 					for(var j = 0; j < iTop.r; j++){
 						if(!iTop.visual[j][ni].visible || e.ctrlKey) continue;
 	
-						var top    = iTop.tp[ iTop.visual[j][ni].i[0] ];						var bottom = iTop.tp[ iTop.visual[j][ni].i.last() + 1 ];
-						var left   = display.s.lp[ iTop.visual[j][ni].j[0] ];					var right  = display.s.lp[ iTop.visual[j][ni].j.last() + 1 ];
+						var top    = iTop.tp[ iTop.visual[j][ni].i[0] ];
+						var bottom = iTop.tp[ iTop.visual[j][ni].i.last() + 1 ];
+						var left   = display.s.lp[ iTop.visual[j][ni].j[0] ];
+						var right  = display.s.lp[ iTop.visual[j][ni].j.last() + 1 ];
  	
 						if( bottom - 3 <= y && y <= bottom + 1 && right - 3 <= x && x <= right + 1 ){	resize.top.down(e, iTop.visual[j][ni], 1, 1);		return;	}
 						if( bottom - 3 <= y && y <= bottom + 1 && x < right && x > left ){				resize.top.down(e, iTop.visual[j][ni], 1, 0);		return;	}
 						if( right - 3 <= x && x <= right + 1  && y < bottom && y > top ){				resize.top.down(e, iTop.visual[j][ni], 0, 1);		return;	}
 					}
 				}
-				x = e.pageX - iTable.coords.left;
+				x = set.scale(e.pageX - iTable.coords.left);
 	
 				var s = display.s;
 				if( x < ((s.vw > s.lp.last()) ? s.lp.last() : s.vw)){	select.cTop.down(e)	
@@ -373,8 +359,8 @@ function table_ui(options){
 		},
 		dbl: {
 			side: function(e){
-				var x = e.pageX - iSide.coords.left;
-				var y = e.pageY - iSide.coords.top + display.s.t;
+				var x = set.scale(e.pageX - iSide.coords.left);
+				var y = set.scale(e.pageY - iSide.coords.top + display.s.t);
 	
 				for(var i = 0; i < display.s.rows.length; i++){
 					var ni = display.s.rows[i];
@@ -390,8 +376,8 @@ function table_ui(options){
 				}
 			},
 			top: function(e){
-				var x = e.pageX - iTop.coords.left + display.s.l;
-				var y = e.pageY - iTop.coords.top;
+				var x = set.scale(e.pageX - iTop.coords.left + display.s.l);
+				var y = set.scale(e.pageY - iTop.coords.top);
 	
 				for(var i = 0; i < display.s.cols.length; i++){
 					var ni = display.s.cols[i];
@@ -413,31 +399,34 @@ function table_ui(options){
 
 				if(e.target == iTable.html){
 
-					var x = e.pageX + display.s.l - iTable.coords.left,
-						y = e.pageY + display.s.t - iTable.coords.top,
-						couple = [display.s.cols[0], display.s.rows[0]];
+					var x = set.scale(e.pageX + display.s.l - iTable.coords.left);
+					var y = set.scale(e.pageY + display.s.t - iTable.coords.top);
+					var couple = [display.s.cols[0], display.s.rows[0]];
 
-					display.s.cols.forEach(	function(i){	if( display.s.lp[i] <= x)				couple[0] = i;	});
-					display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y)				couple[1] = i;	});
+					display.s.cols.forEach(	function(i){	if( display.s.lp[i] <= x)	couple[0] = i;	});
+					display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y)	couple[1] = i;	});
 
 					var cell = iTable.cells[couple[1]][couple[0]];
 
 					if(!cell.select){
-						select.click = iTable;				select.clearAll();						select.select.table( cell.j[0], cell.j[0], cell.i[0], cell.i[0]);
+						select.click = iTable;
+						select.clearAll();
+						select.select.table( cell.j[0], cell.j[0], cell.i[0], cell.i[0]);
 						select.select.headers();
 					}
 					options = {cell: cell, i: cell.i, j: cell.j, area: 'table' };
 
 				} else if(e.target == iSide.html){
 
-					var x = e.pageX - iSide.coords.left,
-						y = e.pageY + display.s.t - iSide.coords.top,
-						couple = [0, display.s.rows[0]];
+					var x = set.scale(e.pageX - iSide.coords.left);
+					var y = set.scale(e.pageY + display.s.t - iSide.coords.top);
+					var couple = [0, display.s.rows[0]];
 
-					for(var i = 0; i < iSide.c; i++){		if( iSide.lp[i] <= x)					couple[0] = i;	}
-					display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y)				couple[1] = i;	});
+					for(var i = 0; i < iSide.c; i++){		if( iSide.lp[i] <= x)		couple[0] = i;	}
+					display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y)	couple[1] = i;	});
 			
-					var cell = iSide.visual[couple[1]][couple[0]], types = [];
+					var cell = iSide.visual[couple[1]][couple[0]];
+					var types = [];
 
 					if(cell.types){
 						if(!(cell.types[0] && setting.showType[0]) && cell.floatType)				types.push(0);
@@ -445,7 +434,9 @@ function table_ui(options){
 					}
 
 					if(!cell.select){
-						select.click = iSide;				select.clearAll();						select.select.table(0, iTable.c - 1, cell.i[0], cell.i.last() );
+						select.click = iSide;
+						select.clearAll();
+						select.select.table(0, iTable.c - 1, cell.i[0], cell.i.last() );
 
 						select.select.header( cell.j[0], iSide.c - 1, cell.i[0], cell.i.last(), iSide, select.side );
 						select.select.header(0, iTable.c - 1, iTop.r - 1, iTop.r - 1, iTop, select.top );
@@ -454,9 +445,9 @@ function table_ui(options){
 					options = {cell: cell, i:  cell.i, j:  cell.j, area: 'side', displayed: types, position: cell.index };
 
 				} else if(e.target == iTop.html){
-					var x = e.pageX + display.s.l - iTop.coords.left,
-						y = e.pageY - iTop.coords.top,
-						couple = [display.s.cols[0], 0];
+					var x = set.scale(e.pageX + display.s.l - iTop.coords.left);
+					var y = set.scale(e.pageY - iTop.coords.top);
+					var couple = [display.s.cols[0], 0];
 
 					display.s.cols.forEach(	function(i){	if( display.s.lp[i] <= x)				couple[0] = i;	});
 					for(var i = 0; i < iTop.r; i++){		if( iTop.tp[i] <= y )					couple[1] = i;	}
@@ -468,7 +459,9 @@ function table_ui(options){
 					}
 
 					if(!cell.select){
-						select.click = iTop;				select.clearAll();						select.select.table( cell.j[0], cell.j.last(), 0, iTable.r - 1);
+						select.click = iTop;
+						select.clearAll();
+						select.select.table( cell.j[0], cell.j.last(), 0, iTable.r - 1);
 
 						select.select.header(iSide.c - 1, iSide.c - 1,  0, iTable.r - 1, iSide, select.side );
 						select.select.header( cell.j[0], cell.j.last(), cell.i[0], iTop.r - 1, iTop, select.top );
@@ -1180,19 +1173,27 @@ function table_ui(options){
 
 		this.generate = function(){
 
-			var x = (iSide.w.length) ? iSide.lp.last() : 100;
-			var y = (iTop.h.length) ? iTop.tp.last() : 100;
+			var x = ((iSide.w.length) ? iSide.lp.last() : 100)/size.scale;
+			var y = ((iTop.h.length) ? iTop.tp.last() : 100)/size.scale;
 
-			var height = s.vh = container.clientHeight - y - 18; //viewport	height
-			var width = s.vw  = container.clientWidth - x - 18;//veiwport width
+			var height = (container.clientHeight - y); //viewport	height
+			var width  = (container.clientWidth - x);//veiwport width
+
+			s.vh = height*size.scale;
+			s.vw = width*size.scale;
 
 			if( (height < 0) || (width < 0) )	return;
 
-			iTable.html.width = iTop.html.width = width + 18;
-			iTable.html.height = iSide.html.height = height + 18;
+			iTable.html.width = iTop.html.width = s.vw;
+			iTable.html.height = iSide.html.height = s.vh;
+			iTable.html.style.width = iTop.html.style.width = width + 'px';
+			iTable.html.style.height = iSide.html.style.height = height + 'px';
 
-			s.y = iTop.html.height = y;			iCorner.html.style.height = y - 1 + 'px';
-			s.x = iSide.html.width = x;			iCorner.html.style.width = x - 1 + 'px';
+			iTop.html.height = s.y = y*size.scale;		iCorner.html.style.height = (y - 1) + 'px';
+			iSide.html.width = s.x = x*size.scale;		iCorner.html.style.width = (x - 1) + 'px';
+
+			s.vh += -18;
+			s.vw += -18;
 
 			if(s.l > (s.lp.last() - s.vw))	s.l = (s.lp.last() - s.vw > 0) ? (s.lp.last() - s.vw) : 0 ;
 			if(s.t > (s.tp.last() - s.vh))	s.t = (s.tp.last() - s.vh > 0) ? (s.tp.last() - s.vh) : 0 ;
@@ -1299,7 +1300,9 @@ function table_ui(options){
 
 			c.fillStyle = '#f1f1f1';			c.fillRect(0, 0, s.vw, s.y); // clear canvas
 			c.fillStyle = '#555';				c.fillRect(0, 0, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), iTop.tp.last()); // set background borders
+
 			s.cols.forEach( function(j){		for(var i = 0; i < iTop.r; i++)		iTop.visual[i][j].displayed = false;	});
+
 			c.textBaseline = "middle";
 			c.textAlign = "center";
 			c.font = size.ttext + "px " + size.font;
@@ -1330,11 +1333,10 @@ function table_ui(options){
 					if(cell != sort.top.cell){	cell.textArray.forEach( function(item){ 	c.fillText(item.text,((s.lp[cell.j[0]] - s.l) + cell.width/2), iTop.tp[cell.i[0]] + item.position); } );
 					} else {					cell.textArray.forEach( function(item){		c.fillText(item.text,((s.lp[cell.j[0]] - s.l) + cell.width/2 - 5), iTop.tp[cell.i[0]] + item.position); } );
 
-						var type = (sort.top.type == 0 && cell.base) ? 3 : sort.top.type;
 						var y = iTop.tp[cell.i[0]] + Math.round(cell.height/2),	x = s.lp[cell.j.last() + 1] - s.l - 6;
 
-						if(sort.side.direction)		drawCircuit(c, defaultBack.sort[type], [ [ x - 4, y - 3], [ x, y + 3], [ x + 4, y - 3] ]);
-						else						drawCircuit(c, defaultBack.sort[type], [ [ x - 4, y + 3], [ x, y - 3], [ x + 4, y + 3] ]);
+						if(sort.top.direction)		drawCircuit(c, defaultBack.sort[(sort.top.type == 0 && cell.base) ? 3 : sort.top.type], [ [ x - 4, y - 3], [ x, y + 3], [ x + 4, y - 3] ]);
+						else						drawCircuit(c, defaultBack.sort[(sort.top.type == 0 && cell.base) ? 3 : sort.top.type], [ [ x - 4, y + 3], [ x, y - 3], [ x + 4, y + 3] ]);
 					}
 				}
 			}});
@@ -1372,11 +1374,10 @@ function table_ui(options){
 				if(cell.j.last() + 1 == iSide.c){
 					cell.textArray.forEach( function(item){ c.fillText(item.text, iSide.lp[cell.j[0]] + 2, (s.tp[cell.i[0]] - s.t) + item.position); } );
 					if(cell == sort.side.cell){
-						var type = (sort.side.type == 0 && cell.base) ? 3 : sort.side.type;
 						var x = iSide.lp[cell.j.last() + 1] - 9, y = s.tp[cell.i[0]] + Math.round(cell.height/2) - s.t;
 
-						if(sort.side.direction)		drawCircuit(c, defaultBack.sort[type], [ [ x, y - 5], [ x + 6, y], [ x, y + 5] ]);
-						else						drawCircuit(c, defaultBack.sort[type], [ [ x + 6, y - 5], [ x, y], [ x + 6, y + 5] ]);
+						if(sort.side.direction)		drawCircuit(c, defaultBack.sort[type = (sort.side.type == 0 && cell.base) ? 3 : sort.side.type], [ [ x, y - 5], [ x + 6, y], [ x, y + 5] ]);
+						else						drawCircuit(c, defaultBack.sort[type = (sort.side.type == 0 && cell.base) ? 3 : sort.side.type], [ [ x + 6, y - 5], [ x, y], [ x + 6, y + 5] ]);
 					}
 				}
 			}});
@@ -1425,22 +1426,16 @@ function table_ui(options){
 			c.beginPath();
 			c.setLineDash([])
 			c.strokeStyle = background;
-			c.moveTo(x1, y1);
-			c.lineTo(x2, y2);
-			c.stroke();
+			c.moveTo(x1, y1);			c.lineTo(x2, y2);			c.stroke();
 			c.setLineDash([4, 2])
 			c.strokeStyle = color;
-			c.moveTo(x1, y1);
-			c.lineTo(x2, y2);
-			c.stroke();
-		}
+			c.moveTo(x1, y1);			c.lineTo(x2, y2);			c.stroke();		}
 		function drawCircuit(c, color, path){
 			c.beginPath();
 			if(color)	c.fillStyle = color;
 			c.moveTo( path[0][0], path[0][1]);
 			for(var i = 1; i < path.length; i++)	c.lineTo( path[i][0] , path[i][1]);
-			c.fill();
-		}
+			c.fill();		}
 	}
 	var scroll = new function(){
 		this.v = {}; //vertical
@@ -1449,8 +1444,8 @@ function table_ui(options){
 		var timer;
 
 		this.hdown = function(e, coord){
-			var x = e.pageX - coord.left;
-			var y = e.pageY - coord.top;
+			var x = set.scale(e.pageX - coord.left);
+			var y = set.scale(e.pageY - coord.top);
 
 			if( x > scroll.h.l && x < (scroll.h.l + scroll.h.w) && (scroll.h.t - 2) < y  ){
 				s = {e: e, ne: e, c: coord, l: display.s.l};
@@ -1467,7 +1462,7 @@ function table_ui(options){
 		}
 		function move(e){		s.ne = e;		}
 		function hredrow(){ // horizontal redrow 
-			display.s.l = Math.round(s.l + (((s.ne.pageX - s.e.pageX)/(display.s.vw - 36)) * display.s.lp.last()));
+			display.s.l = Math.round(s.l + (((set.scale(s.ne.pageX - s.e.pageX))/(display.s.vw - 36)) * display.s.lp.last()));
 			display.table();
 			display.top();
 			timer = setTimeout(hredrow, 5);
@@ -1480,8 +1475,8 @@ function table_ui(options){
 		}
 
 		this.vdown = function(e, coord){
-			var x = e.pageX - coord.left;
-			var y = e.pageY - coord.top;
+			var x = set.scale(e.pageX - coord.left);
+			var y = set.scale(e.pageY - coord.top);
 
 			if( x > (scroll.v.l - 2) && scroll.v.t < y && (scroll.v.t + scroll.v.h) > y ){
 				s = {e: e, ne: e, c: coord, t: display.s.t};
@@ -1498,7 +1493,7 @@ function table_ui(options){
 			else				scroll.pageScroll( 0, 1 );
 		}
 		function vredrow(e){
-			display.s.t = Math.round(s.t + (((s.ne.pageY - s.e.pageY)/(display.s.vh - 36)) * display.s.tp.last()));
+			display.s.t = Math.round(s.t + (((set.scale(s.ne.pageY - s.e.pageY))/(display.s.vh - 36)) * display.s.tp.last()));
 			display.table();
 			display.side();
 			timer = setTimeout(vredrow, 5);
@@ -1616,7 +1611,9 @@ function table_ui(options){
 				if(functions.afterSelect)		functions.afterSelect(link);
 			}
 			function getLocate(e){
-				var x = e.pageX + display.s.l - iTable.coords.left, y = e.pageY + display.s.t - iTable.coords.top;
+				var x = set.scale(e.pageX + display.s.l - iTable.coords.left);
+				var y = set.scale(e.pageY + display.s.t - iTable.coords.top);
+
 				var couple = [display.s.cols[0], display.s.rows[0]];
 				display.s.cols.forEach(	function(i){	if( display.s.lp[i] <= x)	couple[0] = i;	});
 				display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y)	couple[1] = i;	});
@@ -1667,7 +1664,10 @@ function table_ui(options){
 				if(functions.afterSelect)		functions.afterSelect(link);
 			}
 			function getLocate(e){
-				var x = e.pageX - iSide.coords.left, y = e.pageY + display.s.t - iSide.coords.top, couple = [0, display.s.rows[0]];
+				var x = set.scale(e.pageX - iSide.coords.left);
+				var y = set.scale(e.pageY + display.s.t - iSide.coords.top);
+				var couple = [0, display.s.rows[0]];
+
 				for(var i = 0; i < iSide.c; i++){		if( iSide.lp[i] <= x)										couple[0] = i;	}
 				display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y && iSide.branches[i].visible)		couple[1] = i;	});
 				return couple;
@@ -1718,7 +1718,9 @@ function table_ui(options){
 				if(functions.afterSelect)		functions.afterSelect(link);
 			}
 			function getLocate(e){
-				var x = e.pageX + display.s.l - iTop.coords.left, y = e.pageY - iTop.coords.top, couple = [display.s.cols[0], 0];
+				var x = set.scale(e.pageX + display.s.l - iTop.coords.left);
+				var y = set.scale(e.pageY - iTop.coords.top);
+				var couple = [display.s.cols[0], 0];
 				display.s.cols.forEach(	function(i){	if( display.s.lp[i] <= x  && iTop.branches[i].visible)		couple[0] = i;	});
 				for(var i = 0; i < iTop.r; i++){		if( iTop.tp[i] <= y )										couple[1] = i;	}
 				return couple;

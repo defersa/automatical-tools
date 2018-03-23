@@ -65,55 +65,26 @@ function new_function(){
 			}
 		}}, size: { corner: {w: [40, 200]} }});
 
-/*	document.body.oncontextmenu = function(e){
+	document.body.oncontextmenu = function(e){
 		var right = menu_ui({x: e.pageX, y: e.pageY, tree: [ {text: 'first', icon: 'default-img', func: function(e){alert('asfd');}, text2: 'That text is in text2' }, {text: 'second', icon: 'default-img', disabled: true}, {text: 'new branch', icon: 'default-img', check: true}, , {text: 'thrid', children: [ {text: 'first'}, {text: 'second'}, {text: 'thrid', children: [ {text: 'first'}, {text: 'second'}, ,{text: 'thrid', children: [ {text: 'first'}, {text: 'second'}]}]}]}, {text: 'fourth', children: [ {text: 'first'}, ,{text: 'second'}]} ] });
 		return false;
 	}
-*/
+
 	thirdTree.focus();
 	thirdTree.setScroll(1400);
 	console.log(thirdTree.getScroll());
 	tau.setTable( dataSet.top[1], dataSet.side[1], dataSet.cells[1]);
 	tau.focus();
 
-	window.ccb = new combobox_ui({parent: document.getElementById('ccb'), tree: [ {text: '----'}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon'}, { text: 'second', icon: 'tu-TableIcon'}, { text: 'third', icon: 'tu-TableIcon'}] });
-	console.log(window.ccb.getSelected());
+	var ar = [{text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}];
 
-//	document.body.onclick = sss();
-
-/*	var mas = [3, 4, 2, 5, 1, 2, 5, 6, 8, 9, 5, 4, 3, 5, 6, 4];
-	qs(mas, 0, mas.length - 1);
-*/
-/*
-	dg = new data_grid();
-	dg.dg_table_create(document.getElementsByClassName("first")[1]);
-	dg.set_setting({hide_miss_row:true, hide_miss_col:true, round_types: [0,1,2,3], color_types: ['#ffffff','#e6e6ff','#ffe6f2','#ffffe6'], displayed_types: [false,true,false,true],text_orientation: 1, table_sorted: function(obj){console.log(obj);}, right_click: function(e,j){console.log(j);}, sort_by_click: true });
-	dg.set_table(top_h, side_h, cells);
-*/
+	window.ccb = new combobox_ui({parent: document.getElementById('ccb'), tree: ar });
+	window.ccb.setSelected(ar[3]);
+	console.log(window.ccb.getSelected());	
 }
 
-function qs(a, s, e){
-	if(s < e){
-		var p = partition(a, s, e);
-		console.log(a.join(', '));
-		qs(a,s,p - 1);
-		qs(a,p,e);
-	}
-}
-function partition(a, s, e){
-	var pivot = a[Math.round(s + Math.random()*(e - s))];
-	var i = s;
-	var j = e;
-	while(i <= j){
-		while(a[i] < pivot)		i++;
-		while(a[j] > pivot)		j--;
-		if( i <= j ){
-			[a[i], a[j]] = [a[j], a[i]];
-			i++;
-			j--;
-		}	
-	}
-	return i;
+function some(e){
+	
 }
 
 function fds(e){

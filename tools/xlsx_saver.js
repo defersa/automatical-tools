@@ -243,12 +243,13 @@ function object_to_xlsx(setting, array){
 		if(!array[l].description)	array[l].description = [];
 		
 		link_cell[l] = row;
-		if(array[l].object.col.length > 0 && setting.oneSheet){
+		if(array[l].object.col.length > 0 && !setting.oneSheet){
 			sheet += '<cols>';
 			for(var i = 1; i <= array[l].object.col.length; i++)
 				sheet += '<col min="' + (i) + '" max="' + (i) + '" width="' + ((array[l].object.col[i - 1])/7) + '" style="0" customWidth="1"/>';
 			sheet += '</cols>';
 		}
+		if(!setting.oneSheet)		sheet += '<sheetData>'
 
 		for(var j = 0; j < array[l].description.length; j++){
 			var prefix = (setting.descPrefix[j])? setting.descPrefix[j] : '';
@@ -268,7 +269,7 @@ function object_to_xlsx(setting, array){
 			}
 
 			for(var i = 0; i < table.length; i++){
-				sheet += '<row r="' + row + '" spans="1:' + table[i].length + '" ht="' + (array[l].object.row[i]) + '" customHeight="1" x14ac:dyDescent="0.25">';
+				sheet += '<row r="' + row + '" spans="1:' + table[i].length + '" x14ac:dyDescent="0.25">'; // ht="' + (array[l].object.row[i]) + '" customHeight="1"
 				for(var j = 0; j < array[l].object.col.length; j++){
 					if(table[i][j] != undefined){
 
@@ -314,7 +315,7 @@ function object_to_xlsx(setting, array){
 			var col_length = ((array[l].object.col != 0)? (array[l].object.col.length - 1) : (0));
 			sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
 						+ '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:x14="http://schemas.microsoft.com/office/spreadsheetml/2009/9/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="x14ac" xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac">'
-						+ '<dimension ref="A1:' + ( integerToChars(col_length) + (row - 1)) + '"/><sheetViews><sheetView workbookViewId="0"/></sheetViews><sheetFormatPr defaultColWidth="12" defaultRowHeight="15" x14ac:dyDescent="0.25"/><sheetData>' + sheet
+						+ '<dimension ref="A1:' + ( integerToChars(col_length) + (row - 1)) + '"/><sheetViews><sheetView workbookViewId="0"/></sheetViews><sheetFormatPr defaultColWidth="12" defaultRowHeight="15" x14ac:dyDescent="0.25"/>' + sheet
 						+ '<pageMargins left="0.7" right="0.7" top="0.75" bottom="0.75" header="0.3" footer="0.3"/>' + ( (setting.annotation)? '<legacyDrawing r:id="rId1"/>' : '' ) + '</worksheet>';
 		
 			xlsx.xl.sheet.push(sheet);
@@ -491,13 +492,13 @@ function object_to_xlsx(setting, array){
 	function replaceSheetName(text){
 		if(typeof text == 'number')			text += '';
 		else if(typeof text != 'string')	return '';
-		if(text.length > 31) text = text.substring(0, 31);
 		text = text.replace(/&/g, '&amp;');
 		text = text.replace(/\*/g,'x');
 		text = text.replace(/</g, '&lt;');
 		text = text.replace(/>/g, '&gt;');
 		text = text.replace(/\[/g, '(');
 		text = text.replace(/\]/g, ')');
+		if(text.length > 31) text = text.substring(0, 31);
 		return text;
 	}
 	function cut_sheet_name(text){
