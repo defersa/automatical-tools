@@ -2,6 +2,11 @@
 	position: absolute;	overflow: hidden;
 	left: 0;	right: 0;
 	top: 0;		bottom: 0;
+	background: #F1F1F1;
+}
+.tau-parent:focus {
+	outline: none;
+	border: none;
 }
 .tau-side {
 	position: absolute;

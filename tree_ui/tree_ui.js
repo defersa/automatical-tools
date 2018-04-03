@@ -207,6 +207,8 @@ function tree_ui(options){
 	var events = {
 		keyDown: function(e){
 			var kc = e.keyCode;
+			var result = true; //flag of make default algorithm
+
 
 			if(vector.length == 0)	return;
 			if(!current.item){
@@ -216,57 +218,60 @@ function tree_ui(options){
 				} else return;
 			}
 
-			var top = viewport.scrollTop;
-			var bot = viewport.scrollTop + viewport.clientHeight;
+			if( (e.ctrlKey && (kc == 90 || kc == 88 || kc == 67 || kc == 86 || kc == 83 || kc == 70 || (kc >= 37 && kc <= 40))) || kc == 46 || kc == 13 ){
+				if(typeof functions.keyDown == 'function')	result = functions.keyDown(e, current.item, link);
+			}
 
-			if(kc == 38 || kc == 40){
-				var new_index = (kc == 38) ? (current.item.index - 1) : (current.item.index + 1);
-				
-				if(new_index < 0 || isNaN(new_index))		new_index = 0;
-				if(new_index >= vector.length)				new_index = vector.length - 1;
-
-				if(e.shiftKey){
-					if(!current.shiftItem)					current.shiftItem = current.item;
-					current.set(vector[new_index]);			select.removeAll();
+			if(result){
+				var top = viewport.scrollTop;
+				var bot = viewport.scrollTop + viewport.clientHeight;
+	
+				if(kc == 38 || kc == 40){
+					var new_index = (kc == 38) ? (current.item.index - 1) : (current.item.index + 1);
 					
-					var first = (current.item.index > current.shiftItem.index) ? current.shiftItem.index : current.item.index;
-					var last  = (current.item.index < current.shiftItem.index) ? current.shiftItem.index : current.item.index;
-					for(var i = first; i <= last; i++)		select.add(vector[i]);
-
-				} else if(!e.ctrlKey) {
-					current.set(vector[new_index]);
-					select.removeAll();
-					select.add(current.item);
-				}
-				
-				if(select.items.length == 1 && !e.ctrlKey)							events.singleClick(select.items[0]);
-				if(select.items.length > 1 && !e.ctrlKey)							events.customSelect(e);
-				if(current.item.position < top)										viewport.scrollTop = current.item.position - 10;
-				if( (current.item.position + setting.height + 1) > bot)		viewport.scrollTop = current.item.position + setting.height - viewport.clientHeight + 10;
-			}
-
-			if( (kc == 37 || kc == 39) && !e.ctrlKey ){
-				if(kc == 37){
-					if(current.item.expand)					current.item.changeExpand(false);
-					else if(current.item.parent != tree){
-						current.set(current.item.parent);
-						select.removeAll();					select.add(current.item);
-						if(current.item.position < top)		viewport.scrollTop = current.item.position - 10;
+					if(new_index < 0 || isNaN(new_index))		new_index = 0;
+					if(new_index >= vector.length)				new_index = vector.length - 1;
+	
+					if(e.shiftKey){
+						if(!current.shiftItem)					current.shiftItem = current.item;
+						current.set(vector[new_index]);			select.removeAll();
+						
+						var first = (current.item.index > current.shiftItem.index) ? current.shiftItem.index : current.item.index;
+						var last  = (current.item.index < current.shiftItem.index) ? current.shiftItem.index : current.item.index;
+						for(var i = first; i <= last; i++)		select.add(vector[i]);
+	
+					} else if(!e.ctrlKey) {
+						current.set(vector[new_index]);
+						select.removeAll();
+						select.add(current.item);
 					}
-				} else if(current.item.expand === false)	current.item.changeExpand(true);
+					
+					if(select.items.length == 1 && !e.ctrlKey)							events.singleClick(e, select.items[0]);
+					if(select.items.length > 1 && !e.ctrlKey)							events.customSelect(e);
+					if(current.item.position < top)										viewport.scrollTop = current.item.position - 10;
+					if( (current.item.position + setting.height + 1) > bot)		viewport.scrollTop = current.item.position + setting.height - viewport.clientHeight + 10;
+				}
+	
+				if( (kc == 37 || kc == 39) && !e.ctrlKey ){
+					if(kc == 37){
+						if(current.item.expand)					current.item.changeExpand(false);
+						else if(current.item.parent != tree){
+							current.set(current.item.parent);
+							select.removeAll();					select.add(current.item);
+							if(current.item.position < top)		viewport.scrollTop = current.item.position - 10;
+						}
+					} else if(current.item.expand === false)	current.item.changeExpand(true);
+				}
+	
+				if(kc == 13 && typeof functions.doubleClick == 'function')				functions.doubleClick(current.item);
+				if(e.ctrlKey && kc == 65)						select.addAll();
+	
+				if(kc == 36)									viewport.scrollTop = 0;
+				if(kc == 35)									viewport.scrollTop = substrate.clientHeight;
+				if(kc == 33)									viewport.scrollTop += -viewport.clientHeight*0.7;
+				if(kc == 34)									viewport.scrollTop += viewport.clientHeight*0.7;
 			}
 
-			if(kc == 13 && typeof functions.doubleClick == 'function')				functions.doubleClick(current.item);
-			if(e.ctrlKey && kc == 65)						select.addAll();
-
-			if(kc == 36)									viewport.scrollTop = 0;
-			if(kc == 35)									viewport.scrollTop = substrate.clientHeight;
-			if(kc == 33)									viewport.scrollTop += -viewport.clientHeight*0.7;
-			if(kc == 34)									viewport.scrollTop += viewport.clientHeight*0.7;
-			
-			if( (e.ctrlKey && (kc == 90 || kc == 88 || kc == 67 || kc == 86 || kc == 83 || kc == 70 || (kc >= 37 && kc <= 40))) || kc == 46 ){
-				if(typeof functions.keyDown == 'function')	functions.keyDown(e, current.item, link);
-			}
 			if(kc == 13 || kc == 38 || kc == 39 || kc == 40 || kc == 37 || kc == 65 || kc == 33 || kc == 34 || kc == 35 || kc == 36 || kc == 67 || kc == 83 || kc == 90 || kc == 88  || kc == 86 || kc == 70 || kc == 46){
 				tools.stopProp(e);							return false;
 			}
@@ -305,17 +310,17 @@ function tree_ui(options){
 			}
 
 			var item = tools.closest(e.target, 'tu-item');	
-			if(typeof functions.doubleClick == 'function' && item)	functions.doubleClick(item.item);
+			if(typeof functions.doubleClick == 'function' && item)	functions.doubleClick(item.item, e);
 			viewport.focus();
 		},
-		singleClick: function(item){
+		singleClick: function(e, item){
 			if(timer){
 				clearTimeout(timer);								timer = undefined;
 			}
 			if(typeof functions.singleClick == 'function'){
 				timer = setTimeout(function() {
 					timer = null;
-					functions.singleClick(item);
+					functions.singleClick(item, e);
 				}, 500); 
 			}
 			viewport.focus();
@@ -353,7 +358,7 @@ function tree_ui(options){
 			} 				
 
 			viewport.focus();
-			tools.stopProp(e);								return false;
+			return false;
 		}
 	}
 
@@ -573,7 +578,7 @@ function tree_ui(options){
 					else								select.add(items[i]);
 				}
 			}
-			if(!e.shiftKey && !e.ctrlKey)				events.singleClick(item);
+			if(!e.shiftKey && !e.ctrlKey)				events.singleClick(e, e, item);
 			if(select.items.length > 1)					events.customSelect(e);
 		}
 

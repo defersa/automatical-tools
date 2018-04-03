@@ -14,6 +14,8 @@ var displayed = [true, true, true, true];
 var setting = { orientation: true, hideRow: false, hideCol: false };
 
 
+var scale = 1;
+
 function new_function(){
 
 
@@ -85,6 +87,20 @@ function new_function(){
 
 function some(e){
 	
+}
+
+function plus(e){
+	scale = tools.roundPlus(scale + 0.05, 2);
+	var rate = 1/scale;
+	tau.change({ size: {scale: scale, rate: scale} });
+	document.getElementById('scale').innerHTML = scale;
+
+}
+function minus(e){
+	scale = tools.roundPlus(scale - 0.05, 2);
+	var rate = 1/scale;
+	tau.change({ size: {scale: scale, rate: scale} });
+	document.getElementById('scale').innerHTML = scale;
 }
 
 function fds(e){

@@ -8,7 +8,7 @@ function table_ui(options){
 	var functions; //custom functions
 	var setting; //options and settings
 
-	var iTable, iCorner, iSide, iTop; //objects for storage main components
+	var _Table, _Corner, _Side, _Top; //objects for storage main components
 	var size;	//default value for text size, font, height and width rows and cols, 
 
 	var defaultBack = { sort: ['#000', '#00a8a8', '#ff5757', '#b3b300'], 
@@ -33,8 +33,8 @@ function table_ui(options){
 		if(options.sharpOverflow == undefined)	options.sharpOverflow = true;
 
 
-		main = {	html: creating.parent(),	iCorner: creating.corner(),		iTable: creating.table(),	iSide: creating.side(),	iTop: creating.top() };
-		size = {	corner: { w: [], h: [] },	table: { w: [], h: [] },  w: 50, h: 20, text: 13, font: 'sans-serif', scale: 2 };
+		main = {	html: creating.parent(),	_Corner: creating.corner(),		_Table: creating.table(),	_Side: creating.side(),	_Top: creating.top() };
+		size = {	corner: { w: [], h: [] },	table: { w: [], h: [] },  w: 50, h: 20, ttext: 13, font: 'sans-serif', scale: 1, rate: 1 };
 		functions = {};							setting = { showType: [true, true, true], size: size };
 
 		window.addEventListener("resize", display.generate);
@@ -44,8 +44,8 @@ function table_ui(options){
 	link.remove = function(){
 		window.removeEventListener("resize", display.generate);
 		setting = undefined;					tools.destroyHTML(container);
-		iTable = undefined;						iSide = undefined;
-		iTop = undefined;						iCorner = undefined;
+		_Table = undefined;						_Side = undefined;
+		_Top = undefined;						_Corner = undefined;
 		sort.top = {};							sort.side = {};
 		select.table = [];						select.side = [];					select.top = [];
 	}
@@ -85,6 +85,16 @@ function table_ui(options){
 		select.table.forEach(function(item){ cells.push(item.obj);});
 		return cells;
 	}
+	link.clearAll = function(){
+		select.clearAll();
+		display.all();
+		if(functions.afterSelect)	functions.afterSelect(link);
+	}	
+	link.selectAll = function(){
+		select.selectAll();
+		display.all();
+		if(functions.afterSelect)	functions.afterSelect(link);
+	}
 
 	var creating = {
 		parent: function() {
@@ -92,35 +102,35 @@ function table_ui(options){
 			return container;
 		},
 		corner: function() {
-			iCorner = { html: tools.createHTML({ tag: 'div', className: 'tau-corner', parent: container, onmousemove: events.move.corn, onmousedown: events.down.corn }) };
-			return iCorner;
+			_Corner = { html: tools.createHTML({ tag: 'div', className: 'tau-corner', parent: container, onmousemove: events.move.corn, onmousedown: events.down.corn }) };
+			return _Corner;
 		},
 		table: function() {
-			iTable = {cells: [], visual: [], r: 0, c: 0, html: tools.createHTML({ tag: 'canvas', className: 'tau-table', parent: container, 
+			_Table = {cells: [], visual: [], r: 0, c: 0, html: tools.createHTML({ tag: 'canvas', className: 'tau-table', parent: container, 
 																					onmousedown: events.down.table,
 																					onmousemove: events.move.table,
 																					onmouseout: events.out.table,
 																					onwheel: scroll.wheelVertical })};
-			iTable.ctx = iTable.html.getContext("2d");
-			return iTable;
+			_Table.ctx = _Table.html.getContext("2d");
+			return _Table;
 		},
 		side: function(){
-			iSide = {tree: { children: []}, branches: [], dw: [], visual: [], r: 0, c: 0, html: tools.createHTML({ tag: 'canvas', className: 'tau-side', parent: container, 
+			_Side = {tree: { children: []}, branches: [], dw: [], visual: [], r: 0, c: 0, html: tools.createHTML({ tag: 'canvas', className: 'tau-side', parent: container, 
 																					ondblclick: events.dbl.side, 
 																					onmousedown: events.down.side, 
 																					onmousemove: events.move.side,
 																					onwheel: scroll.wheelVertical })};
-			iSide.ctx = iSide.html.getContext("2d");
-			return iSide;
+			_Side.ctx = _Side.html.getContext("2d");
+			return _Side;
 		},
 		top: function(){
-			iTop = {tree: {children: []}, branches: [],  dh: [], visual: [], r: 0, c: 0, html: tools.createHTML({ tag: 'canvas', className: 'tau-top', parent: container, 
+			_Top = {tree: {children: []}, branches: [],  dh: [], visual: [], r: 0, c: 0, html: tools.createHTML({ tag: 'canvas', className: 'tau-top', parent: container, 
 																					ondblclick: events.dbl.top,
 																					onmousedown: events.down.top,
 																					onmousemove: events.move.top,
 																					onwheel: scroll.wheelHorizontal })};
-			iTop.ctx = iTop.html.getContext("2d");
-			return iTop;
+			_Top.ctx = _Top.html.getContext("2d");
+			return _Top;
 		}
 	}
 	var set = {
@@ -157,97 +167,239 @@ function table_ui(options){
 				if(options.size.table.w)	size.table.w = options.size.table.w.concat();
 				if(options.size.table.h)	size.table.h = options.size.table.h.concat();				
 			}
+			if(options.size.scale)			size.scale = options.size.scale;
 			if(options.size.w)				size.w = options.size.w;
 			if(options.size.h)				size.h = options.size.h;
-			if(options.size.text)			size.text = options.size.text;
+			if(options.size.text)			size.ttext = options.size.text;
+			if(options.size.rate)			set.rate(options);
 			if(options.size.font)			size.font = options.size.font;
-			iTable.ctx.font = size.text + "px " + size.font;
-			size.dot				= iTable.ctx.measureText('.').width;
-			size.numeral			= iTable.ctx.measureText('0').width;
-			size.percent			= iTable.ctx.measureText('%').width;
-			size.sharp				= iTable.ctx.measureText('#').width;
+			size.text = Math.round(size.ttext*size.rate);
+			_Table.ctx.font = size.text + "px " + size.font;
+			size.dot				= _Table.ctx.measureText('.').width;
+			size.numeral			= _Table.ctx.measureText('0').width;
+			size.percent			= _Table.ctx.measureText('%').width;
+			size.sharp				= _Table.ctx.measureText('#').width;
 			size.minh = size.text + 4;
-			size.ttext = size.text;
-			size.minw = Math.floor(iTable.ctx.measureText('Abcd').width) + 6;
+			size.minw = Math.floor(_Table.ctx.measureText('Abcd').width) + 6;
 		},
-		scale: function(value){
-			return value*size.scale;
-		},
+		rate: function(options){
+			var _rate = options.size.rate;
 
+			_Top.branches.forEach(	function(item){ item.dw = Math.round(item.dw * ( _rate / size.rate )); } );
+			_Side.branches.forEach(	function(item){ item.dh = Math.round(item.dh * ( _rate / size.rate )); } );
+
+			for(var i = 0; i < _Top.dh.length; i++){	_Top.dh[i]  = Math.round(_Top.dh[i]  * ( _rate / size.rate ));}
+			for(var i = 0; i < _Side.dw.length; i++){	_Side.dw[i] = Math.round(_Side.dw[i] * ( _rate / size.rate ));}
+		
+			if(Array.isArray(_Top.d) && Array.isArray(_Side.w) ){
+				for(var i = 0; i < _Top.d.length; i++){		_Top.d[i]  = Math.round(_Top.d[i]  * ( _rate / size.rate ));}
+				for(var i = 0; i < _Side.w.length; i++){	_Side.w[i] = Math.round(_Side.w[i] * ( _rate / size.rate ));}
+			}
+		
+			size.corner.w.forEach(	function(item){ item = Math.round(item * ( _rate / size.rate )); } );
+			size.corner.h.forEach(	function(item){ item = Math.round(item * ( _rate / size.rate )); } );
+
+			size.table.w.forEach(	function(item){ item = Math.round(item * ( _rate / size.rate )); } );
+			size.table.h.forEach(	function(item){ item = Math.round(item * ( _rate / size.rate )); } );
+
+			size.rate = _rate;
+		}
+	}
+	var get = {
+		cell: {
+			side: function(e){
+				var x = get.scaleM(e.pageX - _Side.coords.left);
+				var y = get.scaleM(e.pageY - _Side.coords.top) + display.s.t;
+
+				for(var ni = 0; ni < display.s.rows.length; ni++){
+					var i = display.s.rows[ni];
+					for(var j = 0; j < _Side.c; j++){
+
+						var t = display.s.tp[_Side.visual[i][j].i[0] ];
+						var b = display.s.tp[ _Side.visual[i][j].i.last() + 1 ];
+						var l = _Side.lp[ _Side.visual[i][j].j[0] ];
+						var r = _Side.lp[ _Side.visual[i][j].j.last() + 1 ];
+
+						if( b - 3 <= y && y <= b + 1 && r - 3 <= x && x <= r + 1 )		return [_Side.visual[i][j], 1, 1];
+						if( b - 3 <= y && y <= b + 1 && x < r && x > l )				return [_Side.visual[i][j], 1, 0];
+						if( r - 3 <= x && x <= r + 1 && y < b && y > t )				return [_Side.visual[i][j], 0, 1];
+						if( t <= y && b >= y && l <= x && r >= x )						return [_Side.visual[i][j], 0, 0];
+
+					}
+				}
+				return ;
+			},
+			top: function(e){
+				var x = get.scaleM(e.pageX - _Top.coords.left) + display.s.l;
+				var y = get.scaleM(e.pageY - _Top.coords.top);
+
+				for(var ni = 0; ni < display.s.cols.length; ni++){
+					var i = display.s.cols[ni];
+					for(var j = 0; j < _Top.r; j++){
+
+						var t = _Top.tp[ _Top.visual[j][i].i[0] ];
+						var b = _Top.tp[ _Top.visual[j][i].i.last() + 1 ];
+						var l = display.s.lp[ _Top.visual[j][i].j[0] ];
+						var r = display.s.lp[ _Top.visual[j][i].j.last() + 1 ];
+
+						if( b - 3 <= y && y <= b + 1 && r - 3 <= x && x <= r + 1 )		return [_Top.visual[j][i], 1, 1];
+						if( b - 3 <= y && y <= b + 1 && x < r && x > l )				return [_Top.visual[j][i], 1, 0];
+						if( r - 3 <= x && x <= r + 1 && y < b && y > t )				return [_Top.visual[j][i], 0, 1];
+						if( t <= y && b >= y && l <= x && r >= x )						return [_Top.visual[j][i], 0, 0];
+					}
+				}
+				return ;
+			},
+			table: function(e){
+				var x = get.scaleM(e.pageX - _Table.coords.left) + display.s.l;
+				var y = get.scaleM(e.pageY - _Table.coords.top) + display.s.t;
+
+				for(var i = 0; i < display.s.rows.length; i++){
+					for(var j = 0; j < display.s.cols.length; j++){
+
+						var t = display.s.tp[ display.s.rows[i] ];
+						var b = display.s.tp[ display.s.rows[i] + 1 ];
+						var l = display.s.lp[ display.s.cols[j] ];
+						var r = display.s.lp[ display.s.cols[j] + 1 ];
+
+						if( t <= y && b >= y && l <= x && r >= x )						return _Table.cells[ display.s.rows[i]][ display.s.cols[j]];
+					}
+				}
+				return ;
+			}
+		},
+		position: {
+			side: function(e){
+				var x = get.scaleM(e.pageX - _Side.coords.left);
+				var y = get.scaleM(e.pageY - _Side.coords.top) + display.s.t;
+				var p = {i: 0, j: 0};
+				for(var i = 0; i < _Side.c; i++){		if( _Side.lp[i] <= x)										p.j = i;	}
+				display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y && _Side.branches[i].visible)		p.i = i;	});
+				return p;				
+			},
+			top: function(e){
+				var x = get.scaleM(e.pageX - _Top.coords.left) + display.s.l;
+				var y = get.scaleM(e.pageY - _Top.coords.top);
+				var p = {i: 0, j: 0};
+				display.s.cols.forEach(	function(i){	if( display.s.lp[i] <= x  && _Top.branches[i].visible)		p.j = i;	});
+				for(var i = 0; i < _Top.r; i++){		if( _Top.tp[i] <= y )										p.i = i;	}
+				return p;
+
+			},
+			table: function(e){
+				var x = get.scaleM(e.pageX - _Table.coords.left) + display.s.l;
+				var y = get.scaleM(e.pageY - _Table.coords.top) + display.s.t;
+				var p = {i: 0, j: 0};
+				display.s.cols.forEach(	function(i){	if( display.s.lp[i] <= x)	p.j = i;	});
+				display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y)	p.i = i;	});
+				return p;
+			}
+		},
+		sortedPosition: {
+			table: function(p1, p2){
+				var p = {};				
+				p.l = (p1.j > p2.j) ? p2.j : p1.j;
+				p.t = (p1.i > p2.i) ? p2.i : p1.i;
+				p.r = (p1.j < p2.j) ? p2.j : p1.j;
+				p.b = (p1.i < p2.i) ? p2.i : p1.i;
+				return p;
+			},
+			side: function(p1, p2){
+				var p = {r: _Side.c - 1};
+				p.l = (p2.j > p1.i) ? p1.i : p2.j;
+				var st = _Side.visual[p1.i][p.l];
+				var ed = _Side.visual[p2.i][p.l];
+				p.t = (st.i[0] > ed.i[0]) ? ed.i[0] : st.i[0],
+				p.b = (st.i.last() < ed.i.last()) ? ed.i.last() : st.i.last();
+				return p;
+			},
+			top: function(p1, p2){
+				var p = {b: _Top.r - 1};
+				p.t = (p1.i > p2.i) ? p2.i : p1.i;
+				var st = _Top.visual[p.t][p1.j];
+				var ed = _Top.visual[p.t][p2.j];
+				p.l = (st.j[0] > ed.j[0]) ? ed.j[0] : st.j[0],
+				p.r = (st.j.last() < ed.j.last()) ? ed.j.last() : st.j.last();
+				return p;
+			}
+		},
+		screenCoord: {
+			side: function(y, x){
+				var result = [];
+				result[0] = get.scaleD(y - display.s.t + display.s.y);
+				result[1] = get.scaleD(x);
+				return result;
+			},
+			top: function(y, x){
+				var result = [];
+				result[0] = get.scaleD(y);
+				result[1] = get.scaleD(x - display.s.l + display.s.x);
+				return result; 
+			},
+			table: function(y, x){
+				var result = [];
+				result[0] = get.scaleD(y - display.s.t + display.s.y);
+				result[1] = get.scaleD(x - display.s.l + display.s.x);
+				return result; 
+			}
+		},
+		scaleM: function(v){
+			return Math.round(v*size.scale);
+		},
+		scaleD: function(v){
+			return Math.round(v/size.scale);
+		}
 	}
 	var events = {
 		move: {
 			side: function(e){
-				var x = set.scale(e.pageX - iSide.coords.left);
-				var y = set.scale(e.pageY - iSide.coords.top + display.s.t);
 
-				if(display.s.vh < set.scale(e.pageY - iSide.coords.top)){ iSide.html.style.cursor = 'default'; return; }
-	
-				for(var i = 0; i < display.s.rows.length; i++){
-					var ni = display.s.rows[i];
-					for(var j = 0; j < iSide.c; j++){
-						if(!iSide.visual[ni][j].visible || e.ctrlKey)	continue;
-	
-						var top    = display.s.tp[ iSide.visual[ni][j].i[0] ],		bottom = display.s.tp[ iSide.visual[ni][j].i.last() + 1 ];
-						var left   = iSide.lp[ iSide.visual[ni][j].j[0] ],			right  = iSide.lp[ iSide.visual[ni][j].j.last() + 1 ];
-	
-						if( bottom - 3 <= y && y <= bottom + 1 && right - 3 <= x && x <= right + 1 ){	iSide.html.style.cursor = 'se-resize';		return;	}
-						if( bottom - 3 <= y && y <= bottom + 1 && x < right && x > left ){				iSide.html.style.cursor = 'n-resize';		return;	}
-						if( right - 3 <= x && x <= right + 1  && y < bottom && y > top ){				iSide.html.style.cursor = 'e-resize';		return;	}
+				var cell = get.cell.side(e);
 
-						if( left < x && right > x && top < y && bottom > y && iSide.visual[ni][j].tooltip){	
-							iSide.html.style.cursor = 'default';
-							iSide.html.title = iSide.visual[ni][j].obj.text;
-							return;
-						}
-					}
+				if(cell != undefined){
+					if(cell[1] == 1 && cell[2] == 1)		_Side.html.style.cursor = 'se-resize';
+					else if(cell[1] == 1 && cell[2] == 0)	_Side.html.style.cursor = 'n-resize';
+					else if(cell[1] == 0 && cell[2] == 1)	_Side.html.style.cursor = 'e-resize';
+					else									_Side.html.style.cursor = 'default';
+	
+					if(cell[1] == 0 && cell[2] == 0 && cell[0].tooltip)	_Side.html.title = cell[0].obj.text;
+					else												_Side.html.title = '';
+				} else {
+					_Side.html.title = '';
+					_Side.html.style.cursor = 'default';
 				}
-				iSide.html.title = '';
-				iSide.html.style.cursor = 'default';
 			},
 			top: function(e){
-				var x = set.scale(e.pageX - iTop.coords.left + display.s.l);
-				var y = set.scale(e.pageY - iTop.coords.top);
 
-				if(display.s.vw < set.scale(e.pageX - iTop.coords.left)){ iTop.html.style.cursor = 'default'; return; }
-	
-				for(var i = 0; i < display.s.cols.length; i++){
-					var ni = display.s.cols[i];
-					for(var j = 0; j < iTop.r; j++){
-						if(!iTop.visual[j][ni].visible || e.ctrlKey)	continue;
-	
-						var top    = iTop.tp[ iTop.visual[j][ni].i[0] ],			bottom = iTop.tp[ iTop.visual[j][ni].i.last() + 1 ];
-						var left   = display.s.lp[ iTop.visual[j][ni].j[0] ],		right  = display.s.lp[ iTop.visual[j][ni].j.last() + 1 ];
-	
-						if( bottom - 3 <= y && y <= bottom + 1 && right - 3 <= x && x <= right + 1 ){	iTop.html.style.cursor = 'se-resize';		return;	}
-						if( bottom - 3 <= y && y <= bottom + 1 && x < right && x > left ){				iTop.html.style.cursor = 'n-resize';		return;	}
-						if( right - 3 <= x && x <= right + 1  && y < bottom && y > top ){				iTop.html.style.cursor = 'e-resize';		return;	}
+				var cell = get.cell.top(e);
 
-						if( left < x && right > x && top < y && bottom > y && iTop.visual[j][ni].tooltip){	
-							iTop.html.style.cursor = 'default';
-							iTop.html.title = iTop.visual[j][ni].obj.text;
-							return;
-						}
-					}
-
+				if(cell != undefined){
+					if(cell[1] == 1 && cell[2] == 1)		_Top.html.style.cursor = 'se-resize';
+					else if(cell[1] == 1 && cell[2] == 0)	_Top.html.style.cursor = 'n-resize';
+					else if(cell[1] == 0 && cell[2] == 1)	_Top.html.style.cursor = 'e-resize';
+					else									_Top.html.style.cursor = 'default';
+	
+					if(cell[1] == 0 && cell[2] == 0 && cell[0].tooltip)	_Top.html.title = cell[0].obj.text;
+					else												_Top.html.title = '';
+				} else {
+					_Top.html.title = '';
+					_Top.html.style.cursor = 'default';
 				}
-				iTop.html.title = '';
-				iTop.html.style.cursor = 'default';
 			},
 			corn: function(e){
-				var x = set.scale(e.pageX - iSide.coords.left);
-				var y = set.scale(e.pageY - iTop.coords.top);
+				var x = get.scaleM(e.pageX - _Side.coords.left);
+				var y = get.scaleM(e.pageY - _Top.coords.top);
 				var s = display.s;
 	
-				if( s.y - 3 <= y && y <= s.y + 1 && s.x - 3 <= x && x <= s.x + 1 || e.ctrlKey){			iCorner.html.style.cursor = 'se-resize';	return;	}
-				if( s.y - 3 <= y && y <= s.y + 1 && x < s.x && x > 0 || e.ctrlKey){						iCorner.html.style.cursor = 'n-resize';		return;	}
-				if( s.x - 3 <= x && x <= s.x + 1 && y < s.y && y > 0 || e.ctrlKey){						iCorner.html.style.cursor = 'e-resize';		return;	}
+				if( s.y - 3 <= y && y <= s.y + 1 && s.x - 3 <= x && x <= s.x + 1 || e.ctrlKey){			_Corner.html.style.cursor = 'se-resize';	return;	}
+				if( s.y - 3 <= y && y <= s.y + 1 && x < s.x && x > 0 || e.ctrlKey){						_Corner.html.style.cursor = 'n-resize';		return;	}
+				if( s.x - 3 <= x && x <= s.x + 1 && y < s.y && y > 0 || e.ctrlKey){						_Corner.html.style.cursor = 'e-resize';		return;	}
 	
-				iCorner.html.style.cursor = 'default';			return;
+				_Corner.html.style.cursor = 'default';			return;
 			},
 			table: function(e){
-				var x = set.scale(e.pageX - iTable.coords.left);
-				var y = set.scale(e.pageY - iTable.coords.top);
+				var x = get.scaleM(e.pageX - _Table.coords.left);
+				var y = get.scaleM(e.pageY - _Table.coords.top);
 				if( display.s.vw < x && x < display.s.vw + 18 && y > display.s.vh - 18 && y < display.s.vh && !display.s.corn.b){		display.s.corn.b = true;	display.table();	return false; };
 				if( display.s.vw < x && x < display.s.vw + 18 && y < 18  && !display.s.corn.t){											display.s.corn.t = true;	display.table();	return false; };
 				if( !(display.s.vw < x && x < display.s.vw + 18 && y > display.s.vh - 18 && y < display.s.vh) && display.s.corn.b){		display.s.corn.b = false;	display.table();	return false; };
@@ -263,133 +415,81 @@ function table_ui(options){
 			corn: function(e){
 				if(e.which != 1) return;
 
-				var x = set.scale(e.pageX - iSide.coords.left);
-				var y = set.scale(e.pageY - iTop.coords.top);
+				var x = get.scaleM(e.pageX - _Side.coords.left);
+				var y = get.scaleM(e.pageY - _Top.coords.top);
 				var s = display.s;
 	
 				if( s.y - 3 <= y && y <= s.y + 1 && s.x - 3 <= x && x <= s.x + 1  || e.ctrlKey){		resize.corner.down( e, 1, 1);	return;	}
 				if( s.y - 3 <= y && y <= s.y + 1 && x < s.x && x > 0 || e.ctrlKey){						resize.corner.down( e, 1, 0);	return;	}
 				if( s.x - 3 <= x && x <= s.x + 1 && y < s.y && y > 0 || e.ctrlKey){						resize.corner.down( e, 0, 1);	return;	}
 	
-				if(iTable.c != 0 && iTable.r != 0){
-					select.click = iTable;
-					if(select.table.length != 0)	select.clearAll();
-					else							select.selectAll();
-					display.all();
-				}
+				if(select.table.length != 0)			link.clearAll();
+				else if(_Table.c != 0 && _Table.r != 0)	link.selectAll();								
 
-				if(functions.afterSelect)		functions.afterSelect(link);
 				console.log(main);
 			},
 			table: function(e){
 				if(e.which != 1) return;
-				var x = set.scale(e.pageX - iTable.coords.left);
-				var y = set.scale(e.pageY - iTable.coords.top);
+				var x = get.scaleM(e.pageX - _Table.coords.left);
+				var y = get.scaleM(e.pageY - _Table.coords.top);
+				var cell = get.cell.table(e);
 	
-				if( display.s.vw > x && display.s.vh < y && e.which == 1){				scroll.hdown(e, iTable.coords);	return;	}
-				if( display.s.vh > y && display.s.vw < x && e.which == 1){				scroll.vdown(e, iTable.coords);	return;	}
+				if( display.s.vw > x && display.s.vh < y && e.which == 1){				scroll.hdown(e, _Table.coords);	return;	}
+				if( display.s.vh > y && display.s.vw < x && e.which == 1){				scroll.vdown(e, _Table.coords);	return;	}
 	
-				var s = display.s;
-				if( x < ((s.vw > s.lp.last()) ? s.lp.last() : s.vw) && y < ((s.vh > s.tp.last()) ? s.tp.last() : s.vh)){	select.cTable.down(e);	
-				} else {
-					select.clearAll();			display.all();
-					if(functions.afterSelect)	functions.afterSelect(link);
-				}
+				if(cell)	select.cTable.down(e);	
+				else		link.clearAll();
 	
 				return;
 			},
 			side: function(e){
 				if(e.which != 1) return;
-				var x = set.scale(e.pageX - iSide.coords.left);
-				var y = set.scale(e.pageY - iSide.coords.top + display.s.t);
-	
-				for(var i = 0; i < display.s.rows.length; i++){
-					var ni = display.s.rows[i];
-					for(var j = 0; j < iSide.c; j++){
-						if(!iSide.visual[ni][j].visible || e.ctrlKey) continue;
-	
-						var top    = display.s.tp[ iSide.visual[ni][j].i[0] ],			bottom = display.s.tp[ iSide.visual[ni][j].i.last() + 1 ];
-						var left   = iSide.lp[ iSide.visual[ni][j].j[0] ],				right  = iSide.lp[ iSide.visual[ni][j].j.last() + 1 ];
-	
-						if( bottom - 3 <= y && y <= bottom + 1 && right - 3 <= x && x <= right + 1 ){	resize.side.down(e, iSide.visual[ni][j], 1, 1);		return;	}
-						if( bottom - 3 <= y && y <= bottom + 1 && x < right && x > left ){				resize.side.down(e, iSide.visual[ni][j], 1, 0);		return;	}
-						if( right - 3 <= x && x <= right + 1  && y < bottom && y > top ){				resize.side.down(e, iSide.visual[ni][j], 0, 1);		return;	}
+
+				var cell = get.cell.side(e);
+
+				if(cell){
+					if(cell[1] || cell[2]){
+						resize.side.down(e, cell[0], cell[1], cell[2]);
+						return;
 					}
 				}
-				y = set.scale(e.pageY - iSide.coords.top);
-	
-				var s = display.s;
-				if( y < ((s.vh > s.tp.last()) ? s.tp.last() : s.vh)){	select.cSide.down(e);	
-				} else {
-					select.clearAll();			display.all();
-					if(functions.afterSelect)	functions.afterSelect(link);
-				}
+
+				if(cell)	select.cSide.down(e);	
+				else 		link.clearAll();
+
 				return;
 			},
 			top: function(e){
 				if(e.which != 1) return;
-				var x = set.scale(e.pageX - iTop.coords.left + display.s.l);
-				var y = set.scale(e.pageY - iTop.coords.top);
-	
-				for(var i = 0; i < display.s.cols.length; i++){
-					var ni = display.s.cols[i];
-					for(var j = 0; j < iTop.r; j++){
-						if(!iTop.visual[j][ni].visible || e.ctrlKey) continue;
-	
-						var top    = iTop.tp[ iTop.visual[j][ni].i[0] ];
-						var bottom = iTop.tp[ iTop.visual[j][ni].i.last() + 1 ];
-						var left   = display.s.lp[ iTop.visual[j][ni].j[0] ];
-						var right  = display.s.lp[ iTop.visual[j][ni].j.last() + 1 ];
- 	
-						if( bottom - 3 <= y && y <= bottom + 1 && right - 3 <= x && x <= right + 1 ){	resize.top.down(e, iTop.visual[j][ni], 1, 1);		return;	}
-						if( bottom - 3 <= y && y <= bottom + 1 && x < right && x > left ){				resize.top.down(e, iTop.visual[j][ni], 1, 0);		return;	}
-						if( right - 3 <= x && x <= right + 1  && y < bottom && y > top ){				resize.top.down(e, iTop.visual[j][ni], 0, 1);		return;	}
+
+				var cell = get.cell.top(e);
+
+				if(cell){
+					if(cell[1] || cell[2]){
+						resize.top.down(e, cell[0], cell[1], cell[2]);
+						return;
 					}
 				}
-				x = set.scale(e.pageX - iTable.coords.left);
-	
-				var s = display.s;
-				if( x < ((s.vw > s.lp.last()) ? s.lp.last() : s.vw)){	select.cTop.down(e)	
-				} else {
-					select.clearAll();			display.all();
-					if(functions.afterSelect)	functions.afterSelect(link);
-				}
+
+				if(cell)	select.cTop.down(e);	
+				else 		link.clearAll();
+
 				return;
 			}
 		},
 		dbl: {
 			side: function(e){
-				var x = set.scale(e.pageX - iSide.coords.left);
-				var y = set.scale(e.pageY - iSide.coords.top + display.s.t);
-	
-				for(var i = 0; i < display.s.rows.length; i++){
-					var ni = display.s.rows[i];
-					for(var j = 0; j < iSide.c; j++){
-						if(!iSide.visual[ni][j].visible) continue;
-	
-						var top    = display.s.tp[ iSide.visual[ni][j].i[0] ];					var bottom = display.s.tp[ iSide.visual[ni][j].i.last() + 1 ];
-						var left   = iSide.lp[ iSide.visual[ni][j].j[0] ];						var right  = iSide.lp[ iSide.visual[ni][j].j.last() + 1 ];
-	
-						if( right - 3 <= x && x <= right + 1  && y < bottom && y > top ){		resize.dbl.sideWidth(iSide.visual[ni][j]);			return;	}
-						if( bottom - 3 <= y && y <= bottom + 1 && x < right && x > left ){		resize.dbl.sideHeight(iSide.visual[ni][j]);			return;	}
-					}
+				var cell = get.cell.side(e);
+				if(cell){
+					if(cell[2])		resize.dbl.sideWidth(cell[0]);
+					if(cell[1])		resize.dbl.sideHeight(cell[0]);
 				}
 			},
-			top: function(e){
-				var x = set.scale(e.pageX - iTop.coords.left + display.s.l);
-				var y = set.scale(e.pageY - iTop.coords.top);
-	
-				for(var i = 0; i < display.s.cols.length; i++){
-					var ni = display.s.cols[i];
-					for(var j = 0; j < iTop.r; j++){
-						if(!iTop.visual[j][ni].visible) continue;
-	
-						var top    = iTop.tp[ iTop.visual[j][ni].i[0] ];						var bottom = iTop.tp[ iTop.visual[j][ni].i.last() + 1 ];
-						var left   = display.s.lp[ iTop.visual[j][ni].j[0] ];					var right  = display.s.lp[ iTop.visual[j][ni].j.last() + 1 ];
-	
-						if( bottom - 3 <= y && y <= bottom + 1 && x < right && x > left ){		resize.dbl.topHeight(iTop.visual[j][ni]);			return;	}
-						if( right - 3 <= x && x <= right + 1  && y < bottom && y > top ){		resize.dbl.topWidth(iTop.visual[j][ni]);			return;	}
-					}
+			top: function(e){				
+				var cell = get.cell.top(e);
+				if(cell){
+					if(cell[2])		resize.dbl.topWidth(cell[0]);
+					if(cell[1])		resize.dbl.topHeight(cell[0]);
 				}
 			}	
 		},
@@ -397,82 +497,58 @@ function table_ui(options){
 			if(functions.rightClick){
 				var options;
 
-				if(e.target == iTable.html){
+				if(e.target == _Table.html){
 
-					var x = set.scale(e.pageX + display.s.l - iTable.coords.left);
-					var y = set.scale(e.pageY + display.s.t - iTable.coords.top);
-					var couple = [display.s.cols[0], display.s.rows[0]];
+					var cell = get.cell.table(e);
+					if(cell){
+						if(!cell.select) select.selectTable(cell.i[0], cell.i[0], cell.j[0], cell.j[0], false);
+						options = {cell: cell, i: cell.i, j: cell.j, area: 'table' };
+					} else	options = {cell: null, i: null, j: null, area: 'table' };
 
-					display.s.cols.forEach(	function(i){	if( display.s.lp[i] <= x)	couple[0] = i;	});
-					display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y)	couple[1] = i;	});
+				} else if(e.target == _Side.html){
 
-					var cell = iTable.cells[couple[1]][couple[0]];
+					var cell = get.cell.side(e);
 
-					if(!cell.select){
-						select.click = iTable;
-						select.clearAll();
-						select.select.table( cell.j[0], cell.j[0], cell.i[0], cell.i[0]);
-						select.select.headers();
+					if(cell){
+						cell = cell[0];
+						var types = [];
+
+						if(cell.types){
+							if(!(cell.types[0] && setting.showType[0]) && cell.floatType)				types.push(0);
+							cell.types.forEach(function(item, i){ 	if(item && setting.showType[i])		types.push(i); });
+						}
+						if(!cell.select)	select.selectSide( cell.i[0], cell.i.last(), cell.j[0], _Side.c - 1, false);
+
+						options = {cell: cell, i:  cell.i, j:  cell.j, area: 'side', displayed: types, position: cell.index };
+					} else {
+						options = {cell: null, i:  null, j:  null, area: 'side' };
+					}					
+
+				} else if(e.target == _Top.html){
+
+					var cell = get.cell.top(e);
+
+					if(cell){
+						cell = cell[0];
+						var types = [];
+
+						if(cell.types){
+							if(!(cell.types[0] && setting.showType[0]) && cell.floatType)				types.push(0);
+							cell.types.forEach(function(item, i){ 	if(item && setting.showType[i])		types.push(i); });
+						}
+						if(!cell.select)	select.selectTop( cell.i[0], _Top.r - 1, cell.j[0], cell.j.last(), false);
+
+						options = {cell: cell, i:  cell.i, j:  cell.j, area: 'top', displayed: types, position: cell.index };
+					} else {
+						options = {cell: null, i:  null, j:  null, area: 'top' };
 					}
-					options = {cell: cell, i: cell.i, j: cell.j, area: 'table' };
-
-				} else if(e.target == iSide.html){
-
-					var x = set.scale(e.pageX - iSide.coords.left);
-					var y = set.scale(e.pageY + display.s.t - iSide.coords.top);
-					var couple = [0, display.s.rows[0]];
-
-					for(var i = 0; i < iSide.c; i++){		if( iSide.lp[i] <= x)		couple[0] = i;	}
-					display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y)	couple[1] = i;	});
-			
-					var cell = iSide.visual[couple[1]][couple[0]];
-					var types = [];
-
-					if(cell.types){
-						if(!(cell.types[0] && setting.showType[0]) && cell.floatType)				types.push(0);
-						cell.types.forEach(function(item, i){ 	if(item && setting.showType[i])		types.push(i); });
-					}
-
-					if(!cell.select){
-						select.click = iSide;
-						select.clearAll();
-						select.select.table(0, iTable.c - 1, cell.i[0], cell.i.last() );
-
-						select.select.header( cell.j[0], iSide.c - 1, cell.i[0], cell.i.last(), iSide, select.side );
-						select.select.header(0, iTable.c - 1, iTop.r - 1, iTop.r - 1, iTop, select.top );
-					}
-					
-					options = {cell: cell, i:  cell.i, j:  cell.j, area: 'side', displayed: types, position: cell.index };
-
-				} else if(e.target == iTop.html){
-					var x = set.scale(e.pageX + display.s.l - iTop.coords.left);
-					var y = set.scale(e.pageY - iTop.coords.top);
-					var couple = [display.s.cols[0], 0];
-
-					display.s.cols.forEach(	function(i){	if( display.s.lp[i] <= x)				couple[0] = i;	});
-					for(var i = 0; i < iTop.r; i++){		if( iTop.tp[i] <= y )					couple[1] = i;	}
-
-					var cell = iTop.visual[couple[1]][couple[0]], types = [];
-					if(cell.types){
-						if(!(cell.types[0] && setting.showType[0]) && cell.floatType)				types.push(0);
-						cell.types.forEach(function(item, i){ 	if(item && setting.showType[i])		types.push(i); });
-					}
-
-					if(!cell.select){
-						select.click = iTop;
-						select.clearAll();
-						select.select.table( cell.j[0], cell.j.last(), 0, iTable.r - 1);
-
-						select.select.header(iSide.c - 1, iSide.c - 1,  0, iTable.r - 1, iSide, select.side );
-						select.select.header( cell.j[0], cell.j.last(), cell.i[0], iTop.r - 1, iTop, select.top );
-					}
-					
-					options = {cell: cell, i:  cell.i, j:  cell.j, area: 'top', displayed: types, position: cell.index };
 
 				} else {	options = {area: 'corner'};		}
 
-				display.all();			functions.rightClick(e, options);
-				tools.stopProp(e);		return false;
+				display.all();
+				functions.rightClick(e, options);
+				tools.stopProp(e);
+				return false;
 			}
 		},
 		key: {
@@ -509,38 +585,31 @@ function table_ui(options){
 					if(kc == 35){	display.s.t = display.s.tp.last();	}
 					if(kc == 36){	display.s.t = 0;	}
 					display.all();
-					tools.stopProp(e);		return false;
+					tools.stopProp(e);
+					return false;
 				}
 				if( e.ctrlKey && ( kc == 67 || kc == 83) ){
 					if(functions.keyDown)				functions.keyDown(e, link);		
-					tools.stopProp(e);		return false;
+					tools.stopProp(e);		
+					return false;
 				}
 			},
-			up: function(e){
-				if(!e.shiftKey && select.shift1st){		select.shift = false;		display.table();	}
-			},
-			blur: function(e){
-				if(e.shiftKey && select.shift1st){		select.shift = false;		display.table(); 	}
-			},
+			up: function(e){	if(!e.shiftKey && select.shift1st){		select.shift = false;		display.table();	}},
+			blur: function(e){	if( select.shift1st){					select.shift = false;		display.table(); 	}},
 			select: function(h, v){
-				if(h == -1 && select.shift2nd[0] != 0)						select.shift2nd[0] -= 1;
-				else if(h == 1 && select.shift2nd[0] != iTable.c - 1)		select.shift2nd[0] += 1;
-				if(v == -1 && select.shift2nd[1] != 0)						select.shift2nd[1] -= 1;
-				else if(v == 1 && select.shift2nd[1] != iTable.r - 1)		select.shift2nd[1] += 1;
+				if(h == -1 && select.shift2nd.j != 0)						select.shift2nd.j -= 1;
+				else if(h == 1 && select.shift2nd.j != _Table.c - 1)		select.shift2nd.j += 1;
+				if(v == -1 && select.shift2nd.i != 0)						select.shift2nd.i -= 1;
+				else if(v == 1 && select.shift2nd.i != _Table.r - 1)		select.shift2nd.i += 1;
 
-				var s = {start: select.shift1st, end: select.shift2nd };
+				if(display.s.lp[select.shift2nd.j + 1] > display.s.l + display.s.vw)	display.s.l = display.s.lp[select.shift2nd.j + 1] - display.s.vw + 10;
+				else if(display.s.lp[select.shift2nd.j] < display.s.l )					display.s.l = display.s.lp[select.shift2nd.j] - 10;
 
-				if(display.s.lp[select.shift2nd[0] + 1] > display.s.l + display.s.vw)	display.s.l = display.s.lp[select.shift2nd[0] + 1] - display.s.vw + 10;
-				else if(display.s.lp[select.shift2nd[0]] < display.s.l )				display.s.l = display.s.lp[select.shift2nd[0]] - 10;
+				if(display.s.tp[select.shift2nd.i + 1] > display.s.t + display.s.vh)	display.s.t = display.s.tp[select.shift2nd.i + 1] - display.s.vh + 10;
+				else if(display.s.tp[select.shift2nd.i] < display.s.t )					display.s.t = display.s.tp[select.shift2nd.i] - 10;
 
-				if(display.s.tp[select.shift2nd[1] + 1] > display.s.t + display.s.vh)	display.s.t = display.s.tp[select.shift2nd[1] + 1] - display.s.vh + 10;
-				else if(display.s.tp[select.shift2nd[1]] < display.s.t )				display.s.t = display.s.tp[select.shift2nd[1]] - 10;
-
-				var l = (s.start[0] > s.end[0]) ? s.end[0] : s.start[0], t = (s.start[1] > s.end[1]) ? s.end[1] : s.start[1];
-				var r = (s.start[0] < s.end[0]) ? s.end[0] : s.start[0], b = (s.start[1] < s.end[1]) ? s.end[1] : s.start[1];
-	
-				select.clearAll();					select.select.clearHeaders();
-				select.select.table(l, r, t, b);	select.select.headers();
+				var p = get.sortedPosition.table(select.shift1st, select.shift2nd);
+				select.selectTable(  p.t,  p.b,  p.l,  p.r,  false );
 			}
 		},
 		out: {
@@ -554,7 +623,7 @@ function table_ui(options){
 		xlsxExport: function(options){
 			if(typeof options != 'object')					options = {};
 			var result = { row: [], col: []};	
-			var fi = iTable.r, li = 0, fj = iTable.r, lj = 0, ci = 0, cj = 0;
+			var fi = _Table.r, li = 0, fj = _Table.r, lj = 0, ci = 0, cj = 0;
 			if(options.select){
 				for(var i = 0; i < select.table.length; i++){
 					if( select.table[i].i[0] < fi )			fi = select.table[i].i[0];
@@ -563,32 +632,32 @@ function table_ui(options){
 					if( select.table[i].j[0] > lj )			lj = select.table[i].j[0];
 				}
 				if(select.table.length == 0){				fi = 0;		fj = 0;	}
-				if(select.side.length != 0){				cj = iSide.c;
+				if(select.side.length != 0){				cj = _Side.c;
 					for(var i = 0; i < select.side.length; i++){	if(select.side[i].j.last() < cj)	cj = select.side[i].j.last();	}		}
-				if(select.top.length != 0){					ci = iTop.r;
+				if(select.top.length != 0){					ci = _Top.r;
 					for(var i = 0; i < select.top.length; i++){		if(select.top[i].i.last() < ci)		ci = select.top[i].i.last();	}		}
 			} else {
-				fi = 0; li = iTable.r - 1;
-				fj = 0; lj = iTable.c - 1;
+				fi = 0; li = _Table.r - 1;
+				fj = 0; lj = _Table.c - 1;
 			}
-			for(var i = cj; i < iSide.c; i++)	result.col.push(iSide.w[i]);
-			for(var i = ci; i < iTop.r; i++)	result.row.push(iTop.h[i]);
-			for(var i = fj; i <= lj; i++)		{ if(iTop.branches[i].visible) result.col.push(iTop.branches[i].width); }
-			for(var i = fi; i <= li; i++)		{ if(iSide.branches[i].visible) for(var j = 0; j < iSide.branches[i].rcount; j++) result.row.push(Math.round(iSide.branches[i].height)/iSide.branches[i].rcount); } 
+			for(var i = cj; i < _Side.c; i++)	result.col.push(_Side.w[i]);
+			for(var i = ci; i < _Top.r; i++)	result.row.push(_Top.h[i]);
+			for(var i = fj; i <= lj; i++)		{ if(_Top.branches[i].visible) result.col.push(_Top.branches[i].width); }
+			for(var i = fi; i <= li; i++)		{ if(_Side.branches[i].visible) for(var j = 0; j < _Side.branches[i].rcount; j++) result.row.push(Math.round(_Side.branches[i].height)/_Side.branches[i].rcount); } 
 	
 			var rows = [[]];
-			rows.last().push({ type: 'corner', rowspan: (iTop.r - ci), colspan: (iSide.c - cj), j: 0 });
+			rows.last().push({ type: 'corner', rowspan: (_Top.r - ci), colspan: (_Side.c - cj), j: 0 });
 	
-			for(var i = 0; i < iTop.r; i++){	for(var j = 0; j < iTop.c; j++)	 iTop.visual[i][j].export = true;	}
-			for(var i = ci; i < iTop.r; i++){
-				var nj = iSide.c - cj;
+			for(var i = 0; i < _Top.r; i++){	for(var j = 0; j < _Top.c; j++)	 _Top.visual[i][j].export = true;	}
+			for(var i = ci; i < _Top.r; i++){
+				var nj = _Side.c - cj;
 				for(var j = fj; j <= lj; j++){
-					if(!iTop.branches[j].visible)	continue;
-					var cell = iTop.visual[i][j];
+					if(!_Top.branches[j].visible)	continue;
+					var cell = _Top.visual[i][j];
 	
 					if( cell.export && !options.split){
 						var colSpan = 0;
-						cell.j.forEach(function(item){  if(iTop.branches[item].visible) colSpan++;  });
+						cell.j.forEach(function(item){  if(_Top.branches[item].visible) colSpan++;  });
 						rows.last().push({ type: 'header', text: cell.obj.text, colspan: colSpan, rowspan: (cell.i.last() - i + 1), j: nj})
 						cell.export = false;
 					} else if(options.split){	rows.last().push({ type: 'header', text: cell.obj.text, colspan: 1, rowspan: 1, j: nj})}
@@ -596,45 +665,46 @@ function table_ui(options){
 				}
 				rows.push([]);
 			}
-			for(var i = 0; i < iSide.r; i++){	for(var j = 0; j < iSide.c; j++)	 iSide.visual[i][j].export = true;	}
+			for(var i = 0; i < _Side.r; i++){	for(var j = 0; j < _Side.c; j++)	 _Side.visual[i][j].export = true;	}
 	
 			for(var i = fi; i <= li; i++){
-				if( !iSide.branches[i].visible )				continue;	
+				if( !_Side.branches[i].visible )				continue;	
 				if(!options.split){
-					for(var j = cj; j < iSide.c; j++){
-						var cell = iSide.visual[i][j];
+					for(var j = cj; j < _Side.c; j++){
+						var cell = _Side.visual[i][j];
 						if(cell.export){
 							var rowSpan = 0;
-							cell.i.forEach(function(item){ if(iSide.branches[item].visible)	rowSpan += iSide.branches[item].rcount; });
+							cell.i.forEach(function(item){ if(_Side.branches[item].visible)	rowSpan += _Side.branches[item].rcount; });
 	
-							if(cell.j.last() == iSide.c - 1)	rows.last().push({ rowspan: rowSpan, colspan: (cell.j.last() - j + 1), j: (j - cj), text: cell.obj.text, type: 'header left' });
+							if(cell.j.last() == _Side.c - 1)	rows.last().push({ rowspan: rowSpan, colspan: (cell.j.last() - j + 1), j: (j - cj), text: cell.obj.text, type: 'header left' });
 							else if(!setting.orientation)		rows.last().push({ rowspan: rowSpan, colspan: (cell.j.last() - j + 1), j: (j - cj), text: cell.obj.text, type: 'header vert' });
 							else								rows.last().push({ rowspan: rowSpan, colspan: (cell.j.last() - j + 1), j: (j - cj), text: cell.obj.text, type: 'header' });						
 							cell.export = false;
 						}
 					}
 				}
-				var rowc = iSide.branches[i].rcount;
+				var rowc = _Side.branches[i].rcount;
 	
 				for(var k = 0; k < rowc; k++){
-					if(options.split){		for(var j = cj; j < iSide.c; j++)		rows.last().push({ rowspan: 1, colspan: 1, j: (j - cj), text: iSide.visual[i][j].obj.text, type: 'header' });	}
-					var nj = iSide.c - cj;
+					if(options.split){		for(var j = cj; j < _Side.c; j++)		rows.last().push({ rowspan: 1, colspan: 1, j: (j - cj), text: _Side.visual[i][j].obj.text, type: 'header' });	}
+					var nj = _Side.c - cj;
 	
 					for(var j = fj; j <= lj; j++){
-						if(!iTop.branches[j].visible)								continue;
-						if(iTable.cells[i][j].visual[k]){
+						if(!_Top.branches[j].visible)								continue;
+						if(_Table.cells[i][j].visual[k]){
 
-							var item = iTable.cells[i][j].visual[k];
-							var text = iTable.cells[i][j].obj[( item.type == 3) ? 0 : item.type];
+							var item = _Table.cells[i][j].visual[k];
+							var text = _Table.cells[i][j].obj[( item.type == 3) ? 0 : item.type];
 							var type = item.type, round;
 
-							if(type == 0 && iTable.cells[i][j].round == 2){				type = 5;	round = setting.round[2];
-							} else if(type == 3 && iTable.cells[i][j].round == 2){		type = 6;	round = setting.round[2];							
+							if(type == 0 && _Table.cells[i][j].round == 2){				type = 5;	round = setting.round[2];
+							} else if(type == 3 && _Table.cells[i][j].round == 2){		type = 6;	round = setting.round[2];							
 							} else if(type != 0 && type != 3)							round = setting.round[1];
 							else 														round = setting.round[0];
 
 							if(text === null)							text = (setting.showZero) ? 0 : ' '; 
 							else if(text === 0 && setting.hideZero)		text = ' ';
+							else if(isNaN(text))						text = ' ';
 							else										text = tools.roundPlus(text, round);
 
 							rows.last().push({ j: nj, type: type, text: text});
@@ -659,7 +729,7 @@ function table_ui(options){
 
 			var html = '<!DOCTYPE HTML><html><head><style> th { background: #F1F1F1; }</style></head><body>';
 
-			var fi = iTable.r, li = 0, fj = iTable.r, lj = 0, ci = 0, cj = 0;
+			var fi = _Table.r, li = 0, fj = _Table.r, lj = 0, ci = 0, cj = 0;
 			if(options.select){
 				for(var i = 0; i < select.table.length; i++){
 					if( select.table[i].i[0] < fi )			fi = select.table[i].i[0];
@@ -669,16 +739,16 @@ function table_ui(options){
 				}
 				if(select.table.length == 0){	fi = 0; fj = 0;	}
 				if(options.side && select.side.length != 0){
-					cj = iSide.c;
+					cj = _Side.c;
 					for(var i = 0; i < select.side.length; i++){	if(select.side[i].j.last() < cj)	cj = select.side[i].j.last();	}
 				}
 				if(options.top && select.top.length != 0){
-					ci = iTop.r;
+					ci = _Top.r;
 					for(var i = 0; i < select.top.length; i++){		if(select.top[i].i.last() < ci)		ci = select.top[i].i.last();	}
 				}
 			} else {
-				fi = 0; li = iTable.r - 1;
-				fj = 0; lj = iTable.c - 1;
+				fi = 0; li = _Table.r - 1;
+				fj = 0; lj = _Table.c - 1;
 			}
 
 			html += '<table border="1" padding="1px" style="vertical-align: middle; font-family: Verdana, serif; font-size: 11px; border-collapse: collapse; text-align: center; "><tbody>    ';
@@ -688,20 +758,20 @@ function table_ui(options){
 				html += '<tr>'; 
 				if(options.side){
 					html += '<th' + ( (options.color) ? ' style="background:#F1F1F1;"' : '' )
-							+ ( (iTop.r - ci > 1 ) ? (' rowspan="' + (iTop.r - ci) + '"') : '' )
-							+ ( (iSide.c - cj > 1 ) ? (' colspan="' + (iSide.c - cj) + '" />') : ' />' );
+							+ ( (_Top.r - ci > 1 ) ? (' rowspan="' + (_Top.r - ci) + '"') : '' )
+							+ ( (_Side.c - cj > 1 ) ? (' colspan="' + (_Side.c - cj) + '" />') : ' />' );
 				}
 
-				for(var i = 0; i < iTop.r; i++){	for(var j = 0; j < iTop.c; j++)	 iTop.visual[i][j].export = true;	}
+				for(var i = 0; i < _Top.r; i++){	for(var j = 0; j < _Top.c; j++)	 _Top.visual[i][j].export = true;	}
 
-				for(var i = ci; i < iTop.r; i++){
+				for(var i = ci; i < _Top.r; i++){
 					for(var j = fj; j <= lj; j++){
-						if(!iTop.branches[j].visible)	continue;
-						var cell = iTop.visual[i][j];
+						if(!_Top.branches[j].visible)	continue;
+						var cell = _Top.visual[i][j];
 
 						if( cell.export && !options.split){
 							var colSpan = 0;
-							cell.j.forEach(function(item){  if(iTop.branches[item].visible) colSpan++;  });
+							cell.j.forEach(function(item){  if(_Top.branches[item].visible) colSpan++;  });
 
 							html += '<th' + ( (options.color) ? ' style="background:#F1F1F1;"' : '' )
 								+ ( ((cell.i.last() - i + 1) > 1 ) ? (' rowspan="' + (cell.i.last() - i + 1) + '"') : '' )
@@ -715,19 +785,19 @@ function table_ui(options){
 			}
 			html = html.substring(0, html.length - 4);
 			if(options.side){ select.side.forEach(function(item){ item.export = true; });	}
-			for(var i = 0; i < iSide.r; i++){	for(var j = 0; j < iSide.c; j++)	 iSide.visual[i][j].export = true;	}
+			for(var i = 0; i < _Side.r; i++){	for(var j = 0; j < _Side.c; j++)	 _Side.visual[i][j].export = true;	}
 
 
 			html += '<tr>';
 			for(var i = fi; i <= li; i++){
-				if( !iSide.branches[i].visible ) continue;
+				if( !_Side.branches[i].visible ) continue;
 
 				if(options.side && !options.split){
-					for(var j = cj; j < iSide.c; j++){
-						var cell = iSide.visual[i][j];
+					for(var j = cj; j < _Side.c; j++){
+						var cell = _Side.visual[i][j];
 						if(cell.export){
 							var rowSpan = 0;
-							cell.i.forEach(function(item){ if(iSide.branches[item].visible) rowSpan += iSide.branches[item].rcount; });
+							cell.i.forEach(function(item){ if(_Side.branches[item].visible) rowSpan += _Side.branches[item].rcount; });
 
 							html += '<th' + ( (options.color) ? ' style="background:#F1F1F1;"' : '' )
 								+ ( (rowSpan > 1 ) ? (' rowspan="' + (rowSpan) + '"') : '' )
@@ -738,20 +808,20 @@ function table_ui(options){
 					}
 				}
 
-				var rows = iSide.branches[i].rcount;
+				var rows = _Side.branches[i].rcount;
 
 				for(var k = 0; k < rows; k++){
 					if(options.side && options.split){
-						for(var j = cj; j < iSide.c; j++)		html += '<th' + ( (options.color) ? ' style="background:#F1F1F1;">' : '>' ) + iSide.visual[i][j].obj.text + '</th>';
+						for(var j = cj; j < _Side.c; j++)		html += '<th' + ( (options.color) ? ' style="background:#F1F1F1;">' : '>' ) + _Side.visual[i][j].obj.text + '</th>';
 					}
 					for(var j = fj; j <= lj; j++){
-						if(iTable.cells[i][j].visual[k]){
+						if(_Table.cells[i][j].visual[k]){
 
-							var item = iTable.cells[i][j].visual[k];
-							var text = iTable.cells[i][j].obj[( item.type == 3) ? 0 : item.type];
+							var item = _Table.cells[i][j].visual[k];
+							var text = _Table.cells[i][j].obj[( item.type == 3) ? 0 : item.type];
 							var round, type = item.type;
 
-							if((type == 0 || type == 3) && (iSide.branches[i].obj.type == 3 || iSide.branches[i].obj.type == 8))	round = setting.round[2];
+							if((type == 0 || type == 3) && (_Side.branches[i].obj.type == 3 || _Side.branches[i].obj.type == 8))	round = setting.round[2];
 							else if(type != 0)																		round = setting.round[1];
 							else 																					round = setting.round[0];
 
@@ -781,18 +851,18 @@ function table_ui(options){
 
 			if(top == undefined || side == undefined || table == undefined) return;
 
-			setBranches(top, iTop.tree);
-			setBranches(side, iSide.tree);
-			iTop.branches = create.getSignBranches(iTop.tree)
-			iSide.branches = create.getSignBranches(iSide.tree);
+			setBranches(top, _Top.tree);
+			setBranches(side, _Side.tree);
+			_Top.branches = create.getSignBranches(_Top.tree)
+			_Side.branches = create.getSignBranches(_Side.tree);
 
-			iTop.r	= create.getDepth(iTop.tree) - 1;
-			iSide.c	= create.getDepth(iSide.tree) - 1;
-			iTop.c	= iTable.c = iTop.branches.length;
-			iSide.r	= iTable.r = iSide.branches.length;
+			_Top.r	= create.getDepth(_Top.tree) - 1;
+			_Side.c	= create.getDepth(_Side.tree) - 1;
+			_Top.c	= _Table.c = _Top.branches.length;
+			_Side.r	= _Table.r = _Side.branches.length;
 
-			iTop.branches.forEach(function(item, i){item.index = i;});
-			iSide.branches.forEach(function(item, i){item.index = i;});
+			_Top.branches.forEach(function(item, i){item.index = i;});
+			_Side.branches.forEach(function(item, i){item.index = i;});
 
 			normalizeIntupTable(table);
 			setTable(table);
@@ -801,48 +871,48 @@ function table_ui(options){
 			create.autoSize();
 		}
 		function removeTable(){
-			iSide.branches.forEach(function(item, i) { size.table.h[i] = item.dh; });
-			iTop.branches.forEach(function(item, i) { size.table.w[i] = item.dw; });
+			_Side.branches.forEach(function(item, i) { size.table.h[i] = item.dh; });
+			_Top.branches.forEach(function(item, i) { size.table.w[i] = item.dw; });
 
-			if(iSide.dw.length < size.corner.w.length ){	for(var i = 1; i <= iSide.dw.length; i++ ) 	size.corner.w[size.corner.w.length - i] = iSide.dw[iSide.dw.length - i] 
-			} else 	size.corner.w = iSide.dw;
-			if(iTop.dh.length < size.corner.h.length ){		for(var i = 1; i <= iTop.dh.length; i++ )	size.corner.h[size.corner.h.length - i] = iTop.dh[iTop.dh.length - i]
-			} else	size.corner.h = iTop.dh;
+			if(_Side.dw.length < size.corner.w.length ){	for(var i = 1; i <= _Side.dw.length; i++ ) 	size.corner.w[size.corner.w.length - i] = _Side.dw[_Side.dw.length - i] 
+			} else 	size.corner.w = _Side.dw;
+			if(_Top.dh.length < size.corner.h.length ){		for(var i = 1; i <= _Top.dh.length; i++ )	size.corner.h[size.corner.h.length - i] = _Top.dh[_Top.dh.length - i]
+			} else	size.corner.h = _Top.dh;
 
-			iSide.tree.children = [];	iTop.tree.children = [];
-			iTop.c = iTop.r = iTable.c = iTable.r = iSide.c = iSide.r = 0;
+			_Side.tree.children = [];	_Top.tree.children = [];
+			_Top.c = _Top.r = _Table.c = _Table.r = _Side.c = _Side.r = 0;
 			select.table = [];			select.side = [];			select.top = [];
 			sort.side = {};				sort.top = {};
 		}
 		function setSize(){
-			iTop.dh = [];				iSide.dw = [];
+			_Top.dh = [];				_Side.dw = [];
 
-			iTop.branches.forEach(  function(item, i){ item.dw = (typeof size.table.w[i] == 'number') ? size.table.w[i] : size.w } );
-			iSide.branches.forEach( function(item, i){ item.dh = (typeof size.table.h[i] == 'number') ? size.table.h[i] : size.h } );
+			_Top.branches.forEach(  function(item, i){ item.dw = (typeof size.table.w[i] == 'number') ? size.table.w[i] : size.w } );
+			_Side.branches.forEach( function(item, i){ item.dh = (typeof size.table.h[i] == 'number') ? size.table.h[i] : size.h } );
 
-			for(var i = 1; i <= iSide.c; i++ ){
-				if( size.corner.w.length - i >= 0)			iSide.dw[iSide.c - i] = size.corner.w[size.corner.w.length - i];
-				else										iSide.dw[iSide.c - i] = size.w;
+			for(var i = 1; i <= _Side.c; i++ ){
+				if( size.corner.w.length - i >= 0)			_Side.dw[_Side.c - i] = size.corner.w[size.corner.w.length - i];
+				else										_Side.dw[_Side.c - i] = size.w;
 			}
-			for(var i = 1; i <= iTop.r; i++ ){
-				if( size.corner.h.length - i >= 0)			iTop.dh[iTop.r - i] = size.corner.h[size.corner.h.length - i];
-				else										iTop.dh[iTop.r - i] = size.h;
+			for(var i = 1; i <= _Top.r; i++ ){
+				if( size.corner.h.length - i >= 0)			_Top.dh[_Top.r - i] = size.corner.h[size.corner.h.length - i];
+				else										_Top.dh[_Top.r - i] = size.h;
 			}
 		}
 
 		this.autoSize = function(){
 			var more = (setting.round[2] > setting.round[0]) ? 2 : 0;
-			iTop.branches.forEach(function(item, j){
+			_Top.branches.forEach(function(item, j){
 				var width = item.dw, symbol = 0;
-				for(var i = 0; i < iTable.r; i++){
-					iTable.cells[i][j].base = ((iSide.branches[i].obj.base || iTop.branches[j].obj.base) && !(iSide.branches[i].obj.type == undefined || iTop.branches[j].obj.type == undefined)) ? 1 : 0;
+				for(var i = 0; i < _Table.r; i++){
+					_Table.cells[i][j].base = ((_Side.branches[i].obj.base || _Top.branches[j].obj.base) && !(_Side.branches[i].obj.type == undefined || _Top.branches[j].obj.type == undefined)) ? 1 : 0;
 
-					iTable.cells[i][j].obj.forEach( function(cell, k){
+					_Table.cells[i][j].obj.forEach( function(cell, k){
 						var percent = (setting.showPercent && (k == 1 || k == 2));
 						var round;
 
-						var rSide = (iSide.branches[i].obj.type == 3 || iSide.branches[i].obj.type == 8) ? 2 : 0;
-						var rTop = (iTop.branches[j].obj.type == 3 || iTop.branches[j].obj.type == 8) ? 2 : 0;
+						var rSide = (_Side.branches[i].obj.type == 3 || _Side.branches[i].obj.type == 8) ? 2 : 0;
+						var rTop = (_Top.branches[j].obj.type == 3 || _Top.branches[j].obj.type == 8) ? 2 : 0;
 
 						if(k == 0)		round = (rSide != rTop) ? more : rSide;
 						else 			round = 1;
@@ -850,7 +920,7 @@ function table_ui(options){
 
 						var ns = (tools.roundPlus(cell, setting.round[round]) + ((percent) ? '%%' : '') ).replace('.', '').length;
 						if(symbol < ns)	symbol = ns;
-						if(k == 0)		iTable.cells[i][j].round = round;
+						if(k == 0)		_Table.cells[i][j].round = round;
 					});
 				}
 				if(symbol*size.numeral + size.dot + 8 > width )		width = symbol*size.numeral + size.dot + 8;
@@ -890,39 +960,39 @@ function table_ui(options){
 			}
 		}
 		function normalizeIntupTable(table){
-			for(var i = 0; i < iTable.r; i++){
+			for(var i = 0; i < _Table.r; i++){
 				if(!Array.isArray(table[i]))		table[i] = [];
-				for(var j = 0; j < iTable.c; j++){
+				for(var j = 0; j < _Table.c; j++){
 					if(!Array.isArray(table[i][j]))	table[i][j] = [null];
 				}
 			}
 		}		
 		function setTable(table){
-			iTable.cells = [];
+			_Table.cells = [];
 
-			for(var i = 0; i < iTable.r; i++){
-				iTable.cells[i] = [];
-				iSide.branches[i].types = [];
-				iSide.branches[i].empty = true;
+			for(var i = 0; i < _Table.r; i++){
+				_Table.cells[i] = [];
+				_Side.branches[i].types = [];
+				_Side.branches[i].empty = true;
 
-				for(var j = 0; j < iTable.c; j++){					
-					iTable.cells[i][j] = { obj: table[i][j] };
+				for(var j = 0; j < _Table.c; j++){					
+					_Table.cells[i][j] = { obj: table[i][j] };
 			
 					for(var k = 0; k < table[i][j].length; k++){
-						if(typeof table[i][j][k] == 'number' && table[i][j][k] != 0 && !(!iSide.branches[i].base && iTop.branches[j].base))		iSide.branches[i].empty = false;
-						if(!iSide.branches[i].types[k])																							iSide.branches[i].types[k] = true;
+						if(typeof table[i][j][k] == 'number' && table[i][j][k] != 0 && !(!_Side.branches[i].base && _Top.branches[j].base))		_Side.branches[i].empty = false;
+						if(!_Side.branches[i].types[k])																							_Side.branches[i].types[k] = true;
 					}
 				}
 			}
-			for(var i = 0; i < iTable.c; i++){
-				iTop.branches[i].types = [];
-				iTop.branches[i].empty = true;
+			for(var i = 0; i < _Table.c; i++){
+				_Top.branches[i].types = [];
+				_Top.branches[i].empty = true;
 
-				for(var j = 0; j < iTable.r; j++){
+				for(var j = 0; j < _Table.r; j++){
 
 					for(var k = 0; k < table[j][i].length; k++){
-						if(typeof table[j][i][k] == 'number' && table[j][i][k] != 0 && !(!iTop.branches[i].base && iSide.branches[j].base))		iTop.branches[i].empty = false;
-						if(!iTop.branches[i].types[k])																							iTop.branches[i].types[k] = true;
+						if(typeof table[j][i][k] == 'number' && table[j][i][k] != 0 && !(!_Top.branches[i].base && _Side.branches[j].base))		_Top.branches[i].empty = false;
+						if(!_Top.branches[i].types[k])																							_Top.branches[i].types[k] = true;
 					}
 				}
 			}
@@ -931,15 +1001,15 @@ function table_ui(options){
 	var remake = new function(){
 		this.reBuild = function(){
 
-			iSide.visual = [];
-			iSide.tree.children.forEach( function(item){ reBuildSide(item, 0); } );
+			_Side.visual = [];
+			_Side.tree.children.forEach( function(item){ reBuildSide(item, 0); } );
 
-			iTop.visual = [];
-			for(var i = 0; i < iTop.r; i++) iTop.visual[i] = [];
-			iTop.tree.children.forEach( function(item){ reBuildTop(item, 0); } );
+			_Top.visual = [];
+			for(var i = 0; i < _Top.r; i++) _Top.visual[i] = [];
+			_Top.tree.children.forEach( function(item){ reBuildTop(item, 0); } );
 
-			iTop.branches = create.getSignBranches(iTop.tree)
-			iSide.branches = create.getSignBranches(iSide.tree);
+			_Top.branches = create.getSignBranches(_Top.tree)
+			_Side.branches = create.getSignBranches(_Side.tree);
 
 			remake.reDrow();
 		}
@@ -948,16 +1018,16 @@ function table_ui(options){
 			item.i = [];			item.j = [];
 
 			if(item.children){
-				newLevel = iSide.c - create.getDepth(item) + 1;
+				newLevel = _Side.c - create.getDepth(item) + 1;
 				item.children.forEach( function(branch){item.i = item.i.concat(reBuildSide(branch, newLevel));} );
 			} else {
-				newLevel = iSide.c;
-				item.i[0] = iSide.visual.length;
-				iSide.visual.push([]);
+				newLevel = _Side.c;
+				item.i[0] = _Side.visual.length;
+				_Side.visual.push([]);
 			}
 
 			for(;level < newLevel; level++){
-				item.i.forEach( function(index) { iSide.visual[index][level] = item; });
+				item.i.forEach( function(index) { _Side.visual[index][level] = item; });
 				item.j.push(level);
 			}
 			return item.i;
@@ -967,35 +1037,35 @@ function table_ui(options){
 			item.i = [];			item.j = [];
 
 			if(item.children){
-				newLevel = iTop.r - create.getDepth(item) + 1;
+				newLevel = _Top.r - create.getDepth(item) + 1;
 				item.children.forEach( function(branch){item.j = item.j.concat(reBuildTop(branch, newLevel));} );
 			} else {
-				newLevel = iTop.r;
-				item.j[0] = iTop.visual[iTop.r - 1].length;
+				newLevel = _Top.r;
+				item.j[0] = _Top.visual[_Top.r - 1].length;
 			}
 
 			for(;level < newLevel;level++){
-				item.j.forEach( function(index){ iTop.visual[level][index] = item; });
+				item.j.forEach( function(index){ _Top.visual[level][index] = item; });
 				item.i.push(level);
 			}
 			return item.j;
 		}
 
 		this.reDrow = function(){
-			hideBranch(iSide.tree);		hideBranch(iTop.tree);
-			iSide.tree.visible = true;	iTop.tree.visible = true;
+			hideBranch(_Side.tree);		hideBranch(_Top.tree);
+			_Side.tree.visible = true;	_Top.tree.visible = true;
 
-			iSide.branches.forEach( function(item){ if( ( !(setting.hideRow && item.empty ) || item.aShow || item.obj.type == undefined ) && !(item.aShow === false)) showBranch(item);  } );
-			iTop.branches.forEach(  function(item){ if( ( !(setting.hideCol && item.empty ) || item.aShow || item.obj.type == undefined ) && !(item.aShow === false)) showBranch(item);  } );
+			_Side.branches.forEach( function(item){ if( ( !(setting.hideRow && item.empty ) || item.aShow || item.obj.type == undefined ) && !(item.aShow === false)) showBranch(item);  } );
+			_Top.branches.forEach(  function(item){ if( ( !(setting.hideCol && item.empty ) || item.aShow || item.obj.type == undefined ) && !(item.aShow === false)) showBranch(item);  } );
 
-			iSide.branches.forEach( function(item){ setHeight(item); } );
-			iTop.branches.forEach(  function(item){ setWidth(item); } );
+			_Side.branches.forEach( function(item){ setHeight(item); } );
+			_Top.branches.forEach(  function(item){ setWidth(item); } );
 
 			setCoords();			
 			setTable();
 
-			setBoldLine(iSide.branches, iSide.tree);
-			setBoldLine(iTop.branches, iTop.tree);
+			setBoldLine(_Side.branches, _Side.tree);
+			setBoldLine(_Top.branches, _Top.tree);
 
 			display.generate();
 		}
@@ -1010,18 +1080,18 @@ function table_ui(options){
 			}
 		}
 		function setTable(){
-			for(var i = 0; i < iTable.r; i++){
-				for(var j = 0; j < iTable.c; j++){
-					var cell = iTable.cells[i][j];
+			for(var i = 0; i < _Table.r; i++){
+				for(var j = 0; j < _Table.c; j++){
+					var cell = _Table.cells[i][j];
 					cell.i = [i];	cell.j = [j];
 
-					if(!iSide.branches[i].visible || !iTop.branches[j].visible) continue;
+					if(!_Side.branches[i].visible || !_Top.branches[j].visible) continue;
 
 					cell.visual = [];
 					cell.obj.forEach( function(item, type){ 
 						if(setting.showType[type]){
 
-							var text, percent = (setting.showPercent && (type == 1 || type == 2)), round, width = iTop.branches[j].width - 6;
+							var text, percent = (setting.showPercent && (type == 1 || type == 2)), round, width = _Top.branches[j].width - 6;
 							if(type == 0)		round = setting.round[cell.round];
 							else				round = setting.round[1];
 
@@ -1037,7 +1107,7 @@ function table_ui(options){
 
 							if(width == 0 && setting.sharpOverflow){
 								text = '';
-								for(var s = 0, end = Math.round((iTop.branches[j].width - 6)/size.sharp); s < end; s++ )	text += '#';
+								for(var s = 0, end = Math.round((_Top.branches[j].width - 6)/size.sharp); s < end; s++ )	text += '#';
 							}
 
 							cell.visual.push({text: text.replace(/\./g, setting.separator), type: ((type == 0 && cell.base) ? 3 : type) } );
@@ -1045,9 +1115,9 @@ function table_ui(options){
 					} );
 					if(!cell.visual.length){
 
-						iSide.branches[i].floatType = true;			iTop.branches[j].floatType = true;
+						_Side.branches[i].floatType = true;			_Top.branches[j].floatType = true;
 
-						var text = cell.obj[0], width = iTop.branches[j].width - 6, round = setting.round[cell.round];
+						var text = cell.obj[0], width = _Top.branches[j].width - 6, round = setting.round[cell.round];
 
 						if(text === null)							text = (setting.showZero) ? '0' : ' '; 
 						else if(text === 0 && setting.hideZero)		text = ' ';
@@ -1056,12 +1126,12 @@ function table_ui(options){
 						if(((text.length - 1)*size.numeral + size.dot) > width ){
 							if(setting.sharpOverflow){
 								text = ''
-								for(var s = 0, end = Math.round((iTop.branches[j].width - 8)/size.sharp); s < end; s++ )	text += '#';
+								for(var s = 0, end = Math.round((_Top.branches[j].width - 8)/size.sharp); s < end; s++ )	text += '#';
 							} else		text = text.substring(0, Math.floor((width - size.dot)/size.numeral + 1));
 						}
 						cell.visual.push({text: text.replace(/\./g, setting.separator), type: ((cell.base) ? 3 : 0) } );
 					}
-					cell.height = ((iSide.branches[i].h - 1 )/cell.visual.length);
+					cell.height = ((_Side.branches[i].h - 1 )/cell.visual.length);
 				}
 			}
 		}
@@ -1086,27 +1156,27 @@ function table_ui(options){
 
 		function setCoords(){
 			display.s.lp = [0]; //left position
-			iTop.branches.forEach( function(item, i){ display.s.lp.push( display.s.lp[i] + item.w ); } );
+			_Top.branches.forEach( function(item, i){ display.s.lp.push( display.s.lp[i] + item.w ); } );
 
 			display.s.tp = [0];	//top position
-			iSide.branches.forEach( function(item, i){ display.s.tp.push( display.s.tp[i] + item.h ); } );
+			_Side.branches.forEach( function(item, i){ display.s.tp.push( display.s.tp[i] + item.h ); } );
 
-			iSide.w = [],	iTop.h = [];
-			iSide.dw.forEach(function(item, i){	if(item < size.minw) iSide.w[i] = size.minw; else iSide.w[i] = item; });
-			iTop.dh.forEach(function(item, i){	if(item < size.minh) iTop.h[i] = size.minh; else iTop.h[i] = item; });
+			_Side.w = [],	_Top.h = [];
+			_Side.dw.forEach(function(item, i){	if(item < size.minw) _Side.w[i] = size.minw; else _Side.w[i] = item; });
+			_Top.dh.forEach(function(item, i){	if(item < size.minh) _Top.h[i] = size.minh; else _Top.h[i] = item; });
 
-			iSide.lp = [0],	iTop.tp = [0];
-			iSide.w.forEach( function(item, i){ iSide.lp.push( iSide.lp[i] + item ); } );
-			iTop.h.forEach( function(item, i){ iTop.tp.push( iTop.tp[i] + item ); } );
-			iTable.ctx.font = size.ttext + "px " + size.font;
-			setCoordsSide(iSide.tree);			setCoordsTop(iTop.tree);
+			_Side.lp = [0],	_Top.tp = [0];
+			_Side.w.forEach( function(item, i){ _Side.lp.push( _Side.lp[i] + item ); } );
+			_Top.h.forEach( function(item, i){ _Top.tp.push( _Top.tp[i] + item ); } );
+			_Table.ctx.font = size.text + "px " + size.font;
+			setCoordsSide(_Side.tree);			setCoordsTop(_Top.tree);
 		}
 		function setCoordsSide(tree){
 			if(tree.i || tree.j){
 				tree.height = 0;
-				tree.i.forEach(function(i){tree.height += iSide.branches[i].h;});
+				tree.i.forEach(function(i){tree.height += _Side.branches[i].h;});
 				tree.width = 0;
-				tree.j.forEach(function(i){tree.width += iSide.w[i];});
+				tree.j.forEach(function(i){tree.width += _Side.w[i];});
 				if(!setting.orientation)	cutText(tree.obj.text, tree.height - 5, tree.width - 4, tree);
 				else						cutText(tree.obj.text, tree.width - 5, tree.height - 4, tree);
 			}
@@ -1119,27 +1189,27 @@ function table_ui(options){
 		function setCoordsTop(tree){
 			if(tree.i || tree.j){
 				tree.height = 0;
-				tree.i.forEach(function(i){tree.height += iTop.h[i]; });
+				tree.i.forEach(function(i){tree.height += _Top.h[i]; });
 				tree.width = 0;
-				tree.j.forEach(function(i){tree.width += iTop.branches[i].w; });
+				tree.j.forEach(function(i){tree.width += _Top.branches[i].w; });
 				cutText(tree.obj.text, tree.width - 5, tree.height - 4, tree);
 			}
 			if(tree.children){ for(var i = 0; i < tree.children.length; i++)	setCoordsTop(tree.children[i]); }
 			else if(tree == sort.top.cell)										cutText(tree.obj.text, tree.width - 15, tree.height - 4, tree);
 		}
 		function cutText(text, width, height, tree){
-			if(width < 10 || height < size.ttext) return [{text:'', width: 0}]
-			var row = Math.floor(height/size.ttext), textArray = [], tooltip = false;
-			var fullWidth = iTable.ctx.measureText(text).width;
+			if(width < 10 || height < size.text) return [{text:'', width: 0}]
+			var row = Math.floor(height/size.text), textArray = [], tooltip = false;
+			var fullWidth = _Table.ctx.measureText(text).width;
 			var exemplaryLength = (text.length) ? Math.floor( width / (fullWidth / text.length) ) : 0;
 
 			for(var i = 0; i < row; i++){
 				var newLength = exemplaryLength;
 				if(newLength < text.length){
-					var bit = iTable.ctx.measureText(text.substring(0, newLength)).width;
+					var bit = _Table.ctx.measureText(text.substring(0, newLength)).width;
 					while(bit > width){
 						newLength--;
-						bit = iTable.ctx.measureText(text.substring(0, newLength)).width;
+						bit = _Table.ctx.measureText(text.substring(0, newLength)).width;
 					}
 					textArray.push( {text: text.substring(0, newLength)} );
 					text = text.substring(newLength, text.length);
@@ -1154,8 +1224,8 @@ function table_ui(options){
 				textArray.last().text = textArray.last().text.substring(0, textArray.last().text.length - 2) + '...';
 			} else if(textArray.length == 1)	textArray[0].width = Math.round(fullWidth/2) + 2;
 
-			var bit = Math.round((height - size.ttext*textArray.length)/2);
-			var half = size.ttext/2;
+			var bit = Math.round((height - size.text*textArray.length)/2);
+			var half = size.text/2;
 			textArray.forEach(function(item, i){ item.position = bit + Math.round(half*(1 + i*2)) + 1; });
 
 			tree.textArray = textArray;
@@ -1173,10 +1243,10 @@ function table_ui(options){
 
 		this.generate = function(){
 
-			var x = ((iSide.w.length) ? iSide.lp.last() : 100)/size.scale;
-			var y = ((iTop.h.length) ? iTop.tp.last() : 100)/size.scale;
+			var x = (((_Side.w.length) ? _Side.lp.last() : 100)/size.scale);
+			var y = (((_Top.h.length) ? _Top.tp.last() : 100)/size.scale);
 
-			var height = (container.clientHeight - y); //viewport	height
+			var height = (container.clientHeight - y); //viewport height
 			var width  = (container.clientWidth - x);//veiwport width
 
 			s.vh = height*size.scale;
@@ -1184,13 +1254,13 @@ function table_ui(options){
 
 			if( (height < 0) || (width < 0) )	return;
 
-			iTable.html.width = iTop.html.width = s.vw;
-			iTable.html.height = iSide.html.height = s.vh;
-			iTable.html.style.width = iTop.html.style.width = width + 'px';
-			iTable.html.style.height = iSide.html.style.height = height + 'px';
+			_Table.html.width = _Top.html.width = s.vw;
+			_Table.html.height = _Side.html.height = s.vh;
+			_Table.html.style.width = _Top.html.style.width = width + 'px';
+			_Table.html.style.height = _Side.html.style.height = height + 'px';
 
-			iTop.html.height = s.y = y*size.scale;		iCorner.html.style.height = (y - 1) + 'px';
-			iSide.html.width = s.x = x*size.scale;		iCorner.html.style.width = (x - 1) + 'px';
+			_Top.html.height = s.y = y*size.scale;		_Corner.html.style.height = (y - 1) + 'px';
+			_Side.html.width = s.x = x*size.scale;		_Corner.html.style.width = (x - 1) + 'px';
 
 			s.vh += -18;
 			s.vw += -18;
@@ -1198,9 +1268,9 @@ function table_ui(options){
 			if(s.l > (s.lp.last() - s.vw))	s.l = (s.lp.last() - s.vw > 0) ? (s.lp.last() - s.vw) : 0 ;
 			if(s.t > (s.tp.last() - s.vh))	s.t = (s.tp.last() - s.vh > 0) ? (s.tp.last() - s.vh) : 0 ;
 
-			iTable.coords = iTable.html.getBoundingClientRect();
-			iSide.coords = iSide.html.getBoundingClientRect();
-			iTop.coords = iTop.html.getBoundingClientRect();
+			_Table.coords = _Table.html.getBoundingClientRect();
+			_Side.coords = _Side.html.getBoundingClientRect();
+			_Top.coords = _Top.html.getBoundingClientRect();
 
 			display.all();
 		}
@@ -1209,7 +1279,7 @@ function table_ui(options){
 			if( s.t > (s.tp.last() - s.vh)) s.t = s.tp.last() - s.vh;				if( s.t < 0) s.t = 0;
 			if( s.l > (s.lp.last() - s.vw)) s.l = s.lp.last() - s.vw;				if( s.l < 0) s.l = 0;
 
-			var c = iTable.ctx;
+			var c = _Table.ctx;
 
 			c.fillStyle = '#FFF';			c.fillRect(0, 0, s.vw + 18, s.vh + 18);	// clear canvas
 			c.fillStyle = '#AAA';			c.fillRect(0, 0, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), ((s.vh > s.tp.last()) ? s.tp.last() : s.vh)); // set background borders
@@ -1219,28 +1289,28 @@ function table_ui(options){
 
 			c.textBaseline = "top";
 			c.textAlign = "right";
-			c.font = size.ttext + "px " + size.font;
+			c.font = size.text + "px " + size.font;
 
 			s.cols = [];					s.rows = [];
-			for(var i = 0; i < iTable.c; i++){	if((s.lp[i] >= s.l && s.lp[i] <= (s.l + s.vw)) || (s.lp[i + 1] >= s.l && s.lp[i + 1] <= (s.l + s.vw)) || (s.lp[i] <= s.l && s.lp[i + 1] >= s.l + s.vw))	s.cols.push(i);	}
-			for(var i = 0; i < iTable.r; i++){	if((s.tp[i] >= s.t && s.tp[i] <= (s.t + s.vh)) || (s.tp[i + 1] >= s.t && s.tp[i + 1] <= (s.t + s.vh)) || (s.tp[i] <= s.t && s.tp[i + 1] >= s.t + s.vh))	s.rows.push(i); }
+			for(var i = 0; i < _Table.c; i++){	if((s.lp[i] >= s.l && s.lp[i] <= (s.l + s.vw)) || (s.lp[i + 1] >= s.l && s.lp[i + 1] <= (s.l + s.vw)) || (s.lp[i] <= s.l && s.lp[i + 1] >= s.l + s.vw))	s.cols.push(i);	}
+			for(var i = 0; i < _Table.r; i++){	if((s.tp[i] >= s.t && s.tp[i] <= (s.t + s.vh)) || (s.tp[i + 1] >= s.t && s.tp[i + 1] <= (s.t + s.vh)) || (s.tp[i] <= s.t && s.tp[i + 1] >= s.t + s.vh))	s.rows.push(i); }
 
 			s.rows.forEach(function(i){
 				s.cols.forEach(function(j){
-					if(!iTop.branches[j].visible || !iSide.branches[i].visible)		return;
-					var back = 2, cell = iTable.cells[i][j];
-					if(select.shift && i == select.shift1st[1] && j == select.shift1st[0]){
+					if(!_Top.branches[j].visible || !_Side.branches[i].visible)		return;
+					var back = 2, cell = _Table.cells[i][j];
+					if(select.shift && i == select.shift1st.i && j == select.shift1st.j){
 						c.fillStyle = '#465360';
-						c.fillRect( (s.lp[j] - s.l - 1), (s.tp[i] - s.t - 1), iTop.branches[j].w + 1, iSide.branches[i].h + 1);
+						c.fillRect( (s.lp[j] - s.l - 1), (s.tp[i] - s.t - 1), _Top.branches[j].w + 1, _Side.branches[i].h + 1);
 					}
 
-					if(iTable.cells[i][j].hover)		back = 0;
-					else if(iTable.cells[i][j].select)	back = 1;
+					if(_Table.cells[i][j].hover)		back = 0;
+					else if(_Table.cells[i][j].select)	back = 1;
 					else 								back = 2;
 					
 					for(var k = 0; k < cell.visual.length; k++){
 						c.fillStyle = defaultBack.table[back][cell.visual[k].type];
-						c.fillRect( (s.lp[j] - s.l), (s.tp[i] - s.t + cell.height*k), iTop.branches[j].w - 1, cell.height);
+						c.fillRect( (s.lp[j] - s.l), (s.tp[i] - s.t + cell.height*k), _Top.branches[j].w - 1, cell.height);
 						c.fillStyle = '#000';
 						c.fillText(cell.visual[k].text, (s.lp[j + 1] - s.l - 4), (s.tp[i] - s.t + cell.height*k + 3 ));
 					}
@@ -1249,11 +1319,11 @@ function table_ui(options){
 			c.fillStyle = '#555';
 
 			s.rows.forEach(function(i){			
-				if(!iSide.branches[i].visible)		drawDashLine(c, '#555', '#fff', 0, s.tp[i + 1] - 0.5 - s.t, (s.vw > s.lp.last()) ? s.lp.last() : s.vw, s.tp[i + 1] - 0.5 - s.t);	
-				else if(iSide.branches[i].line)		c.fillRect(0, s.tp[i + 1] - 1 - s.t, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), 1);			});
+				if(!_Side.branches[i].visible)		drawDashLine(c, '#555', '#fff', 0, s.tp[i + 1] - 0.5 - s.t, (s.vw > s.lp.last()) ? s.lp.last() : s.vw, s.tp[i + 1] - 0.5 - s.t);	
+				else if(_Side.branches[i].line)		c.fillRect(0, s.tp[i + 1] - 1 - s.t, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), 1);			});
 			s.cols.forEach(function(i){
-				if(!iTop.branches[i].visible)		drawDashLine(c, '#555', '#fff', s.lp[i + 1] - 0.5 - s.l, 0, s.lp[i + 1] - 0.5 - s.l, (s.vh > s.tp.last()) ? s.tp.last() : s.vh);
-				else if(iTop.branches[i].line)		c.fillRect(s.lp[i + 1] - 1 - s.l, 0, 1, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh)); 			});
+				if(!_Top.branches[i].visible)		drawDashLine(c, '#555', '#fff', s.lp[i + 1] - 0.5 - s.l, 0, s.lp[i + 1] - 0.5 - s.l, (s.vh > s.tp.last()) ? s.tp.last() : s.vh);
+				else if(_Top.branches[i].line)		c.fillRect(s.lp[i + 1] - 1 - s.l, 0, 1, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh)); 			});
 
 			c.fillStyle = '#F1F1F1';				c.fillRect(0, s.vh, s.vw + 18, 18);	c.fillRect(s.vw, 0, 18, s.vh);
 			c.fillStyle = '#aaa'
@@ -1295,23 +1365,23 @@ function table_ui(options){
 		}
 
 		this.top = function(){
-			var c = iTop.ctx;
-			var back = (select.click == iTop) ? defaultBack.headers[0] : defaultBack.headers[1];
+			var c = _Top.ctx;
+			var back = (select.click == _Top) ? defaultBack.headers[0] : defaultBack.headers[1];
 
 			c.fillStyle = '#f1f1f1';			c.fillRect(0, 0, s.vw, s.y); // clear canvas
-			c.fillStyle = '#555';				c.fillRect(0, 0, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), iTop.tp.last()); // set background borders
+			c.fillStyle = '#555';				c.fillRect(0, 0, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), _Top.tp.last()); // set background borders
 
-			s.cols.forEach( function(j){		for(var i = 0; i < iTop.r; i++)		iTop.visual[i][j].displayed = false;	});
+			s.cols.forEach( function(j){		for(var i = 0; i < _Top.r; i++)		_Top.visual[i][j].displayed = false;	});
 
 			c.textBaseline = "middle";
 			c.textAlign = "center";
-			c.font = size.ttext + "px " + size.font;
+			c.font = size.text + "px " + size.font;
 
-			s.cols.forEach( function(j){		for(var i = 0; i < iTop.r; i++) { 
-				var cell = iTop.visual[i][j];
+			s.cols.forEach( function(j){		for(var i = 0; i < _Top.r; i++) { 
+				var cell = _Top.visual[i][j];
 				if(cell.displayed) continue;
 				if(!cell.visible){
-					drawDashLine(c, '#000', '#f1f1f1', s.lp[cell.j.last() + 1] - 0.5 - s.l, iTop.tp[cell.i[0]], s.lp[cell.j.last() + 1] - 0.5 - s.l, iTop.tp[cell.i.last() + 1]  );
+					drawDashLine(c, '#000', '#f1f1f1', s.lp[cell.j.last() + 1] - 0.5 - s.l, _Top.tp[cell.i[0]], s.lp[cell.j.last() + 1] - 0.5 - s.l, _Top.tp[cell.i.last() + 1]  );
 					continue;
 				}
 				cell.displayed = true;
@@ -1320,20 +1390,20 @@ function table_ui(options){
 				else if(cell.select)	c.fillStyle = back[1];
 				else					c.fillStyle = back[2];
 
-				c.fillRect( (s.lp[cell.j[0]] - s.l), iTop.tp[cell.i[0]], cell.width - 1, cell.height - 1 );
+				c.fillRect( (s.lp[cell.j[0]] - s.l), _Top.tp[cell.i[0]], cell.width - 1, cell.height - 1 );
 				c.fillStyle = '#000';	
 
 				if(s.lp[cell.j[0]] + cell.width/2 - cell.textArray[0].width < s.l){
-					if((s.lp[cell.j[0]] + cell.width - cell.textArray[0].width*2) > s.l )	c.fillText(cell.textArray[0].text, (cell.textArray[0].width), iTop.tp[cell.i[0]] + cell.textArray[0].position);
-					else																	c.fillText(cell.textArray[0].text, (s.lp[cell.j[0]] + cell.width - s.l - cell.textArray[0].width), iTop.tp[cell.i[0]] + cell.textArray[0].position);
+					if((s.lp[cell.j[0]] + cell.width - cell.textArray[0].width*2) > s.l )	c.fillText(cell.textArray[0].text, (cell.textArray[0].width), _Top.tp[cell.i[0]] + cell.textArray[0].position);
+					else																	c.fillText(cell.textArray[0].text, (s.lp[cell.j[0]] + cell.width - s.l - cell.textArray[0].width), _Top.tp[cell.i[0]] + cell.textArray[0].position);
 				} else if((s.lp[cell.j[0]] + cell.width/2 + cell.textArray[0].width) > (s.l + s.vw)){
-					if((s.lp[cell.j[0]] + cell.textArray[0].width*2) > (s.l + s.vw))		c.fillText(cell.textArray[0].text, (s.lp[cell.j[0]] - s.l + cell.textArray[0].width), iTop.tp[cell.i[0]] + cell.textArray[0].position);
-					else																	c.fillText(cell.textArray[0].text, (s.vw - cell.textArray[0].width), iTop.tp[cell.i[0]] + cell.textArray[0].position);
+					if((s.lp[cell.j[0]] + cell.textArray[0].width*2) > (s.l + s.vw))		c.fillText(cell.textArray[0].text, (s.lp[cell.j[0]] - s.l + cell.textArray[0].width), _Top.tp[cell.i[0]] + cell.textArray[0].position);
+					else																	c.fillText(cell.textArray[0].text, (s.vw - cell.textArray[0].width), _Top.tp[cell.i[0]] + cell.textArray[0].position);
 				} else	{
-					if(cell != sort.top.cell){	cell.textArray.forEach( function(item){ 	c.fillText(item.text,((s.lp[cell.j[0]] - s.l) + cell.width/2), iTop.tp[cell.i[0]] + item.position); } );
-					} else {					cell.textArray.forEach( function(item){		c.fillText(item.text,((s.lp[cell.j[0]] - s.l) + cell.width/2 - 5), iTop.tp[cell.i[0]] + item.position); } );
+					if(cell != sort.top.cell){	cell.textArray.forEach( function(item){ 	c.fillText(item.text,((s.lp[cell.j[0]] - s.l) + cell.width/2), _Top.tp[cell.i[0]] + item.position); } );
+					} else {					cell.textArray.forEach( function(item){		c.fillText(item.text,((s.lp[cell.j[0]] - s.l) + cell.width/2 - 5), _Top.tp[cell.i[0]] + item.position); } );
 
-						var y = iTop.tp[cell.i[0]] + Math.round(cell.height/2),	x = s.lp[cell.j.last() + 1] - s.l - 6;
+						var y = _Top.tp[cell.i[0]] + Math.round(cell.height/2),	x = s.lp[cell.j.last() + 1] - s.l - 6;
 
 						if(sort.top.direction)		drawCircuit(c, defaultBack.sort[(sort.top.type == 0 && cell.base) ? 3 : sort.top.type], [ [ x - 4, y - 3], [ x, y + 3], [ x + 4, y - 3] ]);
 						else						drawCircuit(c, defaultBack.sort[(sort.top.type == 0 && cell.base) ? 3 : sort.top.type], [ [ x - 4, y + 3], [ x, y - 3], [ x + 4, y + 3] ]);
@@ -1345,22 +1415,22 @@ function table_ui(options){
 		}
 
 		this.side = function(){
-			var c = iSide.ctx;
-			var back = (select.click == iSide) ? defaultBack.headers[0] : defaultBack.headers[1];
+			var c = _Side.ctx;
+			var back = (select.click == _Side) ? defaultBack.headers[0] : defaultBack.headers[1];
 
 			c.fillStyle = '#f1f1f1';			c.fillRect(0, 0, s.x, s.vh); // clear canvas
-			c.fillStyle = '#555';				c.fillRect(0, 0, iSide.lp.last(), ((s.vh > s.tp.last()) ? s.tp.last() : s.vh) ); // set background borders
+			c.fillStyle = '#555';				c.fillRect(0, 0, _Side.lp.last(), ((s.vh > s.tp.last()) ? s.tp.last() : s.vh) ); // set background borders
 
-			s.rows.forEach( function(j){		for(var i = 0; i < iSide.c; i++)			iSide.visual[j][i].displayed = false;	});
+			s.rows.forEach( function(j){		for(var i = 0; i < _Side.c; i++)			_Side.visual[j][i].displayed = false;	});
 			c.textBaseline = "middle";
 			c.textAlign = "left";
-			c.font = size.ttext + "px " + size.font;
+			c.font = size.text + "px " + size.font;
 
-			s.rows.forEach( function(i){		for(var j = 0; j < iSide.c; j++) {
-				var cell = iSide.visual[i][j];
+			s.rows.forEach( function(i){		for(var j = 0; j < _Side.c; j++) {
+				var cell = _Side.visual[i][j];
 				if(cell.displayed) continue;
 				if(!cell.visible){
-					drawDashLine(c, '#000', '#f1f1f1', iSide.lp[cell.j[0]], s.tp[cell.i.last() + 1] - 0.5 - s.t, iSide.lp[cell.j.last() + 1], s.tp[cell.i.last() + 1] - 0.5 - s.t );
+					drawDashLine(c, '#000', '#f1f1f1', _Side.lp[cell.j[0]], s.tp[cell.i.last() + 1] - 0.5 - s.t, _Side.lp[cell.j.last() + 1], s.tp[cell.i.last() + 1] - 0.5 - s.t );
 					continue;
 				}
 				cell.displayed = true;
@@ -1369,12 +1439,12 @@ function table_ui(options){
 				else if(cell.select)	c.fillStyle = back[1];
 				else					c.fillStyle = back[2];
 
-				c.fillRect( (iSide.lp[cell.j[0]]), (s.tp[cell.i[0]] - s.t), cell.width - 1, cell.height - 1 );
+				c.fillRect( (_Side.lp[cell.j[0]]), (s.tp[cell.i[0]] - s.t), cell.width - 1, cell.height - 1 );
 				c.fillStyle = '#000';	
-				if(cell.j.last() + 1 == iSide.c){
-					cell.textArray.forEach( function(item){ c.fillText(item.text, iSide.lp[cell.j[0]] + 2, (s.tp[cell.i[0]] - s.t) + item.position); } );
+				if(cell.j.last() + 1 == _Side.c){
+					cell.textArray.forEach( function(item){ c.fillText(item.text, _Side.lp[cell.j[0]] + 2, (s.tp[cell.i[0]] - s.t) + item.position); } );
 					if(cell == sort.side.cell){
-						var x = iSide.lp[cell.j.last() + 1] - 9, y = s.tp[cell.i[0]] + Math.round(cell.height/2) - s.t;
+						var x = _Side.lp[cell.j.last() + 1] - 9, y = s.tp[cell.i[0]] + Math.round(cell.height/2) - s.t;
 
 						if(sort.side.direction)		drawCircuit(c, defaultBack.sort[type = (sort.side.type == 0 && cell.base) ? 3 : sort.side.type], [ [ x, y - 5], [ x + 6, y], [ x, y + 5] ]);
 						else						drawCircuit(c, defaultBack.sort[type = (sort.side.type == 0 && cell.base) ? 3 : sort.side.type], [ [ x + 6, y - 5], [ x, y], [ x + 6, y + 5] ]);
@@ -1382,38 +1452,38 @@ function table_ui(options){
 				}
 			}});
 
-			s.rows.forEach( function(j){			for(var i = 0; i < iSide.c; i++){	if(iSide.visual[j][i].j.last() != (iSide.c - 1) ) iSide.visual[j][i].displayed = false;	}});
+			s.rows.forEach( function(j){			for(var i = 0; i < _Side.c; i++){	if(_Side.visual[j][i].j.last() != (_Side.c - 1) ) _Side.visual[j][i].displayed = false;	}});
 			c.fillStyle = '#000';					c.textAlign = "center";
 		
 			if(!setting.orientation){
 				c.rotate(Math.PI*3/2);
-				s.rows.forEach( function(i){ 		for(var j = 0; j < iSide.c-1; j++) {
-					var cell = iSide.visual[i][j];
+				s.rows.forEach( function(i){ 		for(var j = 0; j < _Side.c-1; j++) {
+					var cell = _Side.visual[i][j];
 					if(!cell.visible || cell.displayed) continue;
 					else cell.displayed = true;	
 
 					if(s.tp[cell.i[0]] + cell.height/2 - cell.textArray[0].width < s.t){
-						if((s.tp[cell.i[0]] + cell.height - cell.textArray[0].width*2) > s.t )	cell.textArray.forEach( function(item){ c.fillText(item.text, -(cell.textArray[0].width), (iSide.lp[cell.j[0]] + 2  + item.position)); } );	
-						else																	cell.textArray.forEach( function(item){ c.fillText(item.text, -(s.tp[cell.i[0]] - s.t + cell.height - cell.textArray[0].width), (iSide.lp[cell.j[0]] + 2  + item.position)); } );
+						if((s.tp[cell.i[0]] + cell.height - cell.textArray[0].width*2) > s.t )	cell.textArray.forEach( function(item){ c.fillText(item.text, -(cell.textArray[0].width), (_Side.lp[cell.j[0]] + 2  + item.position)); } );	
+						else																	cell.textArray.forEach( function(item){ c.fillText(item.text, -(s.tp[cell.i[0]] - s.t + cell.height - cell.textArray[0].width), (_Side.lp[cell.j[0]] + 2  + item.position)); } );
 					} else if((s.tp[cell.i[0]] + cell.height/2 + cell.textArray[0].width) > (s.t + s.vh)){
-						if((s.tp[cell.i[0]] + cell.textArray[0].width*2) > (s.t + s.vh))		cell.textArray.forEach( function(item){ c.fillText(item.text, -(s.tp[cell.i[0]] - s.t + cell.textArray[0].width), (iSide.lp[cell.j[0]] + 2  + item.position)); } );
-						else																	cell.textArray.forEach( function(item){ c.fillText(item.text, -(s.vh - cell.textArray[0].width), (iSide.lp[cell.j[0]] + 2  + item.position)); } );
-					} else																		cell.textArray.forEach( function(item){ c.fillText(item.text, -(s.tp[cell.i[0]] - s.t + cell.height/2), (iSide.lp[cell.j[0]] + 2  + item.position)); } );	
+						if((s.tp[cell.i[0]] + cell.textArray[0].width*2) > (s.t + s.vh))		cell.textArray.forEach( function(item){ c.fillText(item.text, -(s.tp[cell.i[0]] - s.t + cell.textArray[0].width), (_Side.lp[cell.j[0]] + 2  + item.position)); } );
+						else																	cell.textArray.forEach( function(item){ c.fillText(item.text, -(s.vh - cell.textArray[0].width), (_Side.lp[cell.j[0]] + 2  + item.position)); } );
+					} else																		cell.textArray.forEach( function(item){ c.fillText(item.text, -(s.tp[cell.i[0]] - s.t + cell.height/2), (_Side.lp[cell.j[0]] + 2  + item.position)); } );	
 				}});
 				c.rotate(Math.PI*1/2);
 			} else {
-				s.rows.forEach( function(i){ 		for(var j = 0; j < iSide.c-1; j++) {
-					var cell = iSide.visual[i][j];
+				s.rows.forEach( function(i){ 		for(var j = 0; j < _Side.c-1; j++) {
+					var cell = _Side.visual[i][j];
 					if(!cell.visible || cell.displayed) continue;
 					else cell.displayed = true;
 
-					if((cell.height - size.ttext*cell.textArray.length)/2 + display.s.tp[cell.i[0]] - 2 < s.t){
-						if(display.s.tp[cell.i[0]] + cell.height  - size.ttext*cell.textArray.length - 2 > s.t )	cell.textArray.forEach( function(item, k){ c.fillText(item.text, cell.width/2 + iSide.lp[cell.j[0]], (k + 0.5)*size.ttext + 2 ); } );	
-						else																						cell.textArray.forEach( function(item, k){ c.fillText(item.text, cell.width/2 + iSide.lp[cell.j[0]], display.s.tp[cell.i[0]] + cell.height  - size.ttext*cell.textArray.length - 2 + (k + 0.5)*size.ttext - display.s.t - 2 ); } );
-					} else if((cell.height + size.ttext*cell.textArray.length)/2 + display.s.tp[cell.i[0]] + 2 > (s.t + s.vh)){
-						if(display.s.tp[cell.i[0]] + size.ttext*cell.textArray.length + 2 > (s.t + s.vh))			cell.textArray.forEach( function(item, k){ c.fillText(item.text, cell.width/2 + iSide.lp[cell.j[0]], display.s.tp[cell.i[0]] - display.s.t + (k + 0.5)*size.ttext + 2 ); } );	
-						else																						cell.textArray.forEach( function(item, k){ c.fillText(item.text, cell.width/2 + iSide.lp[cell.j[0]], s.vh - size.ttext*cell.textArray.length + (k + 0.5)*size.ttext - 2 ); } );	
-					} else																							cell.textArray.forEach( function(item, k){ c.fillText(item.text, cell.width/2 + iSide.lp[cell.j[0]], (cell.height - size.ttext*cell.textArray.length)/2 + display.s.tp[cell.i[0]] - 2 + (k + 0.5)*size.ttext - display.s.t ); } );	
+					if((cell.height - size.text*cell.textArray.length)/2 + display.s.tp[cell.i[0]] - 2 < s.t){
+						if(display.s.tp[cell.i[0]] + cell.height  - size.text*cell.textArray.length - 2 > s.t )	cell.textArray.forEach( function(item, k){ c.fillText(item.text, cell.width/2 + _Side.lp[cell.j[0]], (k + 0.5)*size.text + 2 ); } );	
+						else																						cell.textArray.forEach( function(item, k){ c.fillText(item.text, cell.width/2 + _Side.lp[cell.j[0]], display.s.tp[cell.i[0]] + cell.height  - size.text*cell.textArray.length - 2 + (k + 0.5)*size.text - display.s.t - 2 ); } );
+					} else if((cell.height + size.text*cell.textArray.length)/2 + display.s.tp[cell.i[0]] + 2 > (s.t + s.vh)){
+						if(display.s.tp[cell.i[0]] + size.text*cell.textArray.length + 2 > (s.t + s.vh))			cell.textArray.forEach( function(item, k){ c.fillText(item.text, cell.width/2 + _Side.lp[cell.j[0]], display.s.tp[cell.i[0]] - display.s.t + (k + 0.5)*size.text + 2 ); } );	
+						else																						cell.textArray.forEach( function(item, k){ c.fillText(item.text, cell.width/2 + _Side.lp[cell.j[0]], s.vh - size.text*cell.textArray.length + (k + 0.5)*size.text - 2 ); } );	
+					} else																							cell.textArray.forEach( function(item, k){ c.fillText(item.text, cell.width/2 + _Side.lp[cell.j[0]], (cell.height - size.text*cell.textArray.length)/2 + display.s.tp[cell.i[0]] - 2 + (k + 0.5)*size.text - display.s.t ); } );	
 				}});
 			}
 			c.fillStyle = '#f1f1f1';		c.fillRect( 0, s.vh, s.x, 18 );
@@ -1444,8 +1514,8 @@ function table_ui(options){
 		var timer;
 
 		this.hdown = function(e, coord){
-			var x = set.scale(e.pageX - coord.left);
-			var y = set.scale(e.pageY - coord.top);
+			var x = get.scaleM(e.pageX - coord.left);
+			var y = get.scaleM(e.pageY - coord.top);
 
 			if( x > scroll.h.l && x < (scroll.h.l + scroll.h.w) && (scroll.h.t - 2) < y  ){
 				s = {e: e, ne: e, c: coord, l: display.s.l};
@@ -1462,7 +1532,7 @@ function table_ui(options){
 		}
 		function move(e){		s.ne = e;		}
 		function hredrow(){ // horizontal redrow 
-			display.s.l = Math.round(s.l + (((set.scale(s.ne.pageX - s.e.pageX))/(display.s.vw - 36)) * display.s.lp.last()));
+			display.s.l = Math.round(s.l + (((get.scaleM(s.ne.pageX - s.e.pageX))/(display.s.vw - 36)) * display.s.lp.last()));
 			display.table();
 			display.top();
 			timer = setTimeout(hredrow, 5);
@@ -1475,8 +1545,8 @@ function table_ui(options){
 		}
 
 		this.vdown = function(e, coord){
-			var x = set.scale(e.pageX - coord.left);
-			var y = set.scale(e.pageY - coord.top);
+			var x = get.scaleM(e.pageX - coord.left);
+			var y = get.scaleM(e.pageY - coord.top);
 
 			if( x > (scroll.v.l - 2) && scroll.v.t < y && (scroll.v.t + scroll.v.h) > y ){
 				s = {e: e, ne: e, c: coord, t: display.s.t};
@@ -1493,7 +1563,7 @@ function table_ui(options){
 			else				scroll.pageScroll( 0, 1 );
 		}
 		function vredrow(e){
-			display.s.t = Math.round(s.t + (((set.scale(s.ne.pageY - s.e.pageY))/(display.s.vh - 36)) * display.s.tp.last()));
+			display.s.t = Math.round(s.t + (((get.scaleM(s.ne.pageY - s.e.pageY))/(display.s.vh - 36)) * display.s.tp.last()));
 			display.table();
 			display.side();
 			timer = setTimeout(vredrow, 5);
@@ -1576,179 +1646,149 @@ function table_ui(options){
 
 		this.cTable = new function(){
 			this.down = function(e){
-				var start;
-				if(e.shiftKey && select.shift1st)	start = select.shift1st;
-				else 								start = getLocate(e);
-				s = {e: e, start: start };
+				s = {e: e };
+				if(e.shiftKey && select.shift1st)	s.start = select.shift1st;
+				else 								s.start = get.position.table(e);
 
 				if(!e.ctrlKey)				select.clearAll();
-				select.click = iTable;		hover();
+				
+				select.click = _Table;
+				hover();
 	
 				window.addEventListener("mousemove", move);
 				window.addEventListener("mouseup", up);
 			}
 			function hover(){
-				hscroll(s.e); 					vscroll(s.e);				 s.end = getLocate(s.e);
+				hscroll(s.e);
+				vscroll(s.e);
 
-				var l = (s.start[0] > s.end[0]) ? s.end[0] : s.start[0],	t = (s.start[1] > s.end[1]) ? s.end[1] : s.start[1];
-				var r = (s.start[0] < s.end[0]) ? s.end[0] : s.start[0],	b = (s.start[1] < s.end[1]) ? s.end[1] : s.start[1];
-	
-				select.hover.table(l, r, t, b);	select.hover.side(iSide.c - 1, iSide.c - 1, t, b );			select.hover.top(l, r, iTop.r - 1, iTop.r - 1 );
-				display.all();					timer = setTimeout(hover, 5);
+				s.end = get.position.table(s.e);
+				var p = get.sortedPosition.table(s.start, s.end);
+
+				select.hover.table(  p.l,  p.r,  p.t,  p.b);
+				select.hover.side(_Side.c - 1, _Side.c - 1,  p.t,  p.b );
+				select.hover.top(  p.l,  p.r, _Top.r - 1, _Top.r - 1 );
+
+				display.all();
+				timer = setTimeout(hover, 5);
 			}
 			function up(e){
 				clearTimeout(timer);			timer = undefined;
 
 				select.shift1st = s.start;		select.shift2nd = s.end;
-				var l = (s.start[0] > s.end[0]) ? s.end[0] : s.start[0],	t = (s.start[1] > s.end[1]) ? s.end[1] : s.start[1];
-				var r = (s.start[0] < s.end[0]) ? s.end[0] : s.start[0],	b = (s.start[1] < s.end[1]) ? s.end[1] : s.start[1];
-	
-				select.select.clearHeaders();	select.select.table(l, r, t, b);	select.select.headers();
-				select.hover.clear();			display.all();
-	
+				var p = get.sortedPosition.table(s.start, s.end);
+
+				select.selectTable(  p.t,  p.b,  p.l,  p.r, true);
+				display.all();
 				window.removeEventListener("mousemove", move);
 				window.removeEventListener("mouseup", up);
-				if(functions.afterSelect)		functions.afterSelect(link);
-			}
-			function getLocate(e){
-				var x = set.scale(e.pageX + display.s.l - iTable.coords.left);
-				var y = set.scale(e.pageY + display.s.t - iTable.coords.top);
-
-				var couple = [display.s.cols[0], display.s.rows[0]];
-				display.s.cols.forEach(	function(i){	if( display.s.lp[i] <= x)	couple[0] = i;	});
-				display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y)	couple[1] = i;	});
-				return couple;
 			}
 		}
 		this.cSide = new function(){
 			this.down = function(e){
-				s = {e: e, start: getLocate(e) };
-				s.sort = (iSide.visual[s.start[1]][s.start[0]].select && select.side.length == 1 && select.click == iSide) ? true : false;
+				s = {e: e, start: get.position.side(e) };
+				s.sort = (_Side.visual[s.start.i][s.start.j].select && select.side.length == 1 && select.click == _Side) ? true : false;
+				
 				if(!e.ctrlKey)				select.clearAll();
-				select.click = iSide;		hover();
+				
+				select.click = _Side;
+				hover();
 	
 				window.addEventListener("mousemove", move);
 				window.addEventListener("mouseup", up);
 			}
 			function hover(){
-				hscroll(s.e);				s.end = getLocate(s.e);
-	
-				var c = (s.end[0] > s.start[0]) ? s.start[0] : s.end[0];	var st = iSide.visual[s.start[1]][c], ed = iSide.visual[s.end[1]][c];
-				var t = (st.i[0] > ed.i[0]) ? ed.i[0] : st.i[0],
-					b = (st.i.last() < ed.i.last()) ? ed.i.last() : st.i.last();
-	
-				select.hover.table(0, iTable.c - 1, t, b);					select.hover.side(c, iSide.c - 1, t, b );			select.hover.top(0, iTable.c - 1, iTop.r - 1, iTop.r - 1 );
-				display.all();												timer = setTimeout(hover, 5);			
+				hscroll(s.e);
+				s.end = get.position.side(s.e);
+				var p = get.sortedPosition.side( s.start, s.end);
+
+				select.hover.table(  0, _Table.c - 1,  p.t, p.b);
+				select.hover.side(  p.l,  p.r,  p.t, p.b );
+				select.hover.top(0, _Table.c - 1, _Top.r - 1, _Top.r - 1 );
+				display.all();
+
+				timer = setTimeout(hover, 5);			
 			}
 			function up(e){
-				clearTimeout(timer);					timer = undefined;
-
-				var c = (s.end[0] > s.start[0]) ? s.start[0] : s.end[0];	var st = iSide.visual[s.start[1]][c];				var ed = iSide.visual[s.end[1]][c];
-				var t = (st.i[0] > ed.i[0]) ? ed.i[0] : st.i[0];			var b = (st.i.last() < ed.i.last()) ? ed.i.last() : st.i.last();
+				clearTimeout(timer);
+				timer = undefined;
+				var p = get.sortedPosition.side( s.start, s.end);
 	
-				select.shift1st = [t, 0];				select.shift2nd = [b, iTable.c - 1];
+				select.shift1st = { i: p.t, j: 0 };
+				select.shift2nd = { i: p.b, j: _Table.c - 1};
 
-				select.select.clearHeaders();			select.select.table(0, iTable.c - 1, t, b);
-				if(e.ctrlKey)							select.select.headers();
-				else {
-					select.select.header(c, iSide.c - 1, t, b, iSide, select.side );
-					select.select.header(0, iTable.c - 1, iTop.r - 1, iTop.r - 1, iTop, select.top );
-				}
-				select.hover.clear();
-				if(s.start[0] == s.end[0] && s.start[1] == s.end[1] && s.start[0] == (iSide.c - 1) && setting.sort && s.sort ) sort.sdown(iSide.visual[s.start[1]][s.start[0]], e);
-				else									display.all(); 
+				select.selectSide(  p.t,  p.b,  p.l,  p.r,  e.ctrlKey);
+
+				if(s.start.i == s.end.i && s.start.j == s.end.j && s.start.j == (_Side.c - 1) && setting.sort && s.sort )
+					sort.sdown(_Side.visual[s.start.i][s.start.j], e);
+				else
+					display.all(); 
+				
 				s = {};
-
 				window.removeEventListener("mousemove", move);
 				window.removeEventListener("mouseup", up);
-				if(functions.afterSelect)		functions.afterSelect(link);
-			}
-			function getLocate(e){
-				var x = set.scale(e.pageX - iSide.coords.left);
-				var y = set.scale(e.pageY + display.s.t - iSide.coords.top);
-				var couple = [0, display.s.rows[0]];
-
-				for(var i = 0; i < iSide.c; i++){		if( iSide.lp[i] <= x)										couple[0] = i;	}
-				display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y && iSide.branches[i].visible)		couple[1] = i;	});
-				return couple;
 			}
 		}
 		this.cTop = new function(){
 			this.down = function(e){
-				s = {e: e, start: getLocate(e) };
-				s.sort = (iTop.visual[s.start[1]][s.start[0]].select && select.top.length == 1 && select.click == iTop) ? true : false;
+				s = {e: e, start: get.position.top(e) };
+				s.sort = (_Top.visual[s.start.i][s.start.j].select && select.top.length == 1 && select.click == _Top) ? true : false;
+			
 				if(!e.ctrlKey)				select.clearAll();
-				select.click = iTop;		hover();
+
+				select.click = _Top;
+				hover();
 	
 				window.addEventListener("mousemove", move);
 				window.addEventListener("mouseup", up);
 			}
 			function hover(){
-				vscroll(s.e); s.end = getLocate(s.e);
-	
-				var c = (s.end[1] > s.start[1]) ? s.start[1] : s.end[1];	var st = iTop.visual[c][s.start[0]], ed = iTop.visual[c][s.end[0]];
-				var l = (st.j[0] > ed.j[0]) ? ed.j[0] : st.j[0],
-					r = (st.j.last() < ed.j.last()) ? ed.j.last() : st.j.last();
-	
-				select.hover.table(l, r, 0, iTable.r - 1);					select.hover.top(l, r, c, iTop.r - 1 );					select.hover.side(iSide.c - 1, iSide.c - 1,  0, iTable.r - 1 );
-				display.all();												timer = setTimeout(hover, 5);
+				vscroll(s.e);
+				s.end = get.position.top(s.e);
+				var p = get.sortedPosition.top(s.start, s.end);
+
+				select.hover.table(  p.l,  p.r, 0, _Table.r - 1);
+				select.hover.top(  p.l,  p.r,  p.t,  p.b);	
+				select.hover.side(_Side.c - 1, _Side.c - 1,  0, _Table.r - 1 );
+				display.all();
+
+				timer = setTimeout(hover, 5);
 			}
 			function up(e){
-				clearTimeout(timer);				timer = undefined;
+				clearTimeout(timer);
+				timer = undefined;
+				var p = get.sortedPosition.top(s.start, s.end);
 
-				var c = (s.end[1] > s.start[1]) ? s.start[1] : s.end[1];	var st = iTop.visual[c][s.start[0]], ed = iTop.visual[c][s.end[0]];
-				var l = (st.j[0] > ed.j[0]) ? ed.j[0] : st.j[0],
-					r = (st.j.last() < ed.j.last()) ? ed.j.last() : st.j.last();
-
-				select.shift1st = [0, l];			select.shift2nd = [iTable.r - 1, r];
+				select.shift1st = [0, p.l];
+				select.shift2nd = [_Table.r - 1, p.r];
 	
-				select.select.clearHeaders();		select.select.table( l, r, 0, iTable.r - 1);
-				if(e.ctrlKey)						select.select.headers();
-				else {
-					select.select.header(iSide.c - 1, iSide.c - 1,  0, iTable.r - 1, iSide, select.side );
-					select.select.header(l, r, c, iTop.r - 1, iTop, select.top );
-				}
-				select.hover.clear();
-				if(s.start[0] == s.end[0] && s.start[1] == s.end[1] && s.start[1] == (iTop.r - 1) && setting.sort && s.sort ) sort.tdown(iTop.visual[s.start[1]][s.start[0]], e);			
-				else								display.all();
+				select.selectTop(  p.t,  p.b,  p.l,  p.r, e.ctrlKey );
+
+				if(s.start.j == s.end.j && s.start.i == s.end.i && s.start.i == (_Top.r - 1) && setting.sort && s.sort )
+					sort.tdown(_Top.visual[s.start.i][s.start.j], e);			
+				else
+					display.all();
 				s = {};
 
 				window.removeEventListener("mousemove", move);
 				window.removeEventListener("mouseup", up);
-				if(functions.afterSelect)		functions.afterSelect(link);
-			}
-			function getLocate(e){
-				var x = set.scale(e.pageX + display.s.l - iTop.coords.left);
-				var y = set.scale(e.pageY - iTop.coords.top);
-				var couple = [display.s.cols[0], 0];
-				display.s.cols.forEach(	function(i){	if( display.s.lp[i] <= x  && iTop.branches[i].visible)		couple[0] = i;	});
-				for(var i = 0; i < iTop.r; i++){		if( iTop.tp[i] <= y )										couple[1] = i;	}
-				return couple;
 			}
 		}
 		function move(e){ s.e = e; };
 
 		function vscroll(e){
-			if(iTable.coords.left <= e.pageX && (iTable.coords.left + 10) > e.pageX)
-				display.s.l += -10;
-			else if(iTable.coords.left > e.pageX)
-				display.s.l += -20;
+			if(_Table.coords.left <= e.pageX && (_Table.coords.left + 10) > e.pageX)			display.s.l += -10;
+			else if(_Table.coords.left > e.pageX)												display.s.l += -20;
 
-			if(iTable.coords.right - 18 >= e.pageX && (iTable.coords.right - 28) < e.pageX)
-				display.s.l += 10;
-			else if(iTable.coords.right - 18 < e.pageX)
-				display.s.l += 20;
+			if(_Table.coords.right - 18 >= e.pageX && (_Table.coords.right - 28) < e.pageX)		display.s.l += 10;
+			else if(_Table.coords.right - 18 < e.pageX)											display.s.l += 20;
 		}
 		function hscroll(e){
-			if(iTable.coords.top <= e.pageY && (iTable.coords.top + 10) > e.pageY)
-				display.s.t += -10;
-			else if(iTable.coords.top > e.pageY)
-				display.s.t += -20;
+			if(_Table.coords.top <= e.pageY && (_Table.coords.top + 10) > e.pageY)				display.s.t += -10;
+			else if(_Table.coords.top > e.pageY)												display.s.t += -20;
 
-			if(iTable.coords.bottom - 18 >= e.pageY && (iTable.coords.bottom - 28) < e.pageY)
-				display.s.t += 10;
-			else if(iTable.coords.bottom - 18 < e.pageY)
-				display.s.t += 20;
+			if(_Table.coords.bottom - 18 >= e.pageY && (_Table.coords.bottom - 28) < e.pageY)	display.s.t += 10;
+			else if(_Table.coords.bottom - 18 < e.pageY)										display.s.t += 20;
 		}
 		
 		this.hover = new function(){
@@ -1760,8 +1800,8 @@ function table_ui(options){
 				table.forEach(function(item){item.hover = undefined; });			table = [];	
 				for(var i = t; i <= b; i++ ){
 					for(var j = l; j <= r; j++){
-						iTable.cells[i][j].hover = true;
-						table.push(iTable.cells[i][j]);
+						_Table.cells[i][j].hover = true;
+						table.push(_Table.cells[i][j]);
 					}
 				}
 			}
@@ -1769,8 +1809,8 @@ function table_ui(options){
 				side.forEach(function(item){item.hover = undefined; });				side = [];	
 				for(var i = t; i <= b; i++ ){
 					for(var j = l; j <= r; j++){
-						iSide.visual[i][j].hover = true;
-						side.push(iSide.visual[i][j]);
+						_Side.visual[i][j].hover = true;
+						side.push(_Side.visual[i][j]);
 					}
 				}
 			}
@@ -1778,8 +1818,8 @@ function table_ui(options){
 				top.forEach(function(item){item.hover = undefined; });				top = [];	
 				for(var i = t; i <= b; i++ ){
 					for(var j = l; j <= r; j++){
-						iTop.visual[i][j].hover = true;
-						top.push(iTop.visual[i][j]);
+						_Top.visual[i][j].hover = true;
+						top.push(_Top.visual[i][j]);
 					}
 				}
 			}
@@ -1793,15 +1833,15 @@ function table_ui(options){
 			this.table = function(l, r, t, b){
 				for(var i = t; i <= b; i++ ){
 					for(var j = l; j <= r; j++){
-						if(iTop.branches[j].visible && iSide.branches[i].visible){
-							if(iTable.cells[i][j].select){
-								iTable.cells[i][j].select = false;
+						if(_Top.branches[j].visible && _Side.branches[i].visible){
+							if(_Table.cells[i][j].select){
+								_Table.cells[i][j].select = false;
 								for(var k = select.table.length - 1; k >= 0; k--){
-									if( iTable.cells[i][j] == select.table[k]) select.table.splice(k, 1);
+									if( _Table.cells[i][j] == select.table[k]) select.table.splice(k, 1);
 								}
 							} else {
-								iTable.cells[i][j].select = true;
-								select.table.push(iTable.cells[i][j]);
+								_Table.cells[i][j].select = true;
+								select.table.push(_Table.cells[i][j]);
 							}
 						}
 					}
@@ -1814,8 +1854,8 @@ function table_ui(options){
 			this.headers = function(){
 				select.table.forEach(function(item){
 					var i = item.i[0]; var j = item.j[0];
-					if(!iSide.branches[i].select){	iSide.branches[i].select = true; select.side.push(iSide.branches[i]); };
-					if(!iTop.branches[j].select){	iTop.branches[j].select = true; select.top.push(iTop.branches[j]); }
+					if(!_Side.branches[i].select){	_Side.branches[i].select = true; select.side.push(_Side.branches[i]); };
+					if(!_Top.branches[j].select){	_Top.branches[j].select = true; select.top.push(_Top.branches[j]); }
 				})
 			}
 			this.header = function(l, r, t, b, area, array){	
@@ -1827,13 +1867,62 @@ function table_ui(options){
 				}
 			}
 		}
+
+		this.selectTable = function( t, b, l, r, ctrl){
+			select.click = _Table;
+
+			if(!ctrl) select.clearAll();
+			select.select.clearHeaders();
+			select.select.table(l, r, t, b);
+			select.select.headers();
+			select.hover.clear()
+
+			if(functions.afterSelect)		functions.afterSelect(link);
+		}
+		this.selectSide = function( t, b, l, r, ctrl){
+			select.click = _Side;
+
+			if(!ctrl)	select.clearAll();
+			select.select.clearHeaders();
+			select.hover.clear();
+
+			select.select.table(0, _Table.c - 1, t, b);
+
+			if(ctrl)
+				select.select.headers();
+			else {
+				select.select.header(l, r, t, b, _Side, select.side );
+				select.select.header(0, _Table.c - 1, _Top.r - 1, _Top.r - 1, _Top, select.top );
+			}
+
+			if(functions.afterSelect)		functions.afterSelect(link);
+		}		
+		this.selectTop = function( t, b, l, r, ctrl){
+			select.click = _Top;
+
+			if(!ctrl) select.clearAll();
+			select.select.clearHeaders();
+			select.hover.clear();
+
+			select.select.table( l, r, 0, _Table.r - 1);
+
+			if(ctrl)
+				select.select.headers();
+			else {
+				select.select.header(_Side.c - 1, _Side.c - 1,  0, _Table.r - 1, _Side, select.side );
+				select.select.header(l, r, t, b, _Top, select.top );				
+			}
+
+			if(functions.afterSelect)		functions.afterSelect(link);				
+		}
+
 		this.selectAll = function(){
-			for(var i = 0; i < iTable.r; i++){	for(var j = 0; j < iTable.c; j++)	{if(!iTable.cells[i][j].select){	iTable.cells[i][j].select = true;	select.table.push(iTable.cells[i][j]); }}};
-			for(var i = 0; i < iTop.r; i++){	for(var j = 0; j < iTop.c; j++)		{if(!iTop.visual[i][j].select){		iTop.visual[i][j].select = true; 	select.top.push(iTop.visual[i][j]); }}};
-			for(var i = 0; i < iSide.r; i++){	for(var j = 0; j < iSide.c; j++)	{if(!iSide.visual[i][j].select){	iSide.visual[i][j].select = true;	select.side.push(iSide.visual[i][j]); }}};
+			for(var i = 0; i < _Table.r; i++){	for(var j = 0; j < _Table.c; j++)	{if(!_Table.cells[i][j].select){	_Table.cells[i][j].select = true;	select.table.push(_Table.cells[i][j]); }}};
+			for(var i = 0; i < _Top.r; i++){	for(var j = 0; j < _Top.c; j++)		{if(!_Top.visual[i][j].select){		_Top.visual[i][j].select = true; 	select.top.push(_Top.visual[i][j]); }}};
+			for(var i = 0; i < _Side.r; i++){	for(var j = 0; j < _Side.c; j++)	{if(!_Side.visual[i][j].select){	_Side.visual[i][j].select = true;	select.side.push(_Side.visual[i][j]); }}};
 		
-			select.shift1st = iTable.cells[0][0];
-			select.shift2nd = iTable.cells[iTable.r - 1][iTable.c - 1];
+			select.shift1st = _Table.cells[0][0];
+			select.shift2nd = _Table.cells[_Table.r - 1][_Table.c - 1];
 		}
 		this.clearAll = function(){
 			select.table.forEach(function(item){ item.select = false; });		select.table = [];
@@ -1846,70 +1935,91 @@ function table_ui(options){
 
 		this.side = {
 			down: function(e, cell, v, h){
-				var html = tools.createHTML({tag: 'div', parent: container, className: 'tau-resize', style: ('left: ' + iSide.lp[cell.j[0]] + 'px; top: ' + (display.s.y + display.s.tp[cell.i[0]] - display.s.t) + 'px; width: ' + (cell.width - 1) + 'px; height: ' + (cell.height - 1) + 'px;') });
+				var sCoords = get.screenCoord.side(display.s.tp[cell.i[0]], _Side.lp[cell.j[0]]);
+				var html = tools.createHTML({tag: 'div',
+											parent: container,
+											className: 'tau-resize',
+											style: ('left: ' + sCoords[1] + 'px; top: ' + sCoords[0] + 'px; width: ' + (get.scaleD(cell.width) - 1) + 'px; height: ' + (get.scaleD(cell.height) - 1) + 'px;') });
 	
 				s = {v: v, h: h, cell: cell, html: html, e: e };
 	
-				window.addEventListener("mousemove", move);					window.addEventListener("mouseup", resize.side.up);
+				window.addEventListener("mousemove", move);
+				window.addEventListener("mouseup", resize.side.up);
 			},
 			up: function(e){
 				tools.destroyHTML(s.html);
-				if(s.v && s.move){ 
-					if(s.cell.select && (s.cell.j.last() + 1 == iSide.c))	resize.side.select( s.cell.height + e.pageY - s.e.pageY);
-					else 													resize.side.height( s.cell.i, s.cell.height + e.pageY - s.e.pageY, s.cell.height );
+				if(s.v && s.move){
+					if(s.cell.select && (s.cell.j.last() + 1 == _Side.c))	resize.side.select( s.cell.height + differenceHeight(e, s.e));
+					else 													resize.side.height( s.cell.i, s.cell.height + differenceHeight(e, s.e), s.cell.height );
 				}
-				if(s.h && s.move)											resize.side.width( s.cell.j, s.cell.width + e.pageX - s.e.pageX, s.cell.width );
-				s = {};					remake.reDrow();					tools.endBackdrop();
+				if(s.h && s.move)											resize.side.width( s.cell.j, s.cell.width + differenceWidth(e, s.e), s.cell.width );
+
+				s = {};
+				remake.reDrow();
+				tools.endBackdrop();
 	
-				window.removeEventListener("mousemove", move);				window.removeEventListener("mouseup",  resize.side.up);
+				window.removeEventListener("mousemove", move);
+				window.removeEventListener("mouseup",  resize.side.up);
 				return;
 			},
-			width:	function(columns, width, oldWidth){	columns.forEach(function(i){ iSide.dw[i] = minWidth(iSide.dw[i]*width/oldWidth);});		},
-			height:	function(rows, height, oldHeight){	rows.forEach(function(i){ if(iSide.branches[i].visible) iSide.branches[i].dh = minHeight( iSide.branches[i].height*height/oldHeight );});	},
-			select:	function(height){					iSide.branches.forEach( function(item){ if(item.select) item.dh =  minHeight( height ); })},
+			width:	function(columns, width, oldWidth){	columns.forEach(function(i){ _Side.dw[i] = minWidth(_Side.dw[i]*width/oldWidth);});		},
+			height:	function(rows, height, oldHeight){	rows.forEach(function(i){ if(_Side.branches[i].visible) _Side.branches[i].dh = minHeight( _Side.branches[i].height*height/oldHeight );});	},
+			select:	function(height){					_Side.branches.forEach( function(item){ if(item.select) item.dh =  minHeight( height ); })},
 		}
 
 		this.top = {
 			down: function(e, cell, v, h){
-				var html = tools.createHTML({tag: 'div', parent: container, className: 'tau-resize', style: ('left: ' + (display.s.lp[cell.j[0]] - display.s.l + display.s.x) + 'px; top: ' + iTop.tp[cell.i[0]] + 'px; width: ' + (cell.width - 1) + 'px; height: ' + (cell.height - 1) + 'px;') });
+				var sCoords = get.screenCoord.top( _Top.tp[cell.i[0]], display.s.lp[cell.j[0]]);
+				var html = tools.createHTML({tag: 'div',
+											parent: container,
+											className: 'tau-resize',
+											style: ('left: ' + sCoords[1] + 'px; top: ' + sCoords[0] + 'px; width: ' + get.scaleD(cell.width - 1) + 'px; height: ' + get.scaleD(cell.height - 1) + 'px;') });
 	
 				s = {v: v, h: h, cell: cell, html: html, e: e};
-				window.addEventListener("mousemove", move);					window.addEventListener("mouseup", resize.top.up);
+				window.addEventListener("mousemove", move);
+				window.addEventListener("mouseup", resize.top.up);
 			},
 			up: function(e){
 				tools.destroyHTML(s.html);
 				if(s.h && s.move){
-					if(s.cell.select && (s.cell.i.last() + 1 == iTop.r))	resize.top.select( s.cell.width + e.pageX - s.e.pageX, s.cell.width);
-					else													resize.top.width( s.cell.j, s.cell.width + e.pageX - s.e.pageX, s.cell.width, s.cell.width);
+					if(s.cell.select && (s.cell.i.last() + 1 == _Top.r))	resize.top.select( s.cell.width + differenceWidth(e, s.e), s.cell.width);
+					else													resize.top.width( s.cell.j, s.cell.width + differenceWidth(e, s.e), s.cell.width, s.cell.width);
 				}
-				if(s.v && s.move)											resize.top.height( s.cell.i, s.cell.height + e.pageY - s.e.pageY, s.cell.height);
-				s = {};					remake.reDrow();					tools.endBackdrop();
+				if(s.v && s.move)											resize.top.height( s.cell.i, s.cell.height + differenceHeight(e, s.e) , s.cell.height);
+				s = {};
+				remake.reDrow();
+				tools.endBackdrop();
 	
-				window.removeEventListener("mousemove", move);				window.removeEventListener("mouseup", resize.top.up);
+				window.removeEventListener("mousemove", move);
+				window.removeEventListener("mouseup", resize.top.up);
 				return;
 			},
-			width:	function(columns, width, oldWidth){	columns.forEach(function(i){ if(iTop.branches[i].visible) iTop.branches[i].dw = minWidth(iTop.branches[i].width*width/oldWidth);});		},
-			height:	function(rows, height, oldHeight){	rows.forEach(function(i){ iTop.dh[i] = minHeight(iTop.dh[i]*height/oldHeight);});			},
-			select:	function(width){					iTop.branches.forEach( function(item){ if(item.select) item.dw = minWidth(width); })}
+			width:	function(columns, width, oldWidth){	columns.forEach(function(i){ if(_Top.branches[i].visible) _Top.branches[i].dw = minWidth(_Top.branches[i].width*width/oldWidth);});		},
+			height:	function(rows, height, oldHeight){	rows.forEach(function(i){ _Top.dh[i] = minHeight(_Top.dh[i]*height/oldHeight);});			},
+			select:	function(width){					_Top.branches.forEach( function(item){ if(item.select) item.dw = minWidth(width); })}
 		}
 
 		this.corner = {
 			down: function(e, v, h){
 				var html = tools.createHTML({tag: 'div', parent: container, className: 'tau-resize', style: ('left: 0; top: 0; width: ' + (display.s.x - 1) + 'px; height: ' + (display.s.y - 1) + 'px;') });
 	
-				s = { v: v, h: h, html: html, e: e, cell: {width: display.s.x, height: display.s.y }};
+				s = { v: v, h: h, html: html, e: e, cell: {width: (display.s.x - 1), height: (display.s.y - 1) }};
 				window.addEventListener("mousemove", move);
 				window.addEventListener("mouseup", resize.corner.up);
 			},
 			up: function(e){
-				tools.destroyHTML(s.html);
+
 				var row = [], col = [];
-				for(var i = 0; i < iSide.c; i++)	row[i] = i;
-				for(var i = 0; i < iTop.r; i++)		col[i] = i;
+				for(var i = 0; i < _Side.c; i++)	row[i] = i;
+				for(var i = 0; i < _Top.r; i++)		col[i] = i;
 	
-				if(s.h) 		resize.side.width( col, e.pageX - iSide.coords.left, iSide.lp.last());
-				if(s.v) 		resize.top.height( row, e.pageY - iTop.coords.top, iTop.tp.last());
-				s = {};			remake.reDrow();	tools.endBackdrop();
+				if(s.h) 		resize.side.width( col, get.scaleM(e.pageX - _Side.coords.left), _Side.lp.last());
+				if(s.v) 		resize.top.height( row, get.scaleM(e.pageY - _Top.coords.top), _Top.tp.last());
+
+				tools.destroyHTML(s.html);
+				s = {};
+				remake.reDrow();
+				tools.endBackdrop();
 	
 				window.removeEventListener("mousemove", move);
 				window.removeEventListener("mouseup", resize.corner.up);
@@ -1918,7 +2028,7 @@ function table_ui(options){
 
 		this.dbl = {
 			sideWidth: function(cell){
-				if((cell.j.last() + 1) != iSide.c && setting.orientation){
+				if((cell.j.last() + 1) != _Side.c && setting.orientation){
 					resize.side.width(cell.j, resize.dbl.getHeight(cell.obj.text, cell.height - 5), cell.width);
 				} else {
 					resize.side.width(cell.j, resize.dbl.getWidth(cell.obj.text, cell.height - 4), cell.width);
@@ -1926,7 +2036,7 @@ function table_ui(options){
 				remake.reDrow();
 			},
 			sideHeight: function(cell){
-				if((cell.j.last() + 1) != iSide.c && setting.orientation){
+				if((cell.j.last() + 1) != _Side.c && setting.orientation){
 					resize.side.height(cell.i, resize.dbl.getWidth(cell.obj.text, cell.width - 4) + 1, cell.height);
 				} else {
 					resize.side.height(cell.i, resize.dbl.getHeight(cell.obj.text, cell.width - 5), cell.height);
@@ -1940,7 +2050,7 @@ function table_ui(options){
 
 				if(cell.select){
 					cells = select.top;
-					iTop.branches.forEach( function(item, i){	if(item.select) aj.push(i);	} );
+					_Top.branches.forEach( function(item, i){	if(item.select) aj.push(i);	} );
 				} else {
 					cells.push(cell);
 					aj = cell.j;
@@ -1948,21 +2058,21 @@ function table_ui(options){
 
 				aj.forEach( function(j){
 					var symbol = 0;
-					for(var i = 0; i < iTable.r; i++){
-						iTable.cells[i][j].obj.forEach( function(cell, k){
-							var percent = (setting.showPercent && (k == 1 || k == 2)), round = (iSide.branches[i].obj.type == 3 || iSide.branches[i].obj.type == 8) ? setting.round[2] : setting.round[0];
+					for(var i = 0; i < _Table.r; i++){
+						_Table.cells[i][j].obj.forEach( function(cell, k){
+							var percent = (setting.showPercent && (k == 1 || k == 2)), round = (_Side.branches[i].obj.type == 3 || _Side.branches[i].obj.type == 8) ? setting.round[2] : setting.round[0];
 							if(k != 0)		round = setting.round[1];
 	
 							var ns = (tools.roundPlus(cell, round) + ((percent) ? '%%' : '') ).replace('.', '').length;
 							if(symbol < ns)	symbol = ns;
 						});
 					}
-					iTop.branches[j].width = iTop.branches[j].dw = Math.round(symbol*size.numeral + size.dot + 8);
+					_Top.branches[j].width = _Top.branches[j].dw = Math.round(symbol*size.numeral + size.dot + 8);
 				} );
 
 				cells.forEach( function(item){
 					var width = 0;
-					item.j.forEach( function(j){ width += iTop.branches[j].dw; } );
+					item.j.forEach( function(j){ width += _Top.branches[j].dw; } );
 					var textWidth = resize.dbl.getWidth(item.obj.text, item.height - 4);
 
 					if(textWidth > width)	resize.top.width(item.j, textWidth, width);
@@ -1975,31 +2085,31 @@ function table_ui(options){
 				remake.reDrow();
 			},
 			getHeight: function(text, width){
-				var fullWidth = iTable.ctx.measureText(text).width;
+				var fullWidth = _Table.ctx.measureText(text).width;
 
 				var length = (text.length) ? Math.floor( width / (fullWidth / text.length) ) : 0;
 
 				var row = 0;
 				while(text.length > 0){
 					var nlength = length;
-					var bit = iTable.ctx.measureText(text.substring(0, nlength)).width;
+					var bit = _Table.ctx.measureText(text.substring(0, nlength)).width;
 					while(bit > width){
 						nlength--;
-						bit = iTable.ctx.measureText(text.substring(0, nlength)).width;
+						bit = _Table.ctx.measureText(text.substring(0, nlength)).width;
 					}
 					row++;
 					text = text.substring(nlength, text.length);
 				}
-				return row*size.ttext + 4;
+				return row*size.text + 4;
 			},
 			getWidth: function(text, height){
-				var fullWidth = iTable.ctx.measureText(text).width;
-				var row = Math.floor(height/size.ttext);
+				var fullWidth = _Table.ctx.measureText(text).width;
+				var row = Math.floor(height/size.text);
 				var length = (row && text) ? (Math.floor(text.length/row) + 1) : 0;
 
 				var width = 0;
 				while(text.length > 0){
-					var bit = iTable.ctx.measureText(text.substring(0, length)).width;
+					var bit = _Table.ctx.measureText(text.substring(0, length)).width;
 					if(bit > width)	width = Math.floor(bit) + 1;
 					text = text.substring(length, text.length);
 				}
@@ -2012,15 +2122,20 @@ function table_ui(options){
 				if(s.v && s.h)	s.cursor = 'se-resize';
 				else if(s.v)	s.cursor = 'n-resize';
 				else if(s.h)	s.cursor = 'e-resize';
-				s.move = true;			s.html.style.display = 'block';		tools.startBackdrop({cursor: s.cursor});
+
+				s.move = true;
+				s.html.style.display = 'block';
+				tools.startBackdrop({cursor: s.cursor});
 			}
 			if(s.move){
-				if(s.h)		s.html.style.width	= ((s.cell.width + e.pageX - s.e.pageX > size.minw) ?	s.cell.width + e.pageX - s.e.pageX : size.minw) + 'px';
-				if(s.v)		s.html.style.height	= ((s.cell.height + e.pageY - s.e.pageY > size.minh) ?	s.cell.height + e.pageY - s.e.pageY : size.minh) + 'px';
+				if(s.h)		s.html.style.width	= minWidth(get.scaleD(s.cell.width) + e.pageX - s.e.pageX) + 'px';
+				if(s.v)		s.html.style.height	= minHeight(get.scaleD(s.cell.height) + e.pageY - s.e.pageY) + 'px';
 			}
 		}
-		function minWidth(value){			return (value < size.minw) ? size.minw : Math.round(value);	}
-		function minHeight(value){			return (value < size.minh) ? size.minh : Math.round(value);	}
+		function differenceHeight(e, ne){	return get.scaleM(e.pageY - ne.pageY);	}
+		function differenceWidth(e, ne){	return get.scaleM(e.pageX - ne.pageX);	}
+		function minWidth(value){			return (value < get.scaleD(size.minw)) ? get.scaleD(size.minw) : Math.round(value);	}
+		function minHeight(value){			return (value < get.scaleD(size.minh)) ? get.scaleD(size.minh) : Math.round(value);	}
 	}
 	var sort = new function(){
 		this.side = {};
@@ -2029,8 +2144,8 @@ function table_ui(options){
 		this.sortAll = function(options){
 			if(options.side){
 				var cell;
-				if(options.side.index >= iSide.branches.length)		options.side.index = iSide.branches.length - 1;
-				iSide.branches.forEach(function(item){	if(item.index == options.side.index) cell = item; });
+				if(options.side.index >= _Side.branches.length)		options.side.index = _Side.branches.length - 1;
+				_Side.branches.forEach(function(item){	if(item.index == options.side.index) cell = item; });
 				if(options.side.type == undefined){
 					if(!(cell.types[0] && setting.showType[0]) && cell.floatType)	options.side.type = 0;
 					else{ for(var i = 0; i < cell.types.length; i++){ if(cell.types[i] && setting.showType[i]){ options.side.type = i; break; } } }
@@ -2049,8 +2164,8 @@ function table_ui(options){
 			}
 			if(options.top){
 				var cell;
-				if(options.top.index >= iTop.branches.length)	options.top.index = iTop.branches.length - 1;
-				iTop.branches.forEach(function(item){	if(item.index == options.top.index) cell = item; });
+				if(options.top.index >= _Top.branches.length)	options.top.index = _Top.branches.length - 1;
+				_Top.branches.forEach(function(item){	if(item.index == options.top.index) cell = item; });
 				if(options.top.type == undefined){
 					if(!(cell.types[0] && setting.showType[0]) && cell.floatType)	options.top.type = 0;
 					else{ for(var i = 0; i < cell.types.length; i++){ if(cell.types[i] && setting.showType[i]){ options.top.type = i; break; } } }
@@ -2081,7 +2196,7 @@ function table_ui(options){
 			if(!(cell.types[0] && setting.showType[0]) && cell.floatType)			types.push(0);
 			cell.types.forEach(function(item, i){ 	if(item && setting.showType[i])	types.push(i); });
 
-			var bite = cell.height/types.length, top = iSide.coords.top + display.s.tp[cell.i[0]] - display.s.t;
+			var bite = cell.height/types.length, top = _Side.coords.top + display.s.tp[cell.i[0]] - display.s.t;
 			for(var i = 0; i < types.length; i++){	if( top + bite*i < e.pageY && top + bite*(i + 1) > e.pageY)		type = types[i];	}
 		
 			if(type != sort.side.type || cell != sort.side.cell ){
@@ -2097,40 +2212,40 @@ function table_ui(options){
 			remake.reBuild();
 		}
 		function sideSort(compare){
-			for(var j = 0; j < iTable.c - 1; j++){
-				var p = j, parent = iTop.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
-				if(iTop.branches[j].unsort || (iTop.branches[j].base && !sort.side.cell.base && sort.side.type == 0 ) )		continue;
+			for(var j = 0; j < _Table.c - 1; j++){
+				var p = j, parent = _Top.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
+				if(_Top.branches[j].unsort || (_Top.branches[j].base && !sort.side.cell.base && sort.side.type == 0 ) )		continue;
 
-				for(var k = j + 1; k < iTable.c; k++){
-					if(parent != iTop.branches[k].parent) break;
-					if(iTop.branches[k].unsort || (iTop.branches[k].base && !sort.side.cell.base && sort.side.type == 0 ) ) continue;
+				for(var k = j + 1; k < _Table.c; k++){
+					if(parent != _Top.branches[k].parent) break;
+					if(_Top.branches[k].unsort || (_Top.branches[k].base && !sort.side.cell.base && sort.side.type == 0 ) ) continue;
 
-					if(compare( iTable.cells[sort.side.cell.i[0]][p].obj[sort.side.type], iTable.cells[sort.side.cell.i[0]][k].obj[sort.side.type], iTop.branches[p].index, iTop.branches[k].index))	p = k;
+					if(compare( _Table.cells[sort.side.cell.i[0]][p].obj[sort.side.type], _Table.cells[sort.side.cell.i[0]][k].obj[sort.side.type], _Top.branches[p].index, _Top.branches[k].index))	p = k;
 				}
 				var pi, pj;
-				parent.children.forEach(function(item, i){ if(item == iTop.branches[j]) pi = i; if(item == iTop.branches[p]) pj = i; });
+				parent.children.forEach(function(item, i){ if(item == _Top.branches[j]) pi = i; if(item == _Top.branches[p]) pj = i; });
 
 				buf = parent.children[pi];				parent.children[pi] = parent.children[pj];				parent.children[pj] = buf;
-				buf = iTop.branches[j];					iTop.branches[j] = iTop.branches[p];					iTop.branches[p] = buf;
-				for(var i = 0; i < iTable.r; i++){
-					buf = iTable.cells[i][j];			iTable.cells[i][j] = iTable.cells[i][p];				iTable.cells[i][p] = buf;
+				buf = _Top.branches[j];					_Top.branches[j] = _Top.branches[p];					_Top.branches[p] = buf;
+				for(var i = 0; i < _Table.r; i++){
+					buf = _Table.cells[i][j];			_Table.cells[i][j] = _Table.cells[i][p];				_Table.cells[i][p] = buf;
 				}
 			}
 		}
 		function sideDefault(){
-			for(var j = 0; j < iTable.c - 1; j++){
-				var p = j, parent = iTop.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
+			for(var j = 0; j < _Table.c - 1; j++){
+				var p = j, parent = _Top.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
 
-				for(var k = j + 1; k < iTable.c; k++){
-					if(iTop.branches[k].index == j){	p = k;	break;}
+				for(var k = j + 1; k < _Table.c; k++){
+					if(_Top.branches[k].index == j){	p = k;	break;}
 				}
 				var pi, pj;
-				parent.children.forEach(function(item, i){ if(item == iTop.branches[j]) pi = i; if(item == iTop.branches[p]) pj = i; });
+				parent.children.forEach(function(item, i){ if(item == _Top.branches[j]) pi = i; if(item == _Top.branches[p]) pj = i; });
 
 				buf = parent.children[pi];				parent.children[pi] = parent.children[pj];				parent.children[pj] = buf;
-				buf = iTop.branches[j];					iTop.branches[j] = iTop.branches[p];					iTop.branches[p] = buf;
-				for(var i = 0; i < iTable.r; i++){
-					buf = iTable.cells[i][j];			iTable.cells[i][j] = iTable.cells[i][p];				iTable.cells[i][p] = buf;
+				buf = _Top.branches[j];					_Top.branches[j] = _Top.branches[p];					_Top.branches[p] = buf;
+				for(var i = 0; i < _Table.r; i++){
+					buf = _Table.cells[i][j];			_Table.cells[i][j] = _Table.cells[i][p];				_Table.cells[i][p] = buf;
 				}
 			}
 		}
@@ -2140,7 +2255,7 @@ function table_ui(options){
 			if(!(cell.types[0] && setting.showType[0]) && cell.floatType)			types.push(0);
 			cell.types.forEach(function(item, i){ 	if(item && setting.showType[i])	types.push(i); });
 
-			var bite = cell.width/types.length, left = iTop.coords.left + display.s.lp[cell.j[0]] - display.s.l;
+			var bite = cell.width/types.length, left = _Top.coords.left + display.s.lp[cell.j[0]] - display.s.l;
 			for(var i = 0; i < types.length; i++){	if( left + bite*i < e.pageX && left + bite*(i + 1) > e.pageX)		type = types[i];	}
 		
 			if(type != sort.top.type || cell != sort.top.cell ){
@@ -2156,35 +2271,35 @@ function table_ui(options){
 			remake.reBuild();
 		}
 		function topSort(compare){
-			for(var j = 0; j < iTable.r - 1; j++){
-				var p = j, parent = iSide.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
-				if(iSide.branches[j].unsort || (iSide.branches[j].base && !sort.top.cell.base && sort.top.type == 0 ) )		continue;
+			for(var j = 0; j < _Table.r - 1; j++){
+				var p = j, parent = _Side.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
+				if(_Side.branches[j].unsort || (_Side.branches[j].base && !sort.top.cell.base && sort.top.type == 0 ) )		continue;
 
-				for(var k = j + 1; k < iTable.r; k++){
-					if(parent != iSide.branches[k].parent) break;
-					if(iSide.branches[k].unsort || (iSide.branches[k].base && !sort.top.cell.base && sort.top.type == 0 ) )	continue;
+				for(var k = j + 1; k < _Table.r; k++){
+					if(parent != _Side.branches[k].parent) break;
+					if(_Side.branches[k].unsort || (_Side.branches[k].base && !sort.top.cell.base && sort.top.type == 0 ) )	continue;
 
-					if(compare( iTable.cells[p][sort.top.cell.j[0]].obj[sort.top.type], iTable.cells[k][sort.top.cell.j[0]].obj[sort.top.type], iSide.branches[p].index, iSide.branches[k].index))	p = k;
+					if(compare( _Table.cells[p][sort.top.cell.j[0]].obj[sort.top.type], _Table.cells[k][sort.top.cell.j[0]].obj[sort.top.type], _Side.branches[p].index, _Side.branches[k].index))	p = k;
 				}
 				var pi, pj;
-				parent.children.forEach(function(item, i){ if(item == iSide.branches[j]) pi = i; if(item == iSide.branches[p]) pj = i; });
+				parent.children.forEach(function(item, i){ if(item == _Side.branches[j]) pi = i; if(item == _Side.branches[p]) pj = i; });
 
 				buf = parent.children[pi];				parent.children[pi] = parent.children[pj];				parent.children[pj] = buf;
-				buf = iSide.branches[j];				iSide.branches[j] = iSide.branches[p];					iSide.branches[p] = buf;
-				buf = iTable.cells[j];					iTable.cells[j] = iTable.cells[p];						iTable.cells[p] = buf;
+				buf = _Side.branches[j];				_Side.branches[j] = _Side.branches[p];					_Side.branches[p] = buf;
+				buf = _Table.cells[j];					_Table.cells[j] = _Table.cells[p];						_Table.cells[p] = buf;
 			}
 		}
 		function topDefault(){
-			for(var j = 0; j < iTable.r - 1; j++){
-				var p = j, parent = iSide.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
+			for(var j = 0; j < _Table.r - 1; j++){
+				var p = j, parent = _Side.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
 
-				for(var k = j + 1; k < iTable.r; k++){		if(iSide.branches[k].index == j){	p = k;	break;	}				}
+				for(var k = j + 1; k < _Table.r; k++){		if(_Side.branches[k].index == j){	p = k;	break;	}				}
 				var pi, pj;
-				parent.children.forEach(function(item, i){ if(item == iSide.branches[j]) pi = i; if(item == iSide.branches[p]) pj = i; });
+				parent.children.forEach(function(item, i){ if(item == _Side.branches[j]) pi = i; if(item == _Side.branches[p]) pj = i; });
 
 				buf = parent.children[pi];				parent.children[pi] = parent.children[pj];				parent.children[pj] = buf;
-				buf = iSide.branches[j];				iSide.branches[j] = iSide.branches[p];					iSide.branches[p] = buf;
-				buf = iTable.cells[j];					iTable.cells[j] = iTable.cells[p];						iTable.cells[p] = buf;
+				buf = _Side.branches[j];				_Side.branches[j] = _Side.branches[p];					_Side.branches[p] = buf;
+				buf = _Table.cells[j];					_Table.cells[j] = _Table.cells[p];						_Table.cells[p] = buf;
 			}
 		}
 

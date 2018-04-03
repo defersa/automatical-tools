@@ -494,6 +494,9 @@ function object_to_xlsx(setting, array){
 		else if(typeof text != 'string')	return '';
 		text = text.replace(/&/g, '&amp;');
 		text = text.replace(/\*/g,'x');
+		text = text.replace(/\\/g,'_');
+		text = text.replace(/\//g,'_');
+		text = text.replace(/`/g,'\'');
 		text = text.replace(/</g, '&lt;');
 		text = text.replace(/>/g, '&gt;');
 		text = text.replace(/\[/g, '(');
