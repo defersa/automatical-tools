@@ -1,3 +1,12 @@
+//
+// created by Makarov Aleksand 
+//
+// requiered parametrs - containers - must contain at least 1 html object
+// values of sizing set as dimensionless points, but with postposition "px" can set values in pixels 
+// ATTENTION: for correct display need to css paranet "box-sizing" set value "border-box"
+// 
+
+
 function layout_ui(options){
 	//main controls and container
 	var containers;
@@ -5,9 +14,10 @@ function layout_ui(options){
 	var fragment = document.createDocumentFragment(); //inner parent
 	//options and paranters
 	var self_options;
+	var link = this;
 
-	this.create = function(options){
-		if(containers != undefined) this.remove;
+	link.create = function(options){
+		if(containers != undefined) link.remove;
 		if(options.orientation == undefined)	options.orientation = false; //default orientation - vertical
 		if(options.size == undefined)			options.size = [];
 		if(options.minSize == undefined)		options.minSize = [];
@@ -18,9 +28,9 @@ function layout_ui(options){
 		containers = [];			self_options = {};
 		self_create.containers(options);//create object for storage links
 
-		this.change(options);
+		link.change(options);
 	}
-	this.remove = function(){//clear containers and destroy separators
+	link.remove = function(){//clear containers and destroy separators
 		for(var i = 0; i < containers.length; i++){
 			if(containers[i].rSeparator){
 				tools.destroyHTML(containers[i].rSeparator);
@@ -30,7 +40,7 @@ function layout_ui(options){
 			containers[i].html.index = undefined;							containers[i].lSeparator = undefined;
 		}
 	}
-	this.change = function(options){ 
+	link.change = function(options){ 
 		if(options.orientation != undefined)								self_change.set_orientation(options);
 		if(options.size != undefined )										self_change.set_size(options);
 		if(options.minSize != undefined)									self_change.set_minSize(options);
@@ -38,11 +48,11 @@ function layout_ui(options){
 		self_change.apply_positions();
 	}
 
-	this.show = function(html){ //show hidden container
+	link.show = function(html){ //show hidden container
 		html.layout.visible = true;
 		self_change.apply_positions();
 	}
-	this.hide = function(html){//hide visible container
+	link.hide = function(html){//hide visible container
 		html.layout.visible = false;
 		self_change.apply_positions();
 	}
@@ -225,5 +235,5 @@ function layout_ui(options){
 			self = undefined;
 		}
 	}
-	if(options)	this.create(options);
+	link.create( (!options) ? {} : options );
 }

@@ -51,7 +51,7 @@ function object_to_xlsx(setting, array){
 		for(var i = 0; i < array.length; i++)	sheet_names[i] = 0;
 		for(var i = 0; i < array.length; i++){
 			for(var j = i + 1; j < array.length; j++){
-				if(cut_sheet_name(array[i].annotation) == cut_sheet_name(array[j].annotation))					sheet_names[j] += 1;
+				if(cut_sheet_name(array[i].annotation).toLowerCase() == cut_sheet_name(array[j].annotation).toLowerCase())					sheet_names[j] += 1;
 			}
 		}
 		for(var i = 0; i < array.length; i++){	sheet_names[i] = cut_sheet_name(array[i].annotation) + ((sheet_names[i] != 0) ? ('_' + sheet_names[i]) : '');	}

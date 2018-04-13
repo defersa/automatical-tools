@@ -34,7 +34,7 @@ function table_ui(options){
 
 
 		main = {	html: creating.parent(),	_Corner: creating.corner(),		_Table: creating.table(),	_Side: creating.side(),	_Top: creating.top() };
-		size = {	corner: { w: [], h: [] },	table: { w: [], h: [] },  w: 50, h: 20, ttext: 13, font: 'sans-serif', scale: 1, rate: 1 };
+		size = {	corner: { w: [], h: [] },	table: { w: [], h: [] },  w: 50, h: 20, ttext: 13, font: 'sans-serif', dpi: 1, scale: 1 };
 		functions = {};							setting = { showType: [true, true, true], size: size };
 
 		window.addEventListener("resize", display.generate);
@@ -80,6 +80,12 @@ function table_ui(options){
 	link.getSort = function(){					return sort.getSort();				}
 	link.getSetting = function(){				return tools.cloneObject(setting);	}
 	link.focus = function(){					main.html.focus();					}
+	link.getTop = function(){
+		return _Top.branches.concat();
+	}
+	link.getSide = function(){
+		return _Side.branches.concat();
+	}
 	link.getSelected = function(){
 		var cells = [];
 		select.table.forEach(function(item){ cells.push(item.obj);});
@@ -167,13 +173,13 @@ function table_ui(options){
 				if(options.size.table.w)	size.table.w = options.size.table.w.concat();
 				if(options.size.table.h)	size.table.h = options.size.table.h.concat();				
 			}
-			if(options.size.scale)			size.scale = options.size.scale;
+			if(options.size.dpi)			size.dpi = options.size.dpi;
 			if(options.size.w)				size.w = options.size.w;
 			if(options.size.h)				size.h = options.size.h;
 			if(options.size.text)			size.ttext = options.size.text;
-			if(options.size.rate)			set.rate(options);
+			if(options.size.scale)			set.scale(options);
 			if(options.size.font)			size.font = options.size.font;
-			size.text = Math.round(size.ttext*size.rate);
+			size.text = Math.round(size.ttext*size.scale);
 			_Table.ctx.font = size.text + "px " + size.font;
 			size.dot				= _Table.ctx.measureText('.').width;
 			size.numeral			= _Table.ctx.measureText('0').width;
@@ -182,34 +188,34 @@ function table_ui(options){
 			size.minh = size.text + 4;
 			size.minw = Math.floor(_Table.ctx.measureText('Abcd').width) + 6;
 		},
-		rate: function(options){
-			var _rate = options.size.rate;
+		scale: function(options){
+			var _scale = options.size.scale;
 
-			_Top.branches.forEach(	function(item){ item.dw = Math.round(item.dw * ( _rate / size.rate )); } );
-			_Side.branches.forEach(	function(item){ item.dh = Math.round(item.dh * ( _rate / size.rate )); } );
+			_Top.branches.forEach(	function(item){ item.dw = Math.round(item.dw * ( _scale / size.scale )); } );
+			_Side.branches.forEach(	function(item){ item.dh = Math.round(item.dh * ( _scale / size.scale )); } );
 
-			for(var i = 0; i < _Top.dh.length; i++){	_Top.dh[i]  = Math.round(_Top.dh[i]  * ( _rate / size.rate ));}
-			for(var i = 0; i < _Side.dw.length; i++){	_Side.dw[i] = Math.round(_Side.dw[i] * ( _rate / size.rate ));}
+			for(var i = 0; i < _Top.dh.length; i++){	_Top.dh[i]  = Math.round(_Top.dh[i]  * ( _scale / size.scale ));}
+			for(var i = 0; i < _Side.dw.length; i++){	_Side.dw[i] = Math.round(_Side.dw[i] * ( _scale / size.scale ));}
 		
 			if(Array.isArray(_Top.d) && Array.isArray(_Side.w) ){
-				for(var i = 0; i < _Top.d.length; i++){		_Top.d[i]  = Math.round(_Top.d[i]  * ( _rate / size.rate ));}
-				for(var i = 0; i < _Side.w.length; i++){	_Side.w[i] = Math.round(_Side.w[i] * ( _rate / size.rate ));}
+				for(var i = 0; i < _Top.d.length; i++){		_Top.d[i]  = Math.round(_Top.d[i]  * ( _scale / size.scale ));}
+				for(var i = 0; i < _Side.w.length; i++){	_Side.w[i] = Math.round(_Side.w[i] * ( _scale / size.scale ));}
 			}
 		
-			size.corner.w.forEach(	function(item){ item = Math.round(item * ( _rate / size.rate )); } );
-			size.corner.h.forEach(	function(item){ item = Math.round(item * ( _rate / size.rate )); } );
+			size.corner.w.forEach(	function(item){ item = Math.round(item * ( _scale / size.scale )); } );
+			size.corner.h.forEach(	function(item){ item = Math.round(item * ( _scale / size.scale )); } );
 
-			size.table.w.forEach(	function(item){ item = Math.round(item * ( _rate / size.rate )); } );
-			size.table.h.forEach(	function(item){ item = Math.round(item * ( _rate / size.rate )); } );
+			size.table.w.forEach(	function(item){ item = Math.round(item * ( _scale / size.scale )); } );
+			size.table.h.forEach(	function(item){ item = Math.round(item * ( _scale / size.scale )); } );
 
-			size.rate = _rate;
+			size.scale = _scale;
 		}
 	}
 	var get = {
 		cell: {
 			side: function(e){
-				var x = get.scaleM(e.pageX - _Side.coords.left);
-				var y = get.scaleM(e.pageY - _Side.coords.top) + display.s.t;
+				var x = get.dpiM(e.pageX - _Side.coords.left);
+				var y = get.dpiM(e.pageY - _Side.coords.top) + display.s.t;
 
 				for(var ni = 0; ni < display.s.rows.length; ni++){
 					var i = display.s.rows[ni];
@@ -230,8 +236,8 @@ function table_ui(options){
 				return ;
 			},
 			top: function(e){
-				var x = get.scaleM(e.pageX - _Top.coords.left) + display.s.l;
-				var y = get.scaleM(e.pageY - _Top.coords.top);
+				var x = get.dpiM(e.pageX - _Top.coords.left) + display.s.l;
+				var y = get.dpiM(e.pageY - _Top.coords.top);
 
 				for(var ni = 0; ni < display.s.cols.length; ni++){
 					var i = display.s.cols[ni];
@@ -251,8 +257,8 @@ function table_ui(options){
 				return ;
 			},
 			table: function(e){
-				var x = get.scaleM(e.pageX - _Table.coords.left) + display.s.l;
-				var y = get.scaleM(e.pageY - _Table.coords.top) + display.s.t;
+				var x = get.dpiM(e.pageX - _Table.coords.left) + display.s.l;
+				var y = get.dpiM(e.pageY - _Table.coords.top) + display.s.t;
 
 				for(var i = 0; i < display.s.rows.length; i++){
 					for(var j = 0; j < display.s.cols.length; j++){
@@ -270,16 +276,16 @@ function table_ui(options){
 		},
 		position: {
 			side: function(e){
-				var x = get.scaleM(e.pageX - _Side.coords.left);
-				var y = get.scaleM(e.pageY - _Side.coords.top) + display.s.t;
+				var x = get.dpiM(e.pageX - _Side.coords.left);
+				var y = get.dpiM(e.pageY - _Side.coords.top) + display.s.t;
 				var p = {i: 0, j: 0};
 				for(var i = 0; i < _Side.c; i++){		if( _Side.lp[i] <= x)										p.j = i;	}
 				display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y && _Side.branches[i].visible)		p.i = i;	});
 				return p;				
 			},
 			top: function(e){
-				var x = get.scaleM(e.pageX - _Top.coords.left) + display.s.l;
-				var y = get.scaleM(e.pageY - _Top.coords.top);
+				var x = get.dpiM(e.pageX - _Top.coords.left) + display.s.l;
+				var y = get.dpiM(e.pageY - _Top.coords.top);
 				var p = {i: 0, j: 0};
 				display.s.cols.forEach(	function(i){	if( display.s.lp[i] <= x  && _Top.branches[i].visible)		p.j = i;	});
 				for(var i = 0; i < _Top.r; i++){		if( _Top.tp[i] <= y )										p.i = i;	}
@@ -287,8 +293,8 @@ function table_ui(options){
 
 			},
 			table: function(e){
-				var x = get.scaleM(e.pageX - _Table.coords.left) + display.s.l;
-				var y = get.scaleM(e.pageY - _Table.coords.top) + display.s.t;
+				var x = get.dpiM(e.pageX - _Table.coords.left) + display.s.l;
+				var y = get.dpiM(e.pageY - _Table.coords.top) + display.s.t;
 				var p = {i: 0, j: 0};
 				display.s.cols.forEach(	function(i){	if( display.s.lp[i] <= x)	p.j = i;	});
 				display.s.rows.forEach(	function(i){	if( display.s.tp[i] <= y)	p.i = i;	});
@@ -326,29 +332,25 @@ function table_ui(options){
 		screenCoord: {
 			side: function(y, x){
 				var result = [];
-				result[0] = get.scaleD(y - display.s.t + display.s.y);
-				result[1] = get.scaleD(x);
+				result[0] = get.dpiD(y - display.s.t + display.s.y);
+				result[1] = get.dpiD(x);
 				return result;
 			},
 			top: function(y, x){
 				var result = [];
-				result[0] = get.scaleD(y);
-				result[1] = get.scaleD(x - display.s.l + display.s.x);
+				result[0] = get.dpiD(y);
+				result[1] = get.dpiD(x - display.s.l + display.s.x);
 				return result; 
 			},
 			table: function(y, x){
 				var result = [];
-				result[0] = get.scaleD(y - display.s.t + display.s.y);
-				result[1] = get.scaleD(x - display.s.l + display.s.x);
+				result[0] = get.dpiD(y - display.s.t + display.s.y);
+				result[1] = get.dpiD(x - display.s.l + display.s.x);
 				return result; 
 			}
 		},
-		scaleM: function(v){
-			return Math.round(v*size.scale);
-		},
-		scaleD: function(v){
-			return Math.round(v/size.scale);
-		}
+		dpiM: function(v){	return Math.round(v*size.dpi);	},
+		dpiD: function(v){	return Math.round(v/size.dpi);	}
 	}
 	var events = {
 		move: {
@@ -387,8 +389,8 @@ function table_ui(options){
 				}
 			},
 			corn: function(e){
-				var x = get.scaleM(e.pageX - _Side.coords.left);
-				var y = get.scaleM(e.pageY - _Top.coords.top);
+				var x = get.dpiM(e.pageX - _Side.coords.left);
+				var y = get.dpiM(e.pageY - _Top.coords.top);
 				var s = display.s;
 	
 				if( s.y - 3 <= y && y <= s.y + 1 && s.x - 3 <= x && x <= s.x + 1 || e.ctrlKey){			_Corner.html.style.cursor = 'se-resize';	return;	}
@@ -398,8 +400,8 @@ function table_ui(options){
 				_Corner.html.style.cursor = 'default';			return;
 			},
 			table: function(e){
-				var x = get.scaleM(e.pageX - _Table.coords.left);
-				var y = get.scaleM(e.pageY - _Table.coords.top);
+				var x = get.dpiM(e.pageX - _Table.coords.left);
+				var y = get.dpiM(e.pageY - _Table.coords.top);
 				if( display.s.vw < x && x < display.s.vw + 18 && y > display.s.vh - 18 && y < display.s.vh && !display.s.corn.b){		display.s.corn.b = true;	display.table();	return false; };
 				if( display.s.vw < x && x < display.s.vw + 18 && y < 18  && !display.s.corn.t){											display.s.corn.t = true;	display.table();	return false; };
 				if( !(display.s.vw < x && x < display.s.vw + 18 && y > display.s.vh - 18 && y < display.s.vh) && display.s.corn.b){		display.s.corn.b = false;	display.table();	return false; };
@@ -415,8 +417,8 @@ function table_ui(options){
 			corn: function(e){
 				if(e.which != 1) return;
 
-				var x = get.scaleM(e.pageX - _Side.coords.left);
-				var y = get.scaleM(e.pageY - _Top.coords.top);
+				var x = get.dpiM(e.pageX - _Side.coords.left);
+				var y = get.dpiM(e.pageY - _Top.coords.top);
 				var s = display.s;
 	
 				if( s.y - 3 <= y && y <= s.y + 1 && s.x - 3 <= x && x <= s.x + 1  || e.ctrlKey){		resize.corner.down( e, 1, 1);	return;	}
@@ -430,8 +432,8 @@ function table_ui(options){
 			},
 			table: function(e){
 				if(e.which != 1) return;
-				var x = get.scaleM(e.pageX - _Table.coords.left);
-				var y = get.scaleM(e.pageY - _Table.coords.top);
+				var x = get.dpiM(e.pageX - _Table.coords.left);
+				var y = get.dpiM(e.pageY - _Table.coords.top);
 				var cell = get.cell.table(e);
 	
 				if( display.s.vw > x && display.s.vh < y && e.which == 1){				scroll.hdown(e, _Table.coords);	return;	}
@@ -693,6 +695,7 @@ function table_ui(options){
 						if(!_Top.branches[j].visible)								continue;
 						if(_Table.cells[i][j].visual[k]){
 
+							var sep = (_Side.branches[i].obj.type == undefined || _Top.branches[j].obj.type == undefined);
 							var item = _Table.cells[i][j].visual[k];
 							var text = _Table.cells[i][j].obj[( item.type == 3) ? 0 : item.type];
 							var type = item.type, round;
@@ -702,7 +705,7 @@ function table_ui(options){
 							} else if(type != 0 && type != 3)							round = setting.round[1];
 							else 														round = setting.round[0];
 
-							if(text === null)							text = (setting.showZero) ? 0 : ' '; 
+							if(text === null)							text = (setting.showZero && !sep) ? 0 : ' '; 
 							else if(text === 0 && setting.hideZero)		text = ' ';
 							else if(isNaN(text))						text = ' ';
 							else										text = tools.roundPlus(text, round);
@@ -817,21 +820,25 @@ function table_ui(options){
 					for(var j = fj; j <= lj; j++){
 						if(_Table.cells[i][j].visual[k]){
 
+							var sep = (_Side.branches[i].obj.type == undefined || _Top.branches[j].obj.type == undefined);
 							var item = _Table.cells[i][j].visual[k];
 							var text = _Table.cells[i][j].obj[( item.type == 3) ? 0 : item.type];
-							var round, type = item.type;
+							var type = item.type, round;
 
-							if((type == 0 || type == 3) && (_Side.branches[i].obj.type == 3 || _Side.branches[i].obj.type == 8))	round = setting.round[2];
-							else if(type != 0)																		round = setting.round[1];
-							else 																					round = setting.round[0];
+							if(type == 0 && _Table.cells[i][j].round == 2){				type = 5;	round = setting.round[2];
+							} else if(type == 3 && _Table.cells[i][j].round == 2){		type = 6;	round = setting.round[2];							
+							} else if(type != 0 && type != 3)							round = setting.round[1];
+							else 														round = setting.round[0];
 
-							if(text === null)							text = (setting.showZero) ? '0' : ' '; 
+							if(text === null)							text = (setting.showZero && !sep) ? 0 : ' '; 
 							else if(text === 0 && setting.hideZero)		text = ' ';
-							else										text = tools.roundPlus(text, round) + '';
-
+							else if(isNaN(text))						text = ' ';
+							else										text = tools.roundPlus(text, round);
+							
 							if((type == 1 || type == 2) && setting.showPercent && text != ' ')	text += '%'; 
 
 							html += '<td' + ( (options.color) ? (' style="background:' + defaultBack.table[2][type] + '">') : '>' ) + text + '</td>';
+
 						} else html += '<td></td>';
 					}
 					html += '</tr><tr>';
@@ -1088,6 +1095,7 @@ function table_ui(options){
 					if(!_Side.branches[i].visible || !_Top.branches[j].visible) continue;
 
 					cell.visual = [];
+					var sep = (_Side.branches[i].obj.type == undefined || _Top.branches[j].obj.type == undefined);
 					cell.obj.forEach( function(item, type){ 
 						if(setting.showType[type]){
 
@@ -1095,7 +1103,7 @@ function table_ui(options){
 							if(type == 0)		round = setting.round[cell.round];
 							else				round = setting.round[1];
 
-							if(item === null)							text = (setting.showZero) ? '0' : ' '; 
+							if(item === null)							text = (setting.showZero & !sep) ? '0' : ' '; 
 							else if(item === 0 && setting.hideZero)		text = ' ';
 							else										text = tools.roundPlus(item, round) + '';
 
@@ -1119,7 +1127,7 @@ function table_ui(options){
 
 						var text = cell.obj[0], width = _Top.branches[j].width - 6, round = setting.round[cell.round];
 
-						if(text === null)							text = (setting.showZero) ? '0' : ' '; 
+						if(text === null)							text = (setting.showZero & !sep) ? '0' : ' '; 
 						else if(text === 0 && setting.hideZero)		text = ' ';
 						else										text = tools.roundPlus(text, round) + '';	
 
@@ -1243,14 +1251,14 @@ function table_ui(options){
 
 		this.generate = function(){
 
-			var x = (((_Side.w.length) ? _Side.lp.last() : 100)/size.scale);
-			var y = (((_Top.h.length) ? _Top.tp.last() : 100)/size.scale);
+			var x = (((_Side.w.length) ? _Side.lp.last() : 100)/size.dpi);
+			var y = (((_Top.h.length) ? _Top.tp.last() : 100)/size.dpi);
 
 			var height = (container.clientHeight - y); //viewport height
 			var width  = (container.clientWidth - x);//veiwport width
 
-			s.vh = height*size.scale;
-			s.vw = width*size.scale;
+			s.vh = height*size.dpi;
+			s.vw = width*size.dpi;
 
 			if( (height < 0) || (width < 0) )	return;
 
@@ -1259,8 +1267,8 @@ function table_ui(options){
 			_Table.html.style.width = _Top.html.style.width = width + 'px';
 			_Table.html.style.height = _Side.html.style.height = height + 'px';
 
-			_Top.html.height = s.y = y*size.scale;		_Corner.html.style.height = (y - 1) + 'px';
-			_Side.html.width = s.x = x*size.scale;		_Corner.html.style.width = (x - 1) + 'px';
+			_Top.html.height = s.y = y*size.dpi;		_Corner.html.style.height = (y - 1) + 'px';
+			_Side.html.width = s.x = x*size.dpi;		_Corner.html.style.width = (x - 1) + 'px';
 
 			s.vh += -18;
 			s.vw += -18;
@@ -1514,8 +1522,8 @@ function table_ui(options){
 		var timer;
 
 		this.hdown = function(e, coord){
-			var x = get.scaleM(e.pageX - coord.left);
-			var y = get.scaleM(e.pageY - coord.top);
+			var x = get.dpiM(e.pageX - coord.left);
+			var y = get.dpiM(e.pageY - coord.top);
 
 			if( x > scroll.h.l && x < (scroll.h.l + scroll.h.w) && (scroll.h.t - 2) < y  ){
 				s = {e: e, ne: e, c: coord, l: display.s.l};
@@ -1532,7 +1540,7 @@ function table_ui(options){
 		}
 		function move(e){		s.ne = e;		}
 		function hredrow(){ // horizontal redrow 
-			display.s.l = Math.round(s.l + (((get.scaleM(s.ne.pageX - s.e.pageX))/(display.s.vw - 36)) * display.s.lp.last()));
+			display.s.l = Math.round(s.l + (((get.dpiM(s.ne.pageX - s.e.pageX))/(display.s.vw - 36)) * display.s.lp.last()));
 			display.table();
 			display.top();
 			timer = setTimeout(hredrow, 5);
@@ -1545,8 +1553,8 @@ function table_ui(options){
 		}
 
 		this.vdown = function(e, coord){
-			var x = get.scaleM(e.pageX - coord.left);
-			var y = get.scaleM(e.pageY - coord.top);
+			var x = get.dpiM(e.pageX - coord.left);
+			var y = get.dpiM(e.pageY - coord.top);
 
 			if( x > (scroll.v.l - 2) && scroll.v.t < y && (scroll.v.t + scroll.v.h) > y ){
 				s = {e: e, ne: e, c: coord, t: display.s.t};
@@ -1563,7 +1571,7 @@ function table_ui(options){
 			else				scroll.pageScroll( 0, 1 );
 		}
 		function vredrow(e){
-			display.s.t = Math.round(s.t + (((get.scaleM(s.ne.pageY - s.e.pageY))/(display.s.vh - 36)) * display.s.tp.last()));
+			display.s.t = Math.round(s.t + (((get.dpiM(s.ne.pageY - s.e.pageY))/(display.s.vh - 36)) * display.s.tp.last()));
 			display.table();
 			display.side();
 			timer = setTimeout(vredrow, 5);
@@ -1939,7 +1947,7 @@ function table_ui(options){
 				var html = tools.createHTML({tag: 'div',
 											parent: container,
 											className: 'tau-resize',
-											style: ('left: ' + sCoords[1] + 'px; top: ' + sCoords[0] + 'px; width: ' + (get.scaleD(cell.width) - 1) + 'px; height: ' + (get.scaleD(cell.height) - 1) + 'px;') });
+											style: ('left: ' + sCoords[1] + 'px; top: ' + sCoords[0] + 'px; width: ' + (get.dpiD(cell.width) - 1) + 'px; height: ' + (get.dpiD(cell.height) - 1) + 'px;') });
 	
 				s = {v: v, h: h, cell: cell, html: html, e: e };
 	
@@ -1973,7 +1981,7 @@ function table_ui(options){
 				var html = tools.createHTML({tag: 'div',
 											parent: container,
 											className: 'tau-resize',
-											style: ('left: ' + sCoords[1] + 'px; top: ' + sCoords[0] + 'px; width: ' + get.scaleD(cell.width - 1) + 'px; height: ' + get.scaleD(cell.height - 1) + 'px;') });
+											style: ('left: ' + sCoords[1] + 'px; top: ' + sCoords[0] + 'px; width: ' + get.dpiD(cell.width - 1) + 'px; height: ' + get.dpiD(cell.height - 1) + 'px;') });
 	
 				s = {v: v, h: h, cell: cell, html: html, e: e};
 				window.addEventListener("mousemove", move);
@@ -2013,8 +2021,8 @@ function table_ui(options){
 				for(var i = 0; i < _Side.c; i++)	row[i] = i;
 				for(var i = 0; i < _Top.r; i++)		col[i] = i;
 	
-				if(s.h) 		resize.side.width( col, get.scaleM(e.pageX - _Side.coords.left), _Side.lp.last());
-				if(s.v) 		resize.top.height( row, get.scaleM(e.pageY - _Top.coords.top), _Top.tp.last());
+				if(s.h) 		resize.side.width( col, get.dpiM(e.pageX - _Side.coords.left), _Side.lp.last());
+				if(s.v) 		resize.top.height( row, get.dpiM(e.pageY - _Top.coords.top), _Top.tp.last());
 
 				tools.destroyHTML(s.html);
 				s = {};
@@ -2128,14 +2136,14 @@ function table_ui(options){
 				tools.startBackdrop({cursor: s.cursor});
 			}
 			if(s.move){
-				if(s.h)		s.html.style.width	= minWidth(get.scaleD(s.cell.width) + e.pageX - s.e.pageX) + 'px';
-				if(s.v)		s.html.style.height	= minHeight(get.scaleD(s.cell.height) + e.pageY - s.e.pageY) + 'px';
+				if(s.h)		s.html.style.width	= minWidth(get.dpiD(s.cell.width) + e.pageX - s.e.pageX) + 'px';
+				if(s.v)		s.html.style.height	= minHeight(get.dpiD(s.cell.height) + e.pageY - s.e.pageY) + 'px';
 			}
 		}
-		function differenceHeight(e, ne){	return get.scaleM(e.pageY - ne.pageY);	}
-		function differenceWidth(e, ne){	return get.scaleM(e.pageX - ne.pageX);	}
-		function minWidth(value){			return (value < get.scaleD(size.minw)) ? get.scaleD(size.minw) : Math.round(value);	}
-		function minHeight(value){			return (value < get.scaleD(size.minh)) ? get.scaleD(size.minh) : Math.round(value);	}
+		function differenceHeight(e, ne){	return get.dpiM(e.pageY - ne.pageY);	}
+		function differenceWidth(e, ne){	return get.dpiM(e.pageX - ne.pageX);	}
+		function minWidth(value){			return (value < get.dpiD(size.minw)) ? get.dpiD(size.minw) : Math.round(value);	}
+		function minHeight(value){			return (value < get.dpiD(size.minh)) ? get.dpiD(size.minh) : Math.round(value);	}
 	}
 	var sort = new function(){
 		this.side = {};

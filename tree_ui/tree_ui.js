@@ -75,7 +75,7 @@ function tree_ui(options){
 	link.getFoundItems = function(text) 	{	return search.findItems(text);	}
 	link.showFoundItems = function(text)	{	search.showItems(text);	}
 	link.clearSelect = function()			{	select.removeAll(); }
-	link.showItem = function(item, place)	{
+	link.showItem = function(item, place, showed)	{
 		if( !(item instanceof cItem) )	return;
 
 		var parent = item.parent;
@@ -87,6 +87,8 @@ function tree_ui(options){
 
 		if(place == 1)					newTop += - Math.round(viewport.clientHeight/2) + 10;
 		else if(place == 2)				newTop += - viewport.clientHeight + 40;
+
+		if(showed && item.html)			newTop = viewport.scrollTop;
 
 		viewport.scrollTop = newTop;	}
 	link.addItems = function(objects, parent, position){
@@ -179,6 +181,8 @@ function tree_ui(options){
 
 			if(options.drag != undefined)					iitem.drag = (options.drag) ? true : false;
 			if(options.drop != undefined)					iitem.drop = (options.drop) ? true : false;
+
+			if(options.current)								current.set(iitem);
 
 			if(options.select == true)						select.add(iitem);
 			else if(options.select == false)				select.remove(iitem);
@@ -352,7 +356,7 @@ function tree_ui(options){
 
 					if(viewport.scrollTop + viewport.offsetHeight < itemsHeight + itemPosition){
 						if(viewport.offsetHeight < itemsHeight)		viewport.scrollTop = itemPosition;
-						else												viewport.scrollTop = itemPosition + itemsHeight - viewport.offsetHeight + Math.round(setting.height*0.5);
+						else										viewport.scrollTop = itemPosition + itemsHeight - viewport.offsetHeight + Math.round(setting.height*0.5);
 					}
 				}
 			} 				
@@ -370,7 +374,7 @@ function tree_ui(options){
 		show: function(options){
 			setting.show = options.show;
 
-			if(setting.show)							parent.appendChild(viewport);
+			if(setting.show)								parent.appendChild(viewport);
 			else											fragment.appendChild(viewport);
 		},
 		defaultExpand: function(options){

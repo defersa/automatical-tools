@@ -59,6 +59,9 @@ var tools = {
 	roundPlus: function(value, decimals) {
 		return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 	},
+	round: function(value, decimals) {
+		return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+	},
 	closest: function(target, className){
 		if( target != undefined){
 			if( tools.hasClass(target, className))			return target;
