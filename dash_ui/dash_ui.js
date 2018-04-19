@@ -32,6 +32,7 @@ function dash_ui(options){
 		link.change(options);
 	}
 	link.change = function (options){
+		if(!options)	options = {};
 		if(options.width != undefined)		setting.width = options.width;
 		if(options.height != undefined)		setting.height= options.height;
 		if(options.scale != undefined)		setting.scale = options.scale;
@@ -44,6 +45,11 @@ function dash_ui(options){
 	}
 	link.remove = function (options){
 		setting = undefined;
+		vector = undefined;
+		canvas = undefined;
+		backplate = undefined;
+		functions = undefined;
+		container = undefined;
 		tools.destroyHTML(container);
 
 		window.removeEventListener("resize", set.position);
@@ -123,7 +129,7 @@ function dash_ui(options){
 			canvas.style.cssText	= 'width: ' + setting.width*setting.scale + 'px; '
 									+ 'height: ' + setting.height*setting.scale + 'px; '
 									+ 'left: ' + left + 'px; '
-									+ 'top: ' + top + 'px; ';
+									+ 'top: ' + top + 'px;';
 		},
 		rectangles: function(){
 
@@ -138,7 +144,8 @@ function dash_ui(options){
 				item.bord.style.cssText = 'left: ' + (item.obj.left*setting.scale - 5)
 										+ 'px; top: ' + (item.obj.top*setting.scale - 5)
 										+ 'px; width: ' + (item.obj.width*setting.scale + 10)
-										+ 'px; height: ' + (item.obj.height*setting.scale + 10) + 'px;';
+										+ 'px; height: ' + (item.obj.height*setting.scale + 10)
+										+ 'px; z-index: '+ (item.obj.zindex);
 
 				var left	= -item.obj.left + 5;
 				var top		= -item.obj.top + 5;
@@ -202,6 +209,7 @@ function dash_ui(options){
 			if(item.obj.minHeight < 0 || item.obj.minHeight == undefined)	item.obj.minHeight = 50;
 			if(item.obj.left < 0 || item.obj.left == undefined)				item.obj.left = 0;
 			if(item.obj.top < 0 || item.obj.top == undefined)				item.obj.top = 0;
+			if(item.obj.zindex == undefined)								item.obj.zindex = 0;
 
 			if(options.content != undefined){
 				item.html.innerHTML = '';

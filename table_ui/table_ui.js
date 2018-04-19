@@ -707,12 +707,12 @@ function table_ui(options){
 
 							if(text === null)							text = (setting.showZero && !sep) ? 0 : ' '; 
 							else if(text === 0 && setting.hideZero)		text = ' ';
-							else if(isNaN(text))						text = ' ';
+							else if(isNaN(text) || text == 'NaN' )		text = ' ';
 							else										text = tools.roundPlus(text, round);
 
 							rows.last().push({ j: nj, type: type, text: text});
 
-						} else rows.last().push({ j: nj, type: 0, text: ''});
+						} else rows.last().push({ j: nj, type: 0, text: ' '});
 						nj++;
 					}
 					rows.push([]);
@@ -2021,7 +2021,7 @@ function table_ui(options){
 				for(var i = 0; i < _Side.c; i++)	row[i] = i;
 				for(var i = 0; i < _Top.r; i++)		col[i] = i;
 	
-				if(s.h) 		resize.side.width( col, get.dpiM(e.pageX - _Side.coords.left), _Side.lp.last());
+				if(s.h) 		resize.side.width( row, get.dpiM(e.pageX - _Side.coords.left), _Side.lp.last());
 				if(s.v) 		resize.top.height( row, get.dpiM(e.pageY - _Top.coords.top), _Top.tp.last());
 
 				tools.destroyHTML(s.html);

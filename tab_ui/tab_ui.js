@@ -366,6 +366,8 @@ function tab_ui(options){
 			searchTab.button.onclick = xclick;
 			searchTab.input = tools.createHTML({tag: 'input', parent: searchTab, className: 'tbu-searchInput'})
 			searchTab.input.oninput = function(){ find(searchTab.input.value); };
+			searchTab.input.onkeydown = keydown;
+			searchTab.input.focus();
 		}
 
 		function xclick(e){
@@ -373,6 +375,7 @@ function tab_ui(options){
 			searchTab.button.onclick = search.mclick;
 			find('');
 			tools.destroyHTML(searchTab.input);
+			self_header.focus();
 		}
 
 		function find(text){
@@ -386,6 +389,20 @@ function tab_ui(options){
 			}
 			for(var i = 0; i < found.length; i++)				found[i].html.style.background = '#fffedb';
 			if(typeof functions.search == 'function')			functions.search(found);
+		}
+		
+		function keydown(e){
+			if(e.keyCode == 27){
+				xclick(e);
+				tools.stopProp(e);
+				return false;
+			}
+			if(e.keyCode == 13 && found.length > 0){
+				set.active(found[0]);
+				xclick(e);
+				tools.stopProp(e);
+				return false;
+			}
 		}
 	}
 

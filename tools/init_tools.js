@@ -57,9 +57,11 @@ var tools = {
 		if(object.parentNode != undefined) object.parentNode.removeChild(object);
 		else console.warn('function "%c%s%c" has incorrect input variable', 'color: blue; font-style: italic;', 'tools.destroyHTML', ''); },
 	roundPlus: function(value, decimals) {
+		if(decimals > 16)	decimals = 16;
 		return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 	},
 	round: function(value, decimals) {
+		if(decimals > 16)	decimals = 16;
 		return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 	},
 	closest: function(target, className){
