@@ -4,6 +4,7 @@
 	display: block;				position: absolute;
 	background: #ededed;		overflow: auto;
 }
+.pu-container:focus {	outline: none;	border: none;	}
 .pu-backplate {
 	left: 0;	top: 0;
 	position: absolute;			display: block;

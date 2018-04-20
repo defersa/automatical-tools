@@ -269,7 +269,7 @@ function object_to_xlsx(setting, array){
 			}
 
 			for(var i = 0; i < table.length; i++){
-				sheet += '<row r="' + row + '" spans="1:' + table[i].length + '" x14ac:dyDescent="0.25">'; // ht="' + (array[l].object.row[i]) + '" customHeight="1"
+				sheet += '<row r="' + row + '" spans="1:' + array[l].object.col.length + '" x14ac:dyDescent="0.25">'; // ht="' + (array[l].object.row[i]) + '" customHeight="1"
 				for(var j = 0; j < array[l].object.col.length; j++){
 					if(table[i][j] != undefined){
 
@@ -505,7 +505,7 @@ function object_to_xlsx(setting, array){
 		return text;
 	}
 	function cut_sheet_name(text){
-		if(typeof text != 'string')			return '';
+		if(typeof text != 'string')			return 'error';
 		if(text.length > 29)				text = text.substring(0, 29);
 		return text;
 	}

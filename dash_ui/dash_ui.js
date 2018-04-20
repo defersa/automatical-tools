@@ -17,15 +17,14 @@ function dash_ui(options){
 		if(options.height == undefined)		options.height = 768;
 		if(options.scale == undefined)		options.scale = 1;
 
-		container = tools.createHTML({ tag: 'div', className: 'pu-container', oncontextmenu: events.context});
+		container = tools.createHTML({ tag: 'div', className: 'pu-container', oncontextmenu: events.context, tabIndex: -1, onkeydown: events.keydown });
 		backplate = tools.createHTML({ tag: 'div', className: 'pu-backplate', parent: container});
-		canvas = tools.createHTML({ tag: 'div', className: 'pu-canvas', parent: backplate, onmousedown: events.mouseDown.canvas });
+		canvas = tools.createHTML({ tag: 'div', className: 'pu-canvas', parent: backplate, onmousedown: events.mousedown.canvas });
 
 		vector = [];
 
 		setting = {};
 		functions = {};
-
 
 		window.addEventListener("resize", set.position);
 
@@ -159,7 +158,7 @@ function dash_ui(options){
 		}
 	}
 	var events = {
-		mouseDown: {
+		mousedown: {
 			canvas: function(e){
 				var item = tools.closest(e.target, 'pu-border');
 				if(!item && !e.ctrlKey){
@@ -180,6 +179,19 @@ function dash_ui(options){
 				if(!rect && select.items.length > 0 && !res)	position.down(e);
 			}
 		},
+		keydown: function(e){
+			var kc = e.keyCode;
+			if(e.ctrlKey && kc == 65){
+				select.addAll();
+			}
+			if(kc == 27){
+				select.removeAll();
+			}
+			if(kc == 27 || kc == 65){
+				tools.stopProp();
+				return false;
+			}
+		},
 		context: function(e){
 			item = tools.closest(e.target, 'pu-border');
 			if (item) item = item.item.obj;
@@ -196,7 +208,7 @@ function dash_ui(options){
 		panel: function(options){
 			var item = {};
 
-			item.bord = tools.createHTML({parent: canvas, tag: 'div', className: 'pu-border', onmousedown: events.mouseDown.rectangle });
+			item.bord = tools.createHTML({parent: canvas, tag: 'div', className: 'pu-border', onmousedown: events.mousedown.rectangle });
 			item.html = tools.createHTML({parent: item.bord, tag: 'div', className: 'pu-rectangle'});
 
 
@@ -334,6 +346,12 @@ function dash_ui(options){
 		this.add = function(item){
 			if(!item.select)	add(item);
 
+		}
+		this.addAll = function(){
+			select.removeAll();
+			vector.forEach(function(item){
+				add(item);
+			});
 		}
 		this.remove = function(item){
 			select.items.forEach(function(itm, indx, arry){ if(itm == item){
