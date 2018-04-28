@@ -88,7 +88,7 @@ var tools = {
 	},
 	startBackdrop: function(options){
 		var backdrop = document.getElementById('tools-backdrop');
-		if(backdrop == undefined)		backdrop = tools.createHTML({tab: 'div', parent: document.body, id: 'tools-backdrop', style: 'position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 999;'});
+		if(backdrop == undefined)		backdrop = tools.createHTML({tag: 'div', parent: document.body, id: 'tools-backdrop', style: 'position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 999;'});
 		if(options.cursor)				backdrop.style.cursor = options.cursor;
 	},
 	endBackdrop: function(){

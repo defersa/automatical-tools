@@ -23,25 +23,21 @@
 }
 .pu-resize {
 	z-index: 9998;
-	position: absolute;			display: none;
+	position: absolute;			display: block;
 	width: 9px;					height: 9px;
 	border: 1px solid #bbb;		border-radius: 5px;
 	background: white;
 }
-.pu-border {
-	position: absolute;
-	cursor: move;
-}
+.pu-border {	position: absolute;		cursor: move;	}
 .pu-rectangle {
 	z-index: 3;
-	position: absolute;
-	cursor: default;
-	top: 4px;	left: 4px;
-	right: 4px;	bottom: 4px;
+	position: absolute;		cursor: default;
+	top: 4px;				left: 4px;
+	right: 4px;				bottom: 4px;
 	border: 1px solid transparent;
 }
 .pu-select .pu-rectangle {	border: 1px dashed #ccc; }
-.pu-select .pu-resize {		display: block;	}
+.pu-position .pu-resize {	display: none;	}
 .pu-rectangle-resize, .pu-rectangle-select {
 	box-sizing: border-box;
 	position: absolute;
@@ -49,6 +45,9 @@
 	opacity: 0.3;
 	border: 1px solid #fff;
 }
+
+.pu-vseparator { z-index: 9999;	display: none;	position: absolute;	height: 1px;	left: 0; right: 0; border-top: 1px dashed #236B8E;	}
+.pu-hseparator { z-index: 9999;	display: none;	position: absolute;	width: 1px;		top: 0; bottom: 0; border-left: 1px dashed #236B8E;	}
 
 .pu-rectangle-resize {		box-shadow: 0 0 10px #222;		background: #888;	}
 .pu-rectangle-select {		box-shadow: 0 0 10px #0a5dc7;	background: #3e8ff5;	}

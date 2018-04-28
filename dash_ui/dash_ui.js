@@ -231,34 +231,134 @@ function dash_ui(options){
 		}
 	}
 
+	var guide = new function(){
+		var vertical;
+		var horizontal;
+		var s;
+
+		this.make = function(e, v, h){
+			vertical = [];
+			horizontal = [];
+			
+			vector.forEach(function(item){
+				if(!item.select){
+					var positions = [item.obj.top, item.obj.top + Math.round(item.obj.height/2), item.obj.top + item.obj.height];
+					for(var j = 0; j < positions.length; j++){
+						vertical.forEach(function(i){		if(positions[j] == i.p)		positions[j] = -1;	});
+						if(positions[j] != -1)				vertical.push({				p: positions[j] 	});
+					}
+
+					positions = [item.obj.left, item.obj.left + Math.round(item.obj.width/2), item.obj.left + item.obj.width];
+					for(var j = 0; j < positions.length; j++){
+						horizontal.forEach(function(i){		if(positions[j] == i.p)		positions[j] = -1;	});
+						if(positions[j] != -1)				horizontal.push({			p: positions[j] 	});
+					}
+				}
+			});
+			vertical.forEach(function(item){	item.html = tools.createHTML({tag: 'div', className: 'pu-vseparator', style: ('top: ' + item.p*setting.scale + 'px;'), parent: canvas });		});
+			horizontal.forEach(function(item){	item.html = tools.createHTML({tag: 'div', className: 'pu-hseparator', style: ('left: ' + item.p*setting.scale + 'px;'), parent: canvas });		});
+
+			s = {e: e, v: v, h: h };
+		}
+
+		this.round = function(e){
+			var y = (e.pageY - s.e.pageY)/setting.scale;
+			var x = (e.pageX - s.e.pageX)/setting.scale;
+
+			for(var i = 0; i < horizontal.length; i++){
+				var c = false;
+				for(var j = 0; j < s.h.length; j++){
+					if(horizontal[i].p > s.h[j] + x - 5 && horizontal[i].p < s.h[j] + x + 5){
+						x = horizontal[i].p - s.h[j];
+						c = true;
+						break;
+					}
+				}
+				if(c)	break;
+			}
+
+			for(var i = 0; i < vertical.length; i++){
+				var c = false;
+				for(var j = 0; j < s.v.length; j++){
+					if(vertical[i].p > s.v[j] + y - 5 && vertical[i].p < s.v[j] + y + 5){
+						y = vertical[i].p - s.v[j];
+						c = true;
+						break;
+					}
+				}
+				if(c)	break;
+			}
+
+			for(var i = 0; i < horizontal.length; i++){
+				var d = false;
+				for(var j = 0; j < s.h.length; j++){	if(horizontal[i].p == s.h[j] + x) d = true;			}
+				horizontal[i].html.style.display = (d) ? 'block' : 'none';
+			}
+
+			for(var i = 0; i < vertical.length; i++){
+				var d = false;
+				for(var j = 0; j < s.v.length; j++){	if(vertical[i].p == s.v[j] + y) d = true;			}
+				vertical[i].html.style.display = (d) ? 'block' : 'none';
+			}
+
+			return [y, x];
+		}
+
+		this.destroy = function(){
+			vertical.forEach(function(item){	tools.destroyHTML(item.html);	});
+			horizontal.forEach(function(item){	tools.destroyHTML(item.html);	});
+			vertical = undefined;
+			horizontal = undefined;
+			s = undefined;
+		}
+	}
 	var position = new function(){
 		var s;
 
 		this.down = function(e){
+
 			var positions = [];
+			var h = [setting.width, 0];
+			var v = [setting.height, 0];
+
 			select.items.forEach(function(item){
 				positions.push([item.obj.top, item.obj.left]);
+				if(item.obj.top < v[0])						v[0] = item.obj.top;
+				if(item.obj.top + item.obj.height > v[1])	v[1] = item.obj.top + item.obj.height;
+				if(item.obj.left < h[0])					h[0] = item.obj.left;
+				if(item.obj.left + item.obj.width > h[1])	h[1] = item.obj.left + item.obj.width;
+			});
+			v[2] = Math.round((v[0] + v[1])/2);
+			h[2] = Math.round((h[0] + h[1])/2);
+
+			guide.make(e, v, h);
+
+			var items = select.items.concat();
+			items.forEach(function(item){
+				item.bord.className = 'pu-border pu-select pu-position';
 			});
 
-			s = {e: e, p: positions};
+			s = {e: e, p: positions, i: items};
 			tools.startBackdrop({cursor: 'move'});
 			window.addEventListener("mousemove", move);
 			window.addEventListener("mouseup", up);
 		}
 
 		function move(e){
-			var y = (e.pageY - s.e.pageY)/setting.scale;
-			var x = (e.pageX - s.e.pageX)/setting.scale;
-
+			var p = guide.round(e);
 
 			select.items.forEach(function(item, i){
-				item.obj.top = s.p[i][0] + y;
-				item.obj.left = s.p[i][1] + x;
+				item.obj.top = s.p[i][0] + p[0];
+				item.obj.left = s.p[i][1] + p[1];
 			});
 			set.rectangles();
 		}
 
 		function up(e){
+			guide.destroy();
+			s.i.forEach(function(item){
+				item.bord.className = 'pu-border pu-select';
+			});
 			set.position();
 			tools.endBackdrop();
 			s = undefined;
@@ -270,6 +370,7 @@ function dash_ui(options){
 		var s;
 
 		this.down = function(e, v, h, cursor){
+
 			var objects = [];
 			select.items.forEach(function(item){
 				var object = {	l: item.obj.left*setting.scale,
@@ -280,7 +381,10 @@ function dash_ui(options){
 				object.html = tools.createHTML({tag: 'div', className: 'pu-rectangle-resize', parent: canvas})
 				objects.push(object);
 			});
+			var c = tools.closest(e.target, 'pu-border').item.obj;
+
 			s = {e: e, h: h, v: v, o: objects };
+			guide.make(e, [((v == 1)? c.top + c.height : ( (v == -1)? c.top : 0))], [((h == 1)? c.left + c.width : ( (h == -1)? c.left : 0 ))] );
 			tools.startBackdrop({cursor: cursor});
 			window.addEventListener("mousemove", move);
 			window.addEventListener("mouseup", up);
@@ -288,46 +392,45 @@ function dash_ui(options){
 		}
 
 		function move(e){
-			var x = (e.pageX - s.e.pageX);
-			var y = (e.pageY - s.e.pageY);
+			var p = guide.round(e);
 			s.o.forEach(function(itm){
 				var h = itm.h;
 				var w = itm.w;
 				var l = itm.l;
 				var t = itm.t;
 
-				if(s.h == 1)	w += x;
+				if(s.h == 1)	w += p[1]/setting.scale;
 				if(s.h ==-1){
-					w -= x;
-					l += x;
+					w -= p[1]/setting.scale;
+					l += p[1]/setting.scale;
 				}
-				if(s.v == 1)	h += y;
+				if(s.v == 1)	h += p[0]/setting.scale;
 				if(s.v ==-1){
-					h -= y;
-					t += y;
+					h -= p[0]/setting.scale;
+					t += p[0]/setting.scale;
 				}
 				itm.html.style.cssText = 'left: ' + l + 'px; top: ' + t + 'px; width: ' + w + 'px; height: ' + h + 'px;';
 			});
 		}
 
 		function up(e){
+			var p = guide.round(e);
+			guide.destroy();
 
 			tools.endBackdrop();
 			s.o.forEach(function(itm){		tools.destroyHTML(itm.html);	})
-			var x = (e.pageX - s.e.pageX)/setting.scale;
-			var y = (e.pageY - s.e.pageY)/setting.scale;
 
 			select.items.forEach(function(itm){
 
-				if(s.h == 1)	itm.obj.width += x;
+				if(s.h == 1)	itm.obj.width += p[1];
 				if(s.h ==-1){
-					itm.obj.width -= x;
-					itm.obj.left += x;
+					itm.obj.width -= p[1];
+					itm.obj.left += p[1];
 				}
-				if(s.v == 1)	itm.obj.height += y;
+				if(s.v == 1)	itm.obj.height += p[0];
 				if(s.v ==-1){
-					itm.obj.height -= y;
-					itm.obj.top += y;
+					itm.obj.height -= p[0];
+					itm.obj.top += p[0];
 				}
 				if(itm.obj.width < itm.obj.minWidth)	itm.obj.width = itm.obj.minWidth;
 				if(itm.obj.height < itm.obj.minHeight)	itm.obj.height = itm.obj.minHeight;
