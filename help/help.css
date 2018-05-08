@@ -1,0 +1,95 @@
+#h-header, #h-body, #h-panel, #h-content, #h-menu, #h-content-button, #h-menu-caption, #h-menu-button, .h-page {	
+	display: flex;
+	position: relative;
+	transition: .3s;
+	box-sizing: border-box;
+}
+
+/* main level */
+#h-header {
+	height: 42px;	z-index: 2;
+	left: 0;		right: 0;
+	background: #39739C;
+	box-shadow: 0 0 15px #222;
+}
+#h-body {
+	height: Calc(100% - 42px);
+	left: 0;		top: 0;
+}
+
+/* panel and content */
+#h-panel {
+	overflow-x: hidden;
+	width: 18%;			height: 100%;
+	padding: 0 32px;
+
+	box-shadow: 0 0 15px #666;
+	background: #fff;
+	flex-direction: column;
+}
+#h-content {
+	overflow: auto;		display: block;
+	flex-direction: column;
+	width: 82%;
+	height: 100%;
+	padding: 0 6%;
+}
+
+#h-menu {
+	width: 100%;
+	margin-top: 32px;
+	flex-direction: row;
+}
+#h-search {
+	border-radius: 5px;		border: 1px solid #E6E6E6;
+	width: 100%;			height: 43px;
+	margin: 10px 0;			padding: 0 12px;
+
+	color: #666;	
+	font-style: italic;
+	box-sizing: border-box;
+}
+
+#h-menu-caption {
+	height: 32px;			line-height: 32px;
+	font-size: 19px;		font-weight: bold;
+
+	color: #39739C;
+	flex-grow: 1;
+}
+#h-menu-button {
+	width: 32px;			height: 32px;
+}
+#h-content-button {
+	position: fixed;		display: none;
+	left: 0;				top: 74px;
+	width: 32px;			height: 32px;
+}
+.h-body-close #h-panel {			width: 0;		padding: 0;	}
+.h-body-close #h-content-button {	left: 32px;		display: block;	}
+.h-body-close #h-content {			width: 100%;	padding: 0 10%;	}
+
+.h-table-s {		width: 100%;	border: 0;	}
+.h-content-text {	width: 40%;		vertical-align: top;	}
+.h-content-images {	width: 60%;		vertical-align: top;	}
+
+.h-content-ico {	width: 50px;	vertical-align: top;	text-align: center;	}
+.h-content-description {	width: Calc(100%-50px);	}
+.h-image {	margin: 0 4px;}
+
+body {
+	font-family: Noto Sans, sans-serif;
+	background: #E1E1E1;
+	position: absolute;
+	width: 100%;	height: 100%;
+	margin: 0;		padding: 0;
+}
+
+.h-page {
+	color: #333;
+	padding: 30px;
+	background: #fff;
+	margin: 25px 0;
+	border-radius: 5px;
+	box-shadow: 0 0 15px #444;
+}

@@ -247,7 +247,6 @@ function dash_ui(options){
 						vertical.forEach(function(i){		if(positions[j] == i.p)		positions[j] = -1;	});
 						if(positions[j] != -1)				vertical.push({				p: positions[j] 	});
 					}
-
 					positions = [item.obj.left, item.obj.left + Math.round(item.obj.width/2), item.obj.left + item.obj.width];
 					for(var j = 0; j < positions.length; j++){
 						horizontal.forEach(function(i){		if(positions[j] == i.p)		positions[j] = -1;	});
@@ -257,7 +256,6 @@ function dash_ui(options){
 			});
 			vertical.forEach(function(item){	item.html = tools.createHTML({tag: 'div', className: 'pu-vseparator', style: ('top: ' + item.p*setting.scale + 'px;'), parent: canvas });		});
 			horizontal.forEach(function(item){	item.html = tools.createHTML({tag: 'div', className: 'pu-hseparator', style: ('left: ' + item.p*setting.scale + 'px;'), parent: canvas });		});
-
 			s = {e: e, v: v, h: h };
 		}
 
@@ -276,7 +274,6 @@ function dash_ui(options){
 				}
 				if(c)	break;
 			}
-
 			for(var i = 0; i < vertical.length; i++){
 				var c = false;
 				for(var j = 0; j < s.v.length; j++){
@@ -294,7 +291,6 @@ function dash_ui(options){
 				for(var j = 0; j < s.h.length; j++){	if(horizontal[i].p == s.h[j] + x) d = true;			}
 				horizontal[i].html.style.display = (d) ? 'block' : 'none';
 			}
-
 			for(var i = 0; i < vertical.length; i++){
 				var d = false;
 				for(var j = 0; j < s.v.length; j++){	if(vertical[i].p == s.v[j] + y) d = true;			}
