@@ -2184,7 +2184,7 @@ function table_ui(options){
 			_Corner.html.innerHTML = '';
 			if(options.side){
 				if(options.side.sort == 'text' || options.side.sort == 'exp' || options.side.sort == 'label'){
-					sort.side = { sort: options.side.sort, cell: {i: [0], j: [0], index: -1 }, objType: options.side.objType, direction: options.side.direction };
+					sort.side = { sort: options.side.sort, cell: {i: [0], j: [0], types: [0], index: -1 }, objType: options.side.objType, direction: options.side.direction };
 				
 					if(options.side.direction){
 						_Corner.html.innerHTML += '<div id="tau-sort-arr-h">◀</div>';
@@ -2207,12 +2207,12 @@ function table_ui(options){
 					else											sideSort(dencrease);
 				}
 			} else {
+				sort.side = { cell: {i: [0], j: [0], types: [0] } };
 				sideSort(fDefault);
-				sort.side = {};
 			}
 			if(options.top){
 				if(options.top.sort == 'text' || options.top.sort == 'exp' || options.top.sort == 'label'){
-					sort.top = { sort: options.top.sort, cell: {i: [0], j: [0], index: -1 }, objType: options.top.objType, direction: options.top.direction };
+					sort.top = { sort: options.top.sort, cell: {i: [0], j: [0], types: [0], index: -1 }, objType: options.top.objType, direction: options.top.direction };
 
 					if(options.top.direction){
 						_Corner.html.innerHTML += '<div id="tau-sort-arr-v">▲</div>';
@@ -2237,8 +2237,8 @@ function table_ui(options){
 					else											topSort(dencrease);
 				}
 			} else {
+				sort.top = {cell: {i: [0], j: [0], types: [0] }};
 				topSort(fDefault);
-				sort.top = {};
 			}
 			remake.reBuild();
 		}
@@ -2265,8 +2265,8 @@ function table_ui(options){
 				sort.side.direction = false;
 				sideSort(dencrease);
 			} else if(sort.side.direction === false){
+				sort.side = {cell: {i: [0], j: [0], types: [0] } };
 				sideSort(fDefault);
-				sort.side = {};
 			}
 			remake.reBuild();
 		}
@@ -2286,8 +2286,8 @@ function table_ui(options){
 				sort.top.direction = false;
 				topSort(dencrease);
 			} else if(sort.top.direction === false){
+				sort.top = {cell: {i: [0], j: [0], types: [0] } };
 				topSort(fDefault);
-				sort.top = {};
 			}
 			remake.reBuild();
 		}
