@@ -76,7 +76,7 @@ function table_ui(options){
 
 	link.xlsxExport = function(options){		return exp.xlsxExport(options);		}
 	link.htmlExport = function(options){		return exp.htmlExport(options);		}
-	link.setSort = function(options){			sort.sortAll(options);				}
+	link.setSort = function(options){			sort.setSort(options);				}
 	link.getSort = function(){					return sort.getSort();				}
 	link.getSetting = function(){				return tools.cloneObject(setting);	}
 	link.focus = function(){					main.html.focus();					}
@@ -312,7 +312,7 @@ function table_ui(options){
 			},
 			side: function(p1, p2){
 				var p = {r: _Side.c - 1};
-				p.l = (p2.j > p1.i) ? p1.i : p2.j;
+				p.l = (p2.j > p1.j) ? p1.j : p2.j;
 				var st = _Side.visual[p1.i][p.l];
 				var ed = _Side.visual[p2.i][p.l];
 				p.t = (st.i[0] > ed.i[0]) ? ed.i[0] : st.i[0],
@@ -730,7 +730,23 @@ function table_ui(options){
 			if(typeof options != 'object')					options = {};
 			if(select.table.length == 0)					options.select = false;
 
-			var html = '<!DOCTYPE HTML><html><head><style> th { background: #F1F1F1; }</style></head><body>';
+			var html = '<!DOCTYPE HTML><html><head><style> table { vertical-align: middle; font-family: Verdana, serif; font-size: 11px; border-collapse: collapse; white-space:nowrap } .t{background:#F1F1F1; font-weight:bold; text-align:center;} .r{background:#F1F1F1; font-weight:bold; text-align:center;  white-space:normal; } .s{background:#F1F1F1; font-weight:bold;} .b {background:#fffcec;} .v {background:#e5fbff;} .h {background:#FFECF1;}</style></head><body>';
+
+			if(options.annotation){
+				html += '<table padding="1px" style=" border: 1px solid transparency; ">';
+				for(var i = 0; i < options.annotation.length; i++){
+					html += '<tr>';
+					if(Array.isArray(options.annotation[i]) ){
+						for(var j = 0; j < options.annotation[i].length; j++)
+							html += '<td>' + options.annotation[i][j] + '</td>';
+
+					} else {
+						html += '<td>' + options.annotation[i] + '</td>';
+					}					
+					html += '</tr>';
+				}
+				html += '</table>';
+			}
 
 			var fi = _Table.r, li = 0, fj = _Table.r, lj = 0, ci = 0, cj = 0;
 			if(options.select){
@@ -754,13 +770,18 @@ function table_ui(options){
 				fj = 0; lj = _Table.c - 1;
 			}
 
-			html += '<table border="1" padding="1px" style="vertical-align: middle; font-family: Verdana, serif; font-size: 11px; border-collapse: collapse; text-align: center; "><tbody>    ';
+			if(options.fullHeader){
+				if(options.top)	ci = 0;
+				if(options.side) cj = 0;
+			}
+
+			html += '<table border="1" padding="1px" style=" text-align: center; ">';
 
 			if(options.top){
 				var corner = false;
 				html += '<tr>'; 
 				if(options.side){
-					html += '<th' + ( (options.color) ? ' style="background:#F1F1F1;"' : '' )
+					html += '<td' + ( (options.color) ? ' class="t"' : '' )
 							+ ( (_Top.r - ci > 1 ) ? (' rowspan="' + (_Top.r - ci) + '"') : '' )
 							+ ( (_Side.c - cj > 1 ) ? (' colspan="' + (_Side.c - cj) + '" />') : ' />' );
 				}
@@ -774,19 +795,19 @@ function table_ui(options){
 
 						if( cell.export && !options.split){
 							var colSpan = 0;
-							cell.j.forEach(function(item){  if(_Top.branches[item].visible) colSpan++;  });
+							cell.j.forEach(function(item){  if(_Top.branches[item].visible && item >= fj && item <= lj ) colSpan++;  });
 
-							html += '<th' + ( (options.color) ? ' style="background:#F1F1F1;"' : '' )
+							html += '<td' + ( (options.color) ? ' class="t"' : '' )
 								+ ( ((cell.i.last() - i + 1) > 1 ) ? (' rowspan="' + (cell.i.last() - i + 1) + '"') : '' )
 								+ ( (colSpan > 1 ) ? (' colspan="' + (colSpan) + '">') : '>' )
-								+ cell.obj.text + '</th>';
+								+ cell.obj.text + '</td>';
 							cell.export = false;
-						} else if(options.split){	html += '<th' + ( (options.color) ? ' style="background:#F1F1F1;">' : '>' )	+ cell.obj.text + '</th>';		}
+						} else if(options.split){	html += '<td' + ( (options.color) ? ' class="t"">' : '>' )	+ cell.obj.text + '</td>';		}
 					}
 					html += '</tr><tr>';
 				}
+				html = html.substring(0, html.length - 4);
 			}
-			html = html.substring(0, html.length - 4);
 			if(options.side){ select.side.forEach(function(item){ item.export = true; });	}
 			for(var i = 0; i < _Side.r; i++){	for(var j = 0; j < _Side.c; j++)	 _Side.visual[i][j].export = true;	}
 
@@ -800,12 +821,12 @@ function table_ui(options){
 						var cell = _Side.visual[i][j];
 						if(cell.export){
 							var rowSpan = 0;
-							cell.i.forEach(function(item){ if(_Side.branches[item].visible) rowSpan += _Side.branches[item].rcount; });
+							cell.i.forEach(function(item){ if(_Side.branches[item].visible && item >= fi && item <= li ) rowSpan += _Side.branches[item].rcount; });
 
-							html += '<th' + ( (options.color) ? ' style="background:#F1F1F1;"' : '' )
+							html += '<td' + ( (options.color) ? ( (cell.j.last() == _Side.c - 1) ? ' class="s"' : ' class="r"') : '' )
 								+ ( (rowSpan > 1 ) ? (' rowspan="' + (rowSpan) + '"') : '' )
 								+ ( ((cell.j.last() - j + 1) > 1 ) ? (' colspan="' + (cell.j.last() - j + 1) + '">') : '>' )
-								+ cell.obj.text + '</th>';
+								+ cell.obj.text + '</td>';
 							cell.export = false;
 						}
 					}
@@ -815,7 +836,7 @@ function table_ui(options){
 
 				for(var k = 0; k < rows; k++){
 					if(options.side && options.split){
-						for(var j = cj; j < _Side.c; j++)		html += '<th' + ( (options.color) ? ' style="background:#F1F1F1;">' : '>' ) + _Side.visual[i][j].obj.text + '</th>';
+						for(var j = cj; j < _Side.c; j++)		html += '<td' + ( (options.color) ? '  class="t">' : '>' ) + _Side.visual[i][j].obj.text + '</td>';
 					}
 					for(var j = fj; j <= lj; j++){
 						if(_Table.cells[i][j].visual[k]){
@@ -826,18 +847,19 @@ function table_ui(options){
 							var type = item.type, round;
 
 							if(type == 0 && _Table.cells[i][j].round == 2){				type = 5;	round = setting.round[2];
-							} else if(type == 3 && _Table.cells[i][j].round == 2){		type = 6;	round = setting.round[2];							
+							} else if(type == 3 && _Table.cells[i][j].round == 2){		type = 6;	round = setting.round[2];
 							} else if(type != 0 && type != 3)							round = setting.round[1];
 							else 														round = setting.round[0];
 
-							if(text === null)							text = (setting.showZero && !sep) ? 0 : ' '; 
-							else if(text === 0 && setting.hideZero)		text = ' ';
-							else if(isNaN(text))						text = ' ';
+							if(text === null)							text = (setting.showZero && !sep) ? 0 : ''; 
+							else if(text === 0 && setting.hideZero)		text = '';
+							else if(isNaN(text))						text = '';
 							else										text = tools.roundPlus(text, round);
 							
-							if((type == 1 || type == 2) && setting.showPercent && text != ' ')	text += '%'; 
+							if((type == 1 || type == 2) && setting.showPercent && text !== '')	text += '%'; 
+							var cellClass = (type == 3) ? (' class="b"') : ( (type == 2) ? (' class="h"') : ( (type == 1) ? (' class="v"') : ('') ) )
 
-							html += '<td' + ( (options.color) ? (' style="background:' + defaultBack.table[2][type] + '">') : '>' ) + text + '</td>';
+							html += '<td' + ( (options.color) ? cellClass : '' ) + '>' + text + '</td>';
 
 						} else html += '<td></td>';
 					}
@@ -845,7 +867,7 @@ function table_ui(options){
 				}
 			}
 			html = html.substring(0, html.length - 4);
-			html += '</tbody></table></body></html>';
+			html += '</table></body></html>';
 			return html;
 		}
 	}
@@ -1538,11 +1560,17 @@ function table_ui(options){
 			if( x < scroll.h.l)	scroll.pageScroll(-1, 0 );
 			else				scroll.pageScroll( 1, 0 );
 		}
-		function move(e){		s.ne = e;		}
+		function move(e){
+			s.ne = e;
+			s.redrow = true;
+		}
 		function hredrow(){ // horizontal redrow 
-			display.s.l = Math.round(s.l + (((get.dpiM(s.ne.pageX - s.e.pageX))/(display.s.vw - 36)) * display.s.lp.last()));
-			display.table();
-			display.top();
+			if(s.redrow){
+				display.s.l = Math.round(s.l + (((get.dpiM(s.ne.pageX - s.e.pageX))/(display.s.vw - 36)) * display.s.lp.last()));
+				display.table();
+				display.top();
+				s.redrow = false;
+			}
 			timer = setTimeout(hredrow, 5);
 		}
 		function hup(e){
@@ -1571,9 +1599,12 @@ function table_ui(options){
 			else				scroll.pageScroll( 0, 1 );
 		}
 		function vredrow(e){
-			display.s.t = Math.round(s.t + (((get.dpiM(s.ne.pageY - s.e.pageY))/(display.s.vh - 36)) * display.s.tp.last()));
-			display.table();
-			display.side();
+			if(s.redrow){
+				display.s.t = Math.round(s.t + (((get.dpiM(s.ne.pageY - s.e.pageY))/(display.s.vh - 36)) * display.s.tp.last()));
+				display.table();
+				display.side();
+				s.redrow = false;
+			}
 			timer = setTimeout(vredrow, 5);
 		}
 		function vup(e){
@@ -2022,7 +2053,7 @@ function table_ui(options){
 				for(var i = 0; i < _Top.r; i++)		col[i] = i;
 	
 				if(s.h) 		resize.side.width( row, get.dpiM(e.pageX - _Side.coords.left), _Side.lp.last());
-				if(s.v) 		resize.top.height( row, get.dpiM(e.pageY - _Top.coords.top), _Top.tp.last());
+				if(s.v) 		resize.top.height( col, get.dpiM(e.pageY - _Top.coords.top), _Top.tp.last());
 
 				tools.destroyHTML(s.html);
 				s = {};
@@ -2149,59 +2180,79 @@ function table_ui(options){
 		this.side = {};
 		this.top = {};
 
-		this.sortAll = function(options){
+		this.setSort = function(options){
+			_Corner.html.innerHTML = '';
 			if(options.side){
-				var cell;
-				if(options.side.index >= _Side.branches.length)		options.side.index = _Side.branches.length - 1;
-				_Side.branches.forEach(function(item){	if(item.index == options.side.index) cell = item; });
-				if(options.side.type == undefined){
-					if(!(cell.types[0] && setting.showType[0]) && cell.floatType)	options.side.type = 0;
-					else{ for(var i = 0; i < cell.types.length; i++){ if(cell.types[i] && setting.showType[i]){ options.side.type = i; break; } } }
-				}
-
-				if(options.side.direction){
-					sort.side = {cell: cell, type: options.side.type, direction: true };
-					sideSort(increase);
+				if(options.side.sort == 'text' || options.side.sort == 'exp' || options.side.sort == 'label'){
+					sort.side = { sort: options.side.sort, cell: {i: [0], j: [0], index: -1 }, objType: options.side.objType, direction: options.side.direction };
+				
+					if(options.side.direction){
+						_Corner.html.innerHTML += '<div id="tau-sort-arr-h">◀</div>';
+						sideSort(increaseBy);
+					} else {
+						_Corner.html.innerHTML += '<div id="tau-sort-arr-h">▶</div>';
+						sideSort(dencreaseBy);
+					}
 				} else {
-					sort.side = {cell: cell, type: options.side.type, direction: false };
-					sideSort(dencrease);
+					var cell;
+					if(options.side.index >= _Side.branches.length)		options.side.index = _Side.branches.length - 1;
+					_Side.branches.forEach(function(item){	if(item.index == options.side.index) cell = item; });
+					if(options.side.type == undefined){
+						if(!(cell.types[0] && setting.showType[0]) && cell.floatType)	options.side.type = 0;
+						else{ for(var i = 0; i < cell.types.length; i++){ if(cell.types[i] && setting.showType[i]){ options.side.type = i;		break; } } }
+					}
+	
+					sort.side = {cell: cell, type: options.side.type, direction: options.side.direction };
+					if(options.side.direction)						sideSort(increase);
+					else											sideSort(dencrease);
 				}
 			} else {
-				sideDefault();
+				sideSort(fDefault);
 				sort.side = {};
 			}
 			if(options.top){
-				var cell;
-				if(options.top.index >= _Top.branches.length)	options.top.index = _Top.branches.length - 1;
-				_Top.branches.forEach(function(item){	if(item.index == options.top.index) cell = item; });
-				if(options.top.type == undefined){
-					if(!(cell.types[0] && setting.showType[0]) && cell.floatType)	options.top.type = 0;
-					else{ for(var i = 0; i < cell.types.length; i++){ if(cell.types[i] && setting.showType[i]){ options.top.type = i; break; } } }
-				}
+				if(options.top.sort == 'text' || options.top.sort == 'exp' || options.top.sort == 'label'){
+					sort.top = { sort: options.top.sort, cell: {i: [0], j: [0], index: -1 }, objType: options.top.objType, direction: options.top.direction };
 
-				if(options.top.direction){
-					sort.top = {cell: cell, type: options.top.type, direction: true };
-					topSort(increase);
+					if(options.top.direction){
+						_Corner.html.innerHTML += '<div id="tau-sort-arr-v">▲</div>';
+						topSort(increaseBy);
+					} else {
+						_Corner.html.innerHTML += '<div id="tau-sort-arr-v">▼</div>';
+						topSort(dencreaseBy);
+					}
 				} else {
-					sort.top = {cell: cell, type: options.top.type, direction: false };
-					topSort(dencrease);
+					var cell;
+					
+					if(options.top.index >= _Top.branches.length)	options.top.index = _Top.branches.length - 1;
+					else if(options.top.index < 0)					options.top.index = 0;
+						_Top.branches.forEach(function(item){	if(item.index == options.top.index) cell = item; });
+					if(options.top.type == undefined){
+						if(!(cell.types[0] && setting.showType[0]) && cell.floatType)	options.top.type = 0;
+						else{ for(var i = 0; i < cell.types.length; i++){ if(cell.types[i] && setting.showType[i]){ options.top.type = i; break; } } }
+					}
+					
+					sort.top = {cell: cell, type: options.top.type, direction: options.top.direction};
+					if(options.top.direction)						topSort(increase);
+					else											topSort(dencrease);
 				}
 			} else {
-				topDefault();
+				topSort(fDefault);
 				sort.top = {};
 			}
 			remake.reBuild();
 		}
 		this.getSort = function(){
 			var result = {};
-			if(sort.side.cell != undefined)			result.side = { index: sort.side.cell.index, direction: sort.side.direction, type: sort.side.type };
-			if(sort.top.cell != undefined)			result.top = { index: sort.top.cell.index, direction: sort.top.direction, type: sort.top.type };
+			if(sort.side.cell != undefined)			result.side = { index: sort.side.cell.index, direction: sort.side.direction, type: sort.side.type, sort: sort.side.sort, objType: sort.side.objType };
+			if(sort.top.cell != undefined)			result.top = { index: sort.top.cell.index, direction: sort.top.direction, type: sort.top.type, sort: sort.top.sort, objType: sort.top.objType };
 			return result;
 		}
 
 		this.sdown = function(cell, e){
+			if(document.getElementById('tau-sort-arr-h'))	tools.destroyHTML(document.getElementById('tau-sort-arr-h'));
 			var types = [], type;
-			if(!(cell.types[0] && setting.showType[0]) && cell.floatType)			types.push(0);
+			if( !(cell.types[0] && setting.showType[0]) && cell.floatType)			types.push(0);
 			cell.types.forEach(function(item, i){ 	if(item && setting.showType[i])	types.push(i); });
 
 			var bite = cell.height/types.length, top = _Side.coords.top + display.s.tp[cell.i[0]] - display.s.t;
@@ -2214,51 +2265,13 @@ function table_ui(options){
 				sort.side.direction = false;
 				sideSort(dencrease);
 			} else if(sort.side.direction === false){
-				sideDefault();
+				sideSort(fDefault);
 				sort.side = {};
 			}
 			remake.reBuild();
 		}
-		function sideSort(compare){
-			for(var j = 0; j < _Table.c - 1; j++){
-				var p = j, parent = _Top.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
-				if(_Top.branches[j].unsort || (_Top.branches[j].base && !sort.side.cell.base && sort.side.type == 0 ) )		continue;
-
-				for(var k = j + 1; k < _Table.c; k++){
-					if(parent != _Top.branches[k].parent) break;
-					if(_Top.branches[k].unsort || (_Top.branches[k].base && !sort.side.cell.base && sort.side.type == 0 ) ) continue;
-
-					if(compare( _Table.cells[sort.side.cell.i[0]][p].obj[sort.side.type], _Table.cells[sort.side.cell.i[0]][k].obj[sort.side.type], _Top.branches[p].index, _Top.branches[k].index))	p = k;
-				}
-				var pi, pj;
-				parent.children.forEach(function(item, i){ if(item == _Top.branches[j]) pi = i; if(item == _Top.branches[p]) pj = i; });
-
-				buf = parent.children[pi];				parent.children[pi] = parent.children[pj];				parent.children[pj] = buf;
-				buf = _Top.branches[j];					_Top.branches[j] = _Top.branches[p];					_Top.branches[p] = buf;
-				for(var i = 0; i < _Table.r; i++){
-					buf = _Table.cells[i][j];			_Table.cells[i][j] = _Table.cells[i][p];				_Table.cells[i][p] = buf;
-				}
-			}
-		}
-		function sideDefault(){
-			for(var j = 0; j < _Table.c - 1; j++){
-				var p = j, parent = _Top.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
-
-				for(var k = j + 1; k < _Table.c; k++){
-					if(_Top.branches[k].index == j){	p = k;	break;}
-				}
-				var pi, pj;
-				parent.children.forEach(function(item, i){ if(item == _Top.branches[j]) pi = i; if(item == _Top.branches[p]) pj = i; });
-
-				buf = parent.children[pi];				parent.children[pi] = parent.children[pj];				parent.children[pj] = buf;
-				buf = _Top.branches[j];					_Top.branches[j] = _Top.branches[p];					_Top.branches[p] = buf;
-				for(var i = 0; i < _Table.r; i++){
-					buf = _Table.cells[i][j];			_Table.cells[i][j] = _Table.cells[i][p];				_Table.cells[i][p] = buf;
-				}
-			}
-		}
-
 		this.tdown = function(cell, e){
+			if(document.getElementById('tau-sort-arr-v'))	tools.destroyHTML(document.getElementById('tau-sort-arr-v'));
 			var types = [], type;
 			if(!(cell.types[0] && setting.showType[0]) && cell.floatType)			types.push(0);
 			cell.types.forEach(function(item, i){ 	if(item && setting.showType[i])	types.push(i); });
@@ -2273,62 +2286,131 @@ function table_ui(options){
 				sort.top.direction = false;
 				topSort(dencrease);
 			} else if(sort.top.direction === false){
-				topDefault();
+				topSort(fDefault);
 				sort.top = {};
 			}
 			remake.reBuild();
 		}
+
+		function sideSort(compare){
+			for(var j = 0; j < _Table.c - 1; j++){
+				var p = j, parent = _Top.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
+
+				for(var k = j + 1; k < _Table.c; k++){
+					if(parent != _Top.branches[k].parent) break;
+
+					if(compare( _Table.cells[sort.side.cell.i[0]][p].obj[sort.side.type],
+								_Table.cells[sort.side.cell.i[0]][k].obj[sort.side.type],
+								_Top.branches[p],
+								_Top.branches[k],
+								sort.side, j))		p = k;
+				}
+				if(p != j){
+					var pi, pj;
+					parent.children.forEach(function(item, i){ if(item == _Top.branches[j]) pi = i; if(item == _Top.branches[p]) pj = i; });
+	
+					buf = parent.children[pi];				parent.children[pi] = parent.children[pj];				parent.children[pj] = buf;
+					buf = _Top.branches[j];					_Top.branches[j] = _Top.branches[p];					_Top.branches[p] = buf;
+					for(var i = 0; i < _Table.r; i++){
+						buf = _Table.cells[i][j];			_Table.cells[i][j] = _Table.cells[i][p];				_Table.cells[i][p] = buf;
+					}
+				}
+			}
+		}
 		function topSort(compare){
 			for(var j = 0; j < _Table.r - 1; j++){
 				var p = j, parent = _Side.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
-				if(_Side.branches[j].unsort || (_Side.branches[j].base && !sort.top.cell.base && sort.top.type == 0 ) )		continue;
 
 				for(var k = j + 1; k < _Table.r; k++){
 					if(parent != _Side.branches[k].parent) break;
-					if(_Side.branches[k].unsort || (_Side.branches[k].base && !sort.top.cell.base && sort.top.type == 0 ) )	continue;
 
-					if(compare( _Table.cells[p][sort.top.cell.j[0]].obj[sort.top.type], _Table.cells[k][sort.top.cell.j[0]].obj[sort.top.type], _Side.branches[p].index, _Side.branches[k].index))	p = k;
+					if(compare( _Table.cells[p][sort.top.cell.j[0]].obj[sort.top.type],
+								_Table.cells[k][sort.top.cell.j[0]].obj[sort.top.type],
+								_Side.branches[p],
+								_Side.branches[k],
+								sort.top, j ))	p = k;
 				}
-				var pi, pj;
-				parent.children.forEach(function(item, i){ if(item == _Side.branches[j]) pi = i; if(item == _Side.branches[p]) pj = i; });
-
-				buf = parent.children[pi];				parent.children[pi] = parent.children[pj];				parent.children[pj] = buf;
-				buf = _Side.branches[j];				_Side.branches[j] = _Side.branches[p];					_Side.branches[p] = buf;
-				buf = _Table.cells[j];					_Table.cells[j] = _Table.cells[p];						_Table.cells[p] = buf;
-			}
-		}
-		function topDefault(){
-			for(var j = 0; j < _Table.r - 1; j++){
-				var p = j, parent = _Side.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
-
-				for(var k = j + 1; k < _Table.r; k++){		if(_Side.branches[k].index == j){	p = k;	break;	}				}
-				var pi, pj;
-				parent.children.forEach(function(item, i){ if(item == _Side.branches[j]) pi = i; if(item == _Side.branches[p]) pj = i; });
-
-				buf = parent.children[pi];				parent.children[pi] = parent.children[pj];				parent.children[pj] = buf;
-				buf = _Side.branches[j];				_Side.branches[j] = _Side.branches[p];					_Side.branches[p] = buf;
-				buf = _Table.cells[j];					_Table.cells[j] = _Table.cells[p];						_Table.cells[p] = buf;
+				if(j != p){
+					var pi, pj;
+					parent.children.forEach(function(item, i){ if(item == _Side.branches[j]) pi = i; if(item == _Side.branches[p]) pj = i; });
+	
+					buf = parent.children[pi];				parent.children[pi] = parent.children[pj];				parent.children[pj] = buf;
+					buf = _Side.branches[j];				_Side.branches[j] = _Side.branches[p];					_Side.branches[p] = buf;
+					buf = _Table.cells[j];					_Table.cells[j] = _Table.cells[p];						_Table.cells[p] = buf;
+				}
 			}
 		}
 
-		function increase(a, b, f, l){
-			if(a != undefined){	if(a != undefined) a = a; else a = 0; }			else return false;
-			if(b != undefined){	if(b != undefined) b = b; else b = 0; }			else return false;
-			if(a < b)		return true;
+		function increase(a, b, f, l, s){
+			if(a == undefined)			return false;
+			if(b == undefined)			return false;
+			if(f.unsort || (f.base && !s.cell.base && s.type == 0 ) )		return false;
+			if(l.unsort || (l.base && !s.cell.base && s.type == 0 ) )		return false;
+
+			if(a < b)					return true;
 			else if(a == b){
-				if(f > l)	return true;
-				else		return false;
-			} else			return false;
+				if(f.index > l.index)	return true;
+				else					return false;
+			} else						return false;
 		}		
-		function dencrease(a, b, f, l){
-			if(a != undefined){	if(a != undefined) a = a; else a = 0; }			else return false;
-			if(b != undefined){	if(b != undefined) b = b; else b = 0; }			else return false;
-			if(a > b)		return true;
+		function dencrease(a, b, f, l, s){
+			if(a == undefined)			return false;
+			if(b == undefined)			return false;
+			if(f.unsort || (f.base && !s.cell.base && s.type == 0 ) )		return false;
+			if(l.unsort || (l.base && !s.cell.base && s.type == 0 ) )		return false;
+			if(a > b)					return true;
 			else if(a == b){
-				if(f > l)	return true;
-				else		return false;
-			} else 			return false;
+				if(f.index > l.index)	return true;
+				else					return false;
+			} else 						return false;
 		}
+		function increaseBy(a, b, f, l, s){
+			if(f.unsort || l.unsort)			return false;
+			if(s.objType){
+				if(f.base != l.base){
+					if(f.base == 1) 			return false;
+					else						return true;
+				}
+				if(l.obj.type != f.obj.type){
+					if(f.obj.type == 5)			return false;
+					else if(l.obj.type == 5)	return true;
+				}
+			}
+			if(s.sort == 'text'){
+				if(f.obj.text > l.obj.text)		return true;
+				else							return false;
+			} else if(s.sort == 'exp' && f.obj.type == 5 && l.obj.type == 5) {
+				if( parseFloat(f.obj.exp) > parseFloat(l.obj.exp) )		return true;
+				else							return false;
+			} else if(s.sort == 'label') {
+				if(f.obj.label > l.obj.label)	return true;
+				else							return false;
+			}
+		}
+		function dencreaseBy(a, b, f, l, s){
+			if(f.unsort || l.unsort)			return false;
+			if(s.objType){
+				if(f.base != l.base){
+					if(f.base == 1) 			return false;
+					else						return true;
+				}
+				if(l.obj.type != f.obj.type){
+					if(f.obj.type == 5)			return false;
+					else if(l.obj.type == 5)	return true;
+				}
+			}
+			if(s.sort == 'text'){
+				if(f.obj.text < l.obj.text)		return true;
+				else							return false;
+			} else if(s.sort == 'exp' && f.obj.type == 5 && l.obj.type == 5) {
+				if( parseFloat(f.obj.exp) < parseFloat(l.obj.exp) )		return true;
+				else							return false;
+			} else if(s.sort == 'label') {
+				if(f.obj.label < l.obj.label)	return true;
+				else							return false;
+			}
+		}
+		function fDefault(a, b, f, l, s, j){	return (l.index == j);	}
 	}
 
 	if(options)		link.create(options);

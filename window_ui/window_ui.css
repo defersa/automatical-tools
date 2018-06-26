@@ -22,9 +22,9 @@
 .wu-button-white		{	background-color: #f5f5f5;	border: 1px solid #dfdfdf;	color: #404040;}
 .wu-button-white:hover	{	background-color: #ededed;	}
 .wu-button-white:active	{	background-color: #e1e1e1;	}
-.wu-button-dark			{	background-color: #3399cc;	border: 1px solid transparent;	color: #fff;}
-.wu-button-dark:hover	{	background-color: #297aa3;	}
-.wu-button-dark:active	{	background-color: #1f5c7a;	}
+.wu-button-dark			{	background-color: #358fe8;	border: 1px solid transparent;	color: #fff;}
+.wu-button-dark:hover	{	background-color: #1562af;	}
+.wu-button-dark:active	{	background-color: #0d3b69;	}
 
 .wu-button-white, .wu-button-dark {
 	box-sizing: border-box;
@@ -85,7 +85,7 @@
 .wu-window:focus	{	outline: none;	border: none; }
 .wu-active			{	z-index: 7;	}
 .wu-not-active		{	z-index: 6;	}
-.wu-window											{	box-shadow: 0 0 20px #777;	position: absolute;	display: block;	background: #3399cc; }
+.wu-window											{	box-shadow: 0 0 20px #777;	position: absolute;	display: block;	background: #358fe8; }
 .wu-window.wu-not-active,.wu-not-active .wu-window	{	box-shadow: 0 0 10px #aaa;	background: #84c0e0;	}
 .wu-modal {
 	position: absolute;		background-color: rgba(100, 100, 100, 0.4);

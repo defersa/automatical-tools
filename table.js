@@ -36,13 +36,12 @@ function new_function(){
 
 	thirdTree = new tree_ui({parent: document.getElementsByClassName('second')[1], items: side_h, defaultExpand: true, defaultDrag: true, defaultDrop: true, rootDrop: true,
 							functions: {
-							rightClick: function(e, item){ item.change({current: true }) }, 
+							rightClick: function(e){ console.log(e); }, 
 							singleClick: function(item){ console.log("single click " + item ); }, 
 							doubleClick: function(item){ console.log("double click " + item ); },
 							customSelect: function(event, items){ console.log("custom select " + items ); }
 							}});
 
-	var simple = tools.createHTML({tag: 'div', className: 'tbu-default' });
 
 	dataSet.top[0]		= JSON.parse('[{"text":"Город","type":"4","exp":"SQ4","children":[		{"text":"Москва","type":"8","exp":"1"},		{"text":"Санкт-Петербург","type":"5","exp":"2"},		{"text":"Другой город","type":"5","exp":"999"}]}]');
 	dataSet.side[0]		= JSON.parse('[{"text":"Возраст recoded(sum#)","type":"4","exp":"SQ3","children":[	{"text":"Cases WF-Not Established","type":"8","exp":"#cwf-nes"},{"text":"Cases WF","type":"7","exp":"cwf"},{"text":"24 и младше","type":"5","exp":"1"},{"text":"25 - 40","type":"5","exp":"2"},{"text":"41 - 55","type":"5","exp":"4"},{"text":"Старше 55 лет","type":"5","exp":"5"}]}]');
@@ -52,17 +51,14 @@ function new_function(){
 	dataSet.side[1]		= JSON.parse('[{"text":"T-O-M Brand Awareness","text2":"","type":"4","exp":"QB1KC1","children":[{"text":"Cases WF","text2":"","type":"7","exp":"cwf"},{"text":"Calve","text2":"","type":"5","exp":"1","nopercent":1},{"text":"Heinz","text2":"","type":"5","exp":"2","nopercent":1},{"text":"Mr. Ricco","text2":"","type":"5","exp":"3","nopercent":1},{"text":"Baltimor","text2":"","type":"5","exp":"4","nopercent":1},{"text":"EZhK Gotovim doma","text2":"","type":"5","exp":"5","nopercent":1},{"text":"Kukhmaster","text2":"","type":"5","exp":"6","nopercent":1},{"text":"Makheev","text2":"","type":"5","exp":"7","nopercent":1},{"text":"Moya semja","text2":"","type":"5","exp":"8","nopercent":1},{"text":"Stebel Bambuka","text2":"","type":"5","exp":"9","nopercent":1},{"text":"Pikador","text2":"","type":"5","exp":"10","nopercent":1},{"text":"Ryaba","text2":"","type":"5","exp":"11","nopercent":1},{"text":"Sloboda","text2":"","type":"5","exp":"12","nopercent":1},{"text":"Astoria","text2":"","type":"5","exp":"13","nopercent":1},{"text":"Hershey\u0027s","text2":"","type":"5","exp":"14","nopercent":1},{"text":"Dolmio","text2":"","type":"5","exp":"15","nopercent":1},{"text":"Kikkoman","text2":"","type":"5","exp":"16","nopercent":1},{"text":"Kuhne","text2":"","type":"5","exp":"17","nopercent":1},{"text":"Mivimex","text2":"","type":"5","exp":"18","nopercent":1},{"text":"Monin","text2":"","type":"5","exp":"19","nopercent":1},{"text":"Barilla","text2":"","type":"5","exp":"20","nopercent":1},{"text":"Veres","text2":"","type":"5","exp":"21","nopercent":1},{"text":"Spilva","text2":"","type":"5","exp":"22","nopercent":1},{"text":"Sen Soi","text2":"","type":"5","exp":"23","nopercent":1},{"text":"Pikanta","text2":"","type":"5","exp":"24","nopercent":1},{"text":"Kinto","text2":"","type":"5","exp":"25","nopercent":1},{"text":"Uncle Ben\u0027s","text2":"","type":"5","exp":"106","nopercent":1},{"text":"Buzdyakskiy","text2":"","type":"5","exp":"110","nopercent":1},{"text":"Dyadya Vanya","text2":"","type":"5","exp":"122","nopercent":1},{"text":"Knorr","text2":"","type":"5","exp":"126","nopercent":1},{"text":"Maggi","text2":"","type":"5","exp":"133","nopercent":1},{"text":"MZhK / Moskovskiy provansal\u0027","text2":"","type":"5","exp":"135","nopercent":1},{"text":"Persona","text2":"","type":"5","exp":"143","nopercent":1},{"text":"Pomidorka","text2":"","type":"5","exp":"146","nopercent":1},{"text":"Semeynye sekrety","text2":"","type":"5","exp":"152","nopercent":1},{"text":"Skit","text2":"","type":"5","exp":"155","nopercent":1},{"text":"Torchin","text2":"","type":"5","exp":"160","nopercent":1},{"text":"Hame","text2":"","type":"5","exp":"163","nopercent":1},{"text":"Chumak","text2":"","type":"5","exp":"165","nopercent":1},{"text":"Shchedro","text2":"","type":"5","exp":"166","nopercent":1},{"text":"Uni Dan","text2":"","type":"5","exp":"170","nopercent":1},{"text":"Yanta","text2":"","type":"5","exp":"175","nopercent":1},{"text":"Private text","text2":"","type":"5","exp":"178","nopercent":1},{"text":"Other","text2":"","type":"5","exp":"95","nopercent":1},{"text":"Hard to answer","text2":"","type":"5","exp":"99","nopercent":1}]}]');
 	dataSet.cells[1]	= JSON.parse('[[[400],[400]],[[50.8694187637],[41.1870544317]],[[128.1520214761],[144.4974128099]],[[13.8947961437],[12.8876546067]],[[67.7626670177],[60.3154765315]],[[1.0054070994],[0]],[[0.9642984904],[1.0012241972]],[[68.6679149247],[59.4512407323]],[[6.9697150402],[6.9411062156]],[[0],[0]],[[4.0145470581],[5.742697663]],[[3.0107425161],[0.9985044423]],[[10.9068999188],[11.7542399408]],[[0.9944681426],[0.9782872138]],[[0],[0]],[[1.9669929652],[3.0315768746]],[[1.0026366978],[0.9988534707]],[[0],[0]],[[0],[0]],[[0],[0]],[[1.0076307823],[0]],[[0],[0]],[[0],[0]],[[0],[0]],[[0],[0]],[[0],[0]],[[1.986684118],[0]],[[0],[0]],[[3.008257881],[0]],[[0],[1.0092588755]],[[0],[0]],[[0],[2.9966279887]],[[1.9964504057],[1.0092588755]],[[0],[0.9288980332]],[[0],[0]],[[0],[0]],[[1.0078971638],[2.9498266762]],[[0],[0]],[[2.9589157768],[2.9255977435]],[[0],[0]],[[0],[0]],[[1.9875156402],[1.9631339505]],[[0.9908103906],[1.9505384542]],[[7.9639817465],[18.6894074523]],[[16.9093298406],[14.8142637484]]]');
 
-	tau = new table_ui({parent: document.getElementsByClassName('first')[1], round: [5,4,3], functions: {
-		rightClick: function(e, options){
-			if(options.area == 'side' || options.area == 'top' ){
-				if(options.area == 'side' && options.displayed){
-					tau.setSort({side: {index: options.position, type: options.displayed[0], direction: true } });
-				} else if(options.area == 'top' && options.displayed){
-					tau.setSort({top: {index: options.position, type: options.displayed[0], direction: true } });
-				}
+	var tabs = new tab_ui({ parent: document.getElementsByClassName('first')[1]});
+	var simple = tools.createHTML({tag: 'div', className: 'tbu-default' });
+	tabs.addTabs([{content: simple}]);
+	tabs.setCurrent( tabs.getTab(0) );
 
-				console.log(options.displayed[0]);
-			}
+	tau = new table_ui({parent: simple, sort: true, round: [5,4,3], functions: {
+		rightClick: function(e, options){
+			new menu_ui({ x: e.pageX, y: e.pageY, items: [{text: 'lol'}] });			
 		}}, size: { corner: {w: [40, 200]} }});
 
 	thirdTree.focus();
@@ -75,9 +71,6 @@ function new_function(){
 
 	var ar = [{text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}];
 
-	window.ccb = new combobox_ui({parent: document.getElementById('ccb'), tree: ar });
-	window.ccb.setSelected(ar[3]);
-	console.log(window.ccb.getSelected());	
 }
 
 function some(e){
@@ -160,7 +153,11 @@ function hc(){
 }
 
 function xlsx(){
-	var b = tau.xlsxExport({side: true, top: true, color: true});
+	var b = tau.htmlExport({side: true, color: true, select: true, fullHeader: true, annotation: ['alex', 'sfssda', ['sdsfs', 'sdsfsd'], ['asdfas', 'dsfsdfsdf', 'dsfsdf'] ]});
+	console.log(b);
+
+/*	var b = tau.xlsxExport({side: true, top: true, color: true});
 	console.log(b);
 	object_to_xlsx( {descPrefix: ['1','2','3','4','5','6','7'], TOC: true, annotation: true, background: true}, [{description: ['first string', 'second string', 'third string', 'fourth string', 'fifth string'], annotation: 'annotation'}, {description: ['first string', 'second string', 'third string', 'fourth string', 'fifth string'], object: b, annotation: 'annotation'}] );
+*/
 }

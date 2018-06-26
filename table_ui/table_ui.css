@@ -34,3 +34,14 @@
 	opacity: 0.3;					z-index: 8;
 	background: #888;				display: none;
 }
+#tau-sort-arr-v, #tau-sort-arr-h {
+	position: absolute;
+	display: block;
+	color: black; 
+	bottom: 0;
+	right: 0;
+	font: 12px monospace;
+	margin-right: 1px;
+}
+#tau-sort-arr-h {	margin-bottom: 6px;	}
+#tau-sort-arr-v {	margin-right: 9px;	}

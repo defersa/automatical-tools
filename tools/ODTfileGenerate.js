@@ -58,7 +58,8 @@ function AddImgFiles(odt, zip, fileName)
 			start: odt.content.indexOf('[img'),
 			src: src,
 			width: -1,
-			height: -1};
+			height: -1
+		};
 	
 		//remove img string
 		odt.content = odt.content.substring(0 , odt.content.indexOf('[img')) + odt.content.substring(odt.content.indexOf(']',odt.content.indexOf('[img')) + 1, odt.content.length);

@@ -15,7 +15,7 @@
 .tbu-container {
 	position: absolute;				z-index: 5;
 	left: 0;		right: 0;		top: 30px;		bottom: 0;
-	border-top: 1px solid #759db3;
+	border-top: 1px solid #1976d2;
 	background: white;				box-sizing: border-box; 
 }
 .tbu-default {
@@ -50,14 +50,14 @@
 /* tabs behavior */
 .tbu-tab-active	{
 	padding: 7px 4px 0 6px;			z-index: 6;						
-	color: #333;					border-color: #1f5c7a;	
+	color: #333;					border-color: #1976d2;	
 	height: 29px;					top: 2px;
 	font-weight: bold;
 }
 .tbu-tab-nactive	{
 	padding: 4px 4px 0 6px;			transition: .3s;
 	z-index: 4;						color: #555;
-	border-color: #8eafc1; 			
+	border-color: #8AAED1; 			
 	height: 27px;					top: 5px;
 }
 .tbu-tab-nactive::after {
@@ -86,8 +86,8 @@
 }
 .tbu-searchInput{
 	float: right;
-	height: 22px;					width: 130px;
+	height: 22px;					width: 150px;
 	margin: 6px 4px 0 4px;			padding: 1px 8px;
-	border: 1px solid #8eafc1;		border-radius: 11px;	
+	border: 1px solid #1976d2;		border-radius: 11px;	
 }
 .tbu-searchInput:focus { outline: none; }
