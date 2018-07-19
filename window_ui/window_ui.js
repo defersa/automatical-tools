@@ -161,8 +161,8 @@ function window_ui(options){
 				setting.active = true;
 				if(setting.modal)			modal.className = 'wu-modal wu-active';
 				else						main_window.className = 'wu-window wu-active';
+				main_window.focus();
 			}
-			main_window.focus();
 		}
 	}
 	var self_change = {
@@ -203,6 +203,7 @@ function window_ui(options){
 					parent.appendChild(main_window);
 
 				self_events.window_main_down();
+				main_window.focus();
 			} else if(!options.show && setting.show){
 				window.removeEventListener('activeWindowChanged', self_events.activeWindowChanged);
 				if(modal)
@@ -211,6 +212,7 @@ function window_ui(options){
 					fragment.appendChild(main_window);
 			} else if(options.show && setting.show){
 				self_events.window_main_down();
+				main_window.focus();
 			}
 			setting.show = options.show;
 		},

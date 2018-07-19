@@ -46,7 +46,8 @@ function table_ui(options){
 		setting = undefined;					tools.destroyHTML(container);
 		_Table = undefined;						_Side = undefined;
 		_Top = undefined;						_Corner = undefined;
-		sort.top = {};							sort.side = {};
+		sort.top = {};
+		sort.side = {};
 		select.table = [];						select.side = [];					select.top = [];
 	}
 	link.change = function(options){
@@ -95,12 +96,13 @@ function table_ui(options){
 		select.clearAll();
 		display.all();
 		if(functions.afterSelect)	functions.afterSelect(link);
-	}	
+	}
 	link.selectAll = function(){
 		select.selectAll();
 		display.all();
 		if(functions.afterSelect)	functions.afterSelect(link);
 	}
+	link.export = function(options){	return exp1(options); }
 
 	var creating = {
 		parent: function() {
@@ -730,10 +732,14 @@ function table_ui(options){
 			if(typeof options != 'object')					options = {};
 			if(select.table.length == 0)					options.select = false;
 
-			var html = '<!DOCTYPE HTML><html><head><style> table { vertical-align: middle; font-family: Verdana, serif; font-size: 11px; border-collapse: collapse; white-space:nowrap } .t{background:#F1F1F1; font-weight:bold; text-align:center;} .r{background:#F1F1F1; font-weight:bold; text-align:center;  white-space:normal; } .s{background:#F1F1F1; font-weight:bold;} .b {background:#fffcec;} .v {background:#e5fbff;} .h {background:#FFECF1;}</style></head><body>';
+			var html	= '<!DOCTYPE HTML><html><head><style>'
+						+ 'table { vertical-align: middle; font-family: Verdana, serif; padding: 1px; font-size: 11px; border-collapse: collapse; white-space:nowrap;}'
+						+ '.t{background:#F1F1F1; text-align:center;} .r{background:#F1F1F1; text-align:center;  white-space:normal;}'
+						+ '.s{background:#F1F1F1;} .b {background:#fffcec;}'
+						+ '.v {background:#e5fbff;} .h {background:#FFECF1;}</style></head><body>';
 
 			if(options.annotation){
-				html += '<table padding="1px" style=" border: 1px solid transparency; ">';
+				html += '<table>';
 				for(var i = 0; i < options.annotation.length; i++){
 					html += '<tr>';
 					if(Array.isArray(options.annotation[i]) ){
@@ -775,10 +781,9 @@ function table_ui(options){
 				if(options.side) cj = 0;
 			}
 
-			html += '<table border="1" padding="1px" style=" text-align: center; ">';
+			html += '<table border="1" bordercolor="silver" style="text-align: center;">';
 
 			if(options.top){
-				var corner = false;
 				html += '<tr>'; 
 				if(options.side){
 					html += '<td' + ( (options.color) ? ' class="t"' : '' )
@@ -851,11 +856,13 @@ function table_ui(options){
 							} else if(type != 0 && type != 3)							round = setting.round[1];
 							else 														round = setting.round[0];
 
-							if(text === null)							text = (setting.showZero && !sep) ? 0 : ''; 
+							if(text === null)							text = (setting.showZero && !sep) ? '0' : ''; 
 							else if(text === 0 && setting.hideZero)		text = '';
 							else if(isNaN(text))						text = '';
-							else										text = tools.roundPlus(text, round);
+							else										text = tools.roundPlus(text, round) + '';
 							
+							text = text.replace(/\./g, setting.separator);
+
 							if((type == 1 || type == 2) && setting.showPercent && text !== '')	text += '%'; 
 							var cellClass = (type == 3) ? (' class="b"') : ( (type == 2) ? (' class="h"') : ( (type == 1) ? (' class="v"') : ('') ) )
 
@@ -869,7 +876,233 @@ function table_ui(options){
 			html = html.substring(0, html.length - 4);
 			html += '</table></body></html>';
 			return html;
+		}		
+	}
+	var exp1 = function(options){
+		var expFunc = {
+			getSize: function(options){
+				var rRow = [];
+				var rCol = [];
+	
+				for(var i = 0; i < _Side.c; i++){
+					rCol.push( _Side.w[i] );
+				}
+				for(var i = 0; i < _Table.c; i++){
+					if(_Top.branches[i].visible)		rCol.push( _Top.branches[i].width );
+				}
+				for(var i = 0; i < _Top.r; i++){
+					rRow.push( _Top.h[i] );
+				}
+				for(var i = 0; i < _Table.r; i++){
+					if(!_Side.branches[i].visible)		continue;
+					for(var j = 0; j < _Side.branches[i].rcount; j++ ){
+						rRow.push( _Side.branches[i].height / _Side.branches[i].rcount );		
+					}
+				}
+				return { row: rRow, col: rCol };
+			},
+			getTable: function(options){
+				var rTable = [];
+	
+				for(var i = 0; i < _Top.r; i++){
+					var row = rTable[rTable.push([]) - 1];
+					for(var j = 0; j < _Side.c; j++){
+						row.push({ type: 'corn', text: '' });
+					}
+					for(var j = 0; j < _Top.c; j++){
+						if(_Top.branches[j].visible)		row.push({ type: 'thead', text: _Top.visual[i][j].obj.text });
+					}
+				}
+	
+				for(var i = 0; i < _Table.r; i++){
+					if(!_Side.branches[i].visible)			continue;
+
+					for(var k = 0; k < _Side.branches[i].rcount; k++){
+						var row = rTable[rTable.push([]) - 1];
+						for(var j = 0; j < _Side.c; j++){
+							row.push({	type: 'shead',
+										text: _Side.visual[i][j].obj.text,
+										s: (_Side.visual[i][j].obj.type == undefined) ? true : false });
+						}
+						row[0].i = i;
+						for(var j = 0; j < _Table.c; j++){
+							if(!_Top.branches[j].visible)	continue;
+							var type = 0, text = ' ', round;
+	
+							if(_Table.cells[i][j].visual[k]){
+								var sep = (_Side.branches[i].obj.type == undefined || _Top.branches[j].obj.type == undefined);
+								type =  _Table.cells[i][j].visual[k].type;
+								text = _Table.cells[i][j].obj[( type == 3) ? 0 : type];
+	
+								if(type == 0 && _Table.cells[i][j].round == 2){				type = 5;	round = setting.round[2];
+								} else if(type == 3 && _Table.cells[i][j].round == 2){		type = 6;	round = setting.round[2];							
+								} else if(type != 0 && type != 3)							round = setting.round[1];
+								else 														round = setting.round[0];
+		
+								if(text === null)							text = (setting.showZero && !sep) ? 0 : ''; 
+								else if(text === 0 && setting.hideZero)		text = '';
+								else if(isNaN(text) || text == 'NaN' )		text = '';
+								else										text = tools.roundPlus(text, round);
+							}						
+	
+							row.push({type: type, text: text });
+						}
+					}
+				}
+				options.r = rTable.length - _Top.r;				/*count of rows without top headers*/
+				return rTable;
+			},
+			cutTop: function(eObj){
+				for(var i = _Top.r - 1; i >= 0; i--){
+					eObj.table.splice(i, 1);
+					eObj.row.splice(i, 1);
+				}
+			},
+			cutSide: function(eObj){
+				for(var i = 0; i < eObj.table.length; i++){
+					eObj.table[i][_Side.c].i = eObj.table[i][0].i;
+				}
+				for(var i = _Side.c - 1; i >= 0; i--){
+					eObj.col.splice(i, 1);
+					for(var j = 0; j < eObj.table.length; j++){
+						eObj.table[j].splice(i, 1)
+					}
+				}
+			},
+			cutSelect: function(eObj, options){
+				var cols = [];
+				var rows = [];
+	
+				for(var i = 0; i < select.table.length; i++){
+					if( rows.indexOf(select.table[i].i[0]) == -1 )	rows.push(select.table[i].i[0]);
+					if( cols.indexOf(select.table[i].j[0]) == -1 )	cols.push(select.table[i].j[0]);
+				}
+	
+				var c = _Table.c, r = options.r;
+				var sc = ((eObj.table[0]) ? eObj.table[0].length : 0) - c; 
+				var tr = eObj.table.length - r;
+	
+				for(var i = r - 1; i >= 0; i--){
+					if( rows.indexOf(eObj.table[i + tr][0].i) == -1 ){
+						eObj.table.splice(i + tr, 1);
+						eObj.row.splice(i + tr, 1);
+					}
+				}
+				for(var i = c - 1; i >= 0; i--){
+					if( cols.indexOf(i) == -1){
+						for(var j = 0; j < eObj.table.length; j++){
+							eObj.table[j].splice(i + sc, 1);
+						}
+						eObj.col.splice(i + sc, 1);
+					}
+				}
+				if(!options.fullHeader){
+					
+					var sl = sc;
+					var tl = tr;
+					for(var i = 0; i < select.side.length; i++){	if(select.side[i].j.last() < sl)	sl = select.side[i].j.last();	}
+					for(var i = 0; i < select.top.length; i++){		if(select.top[i].i.last() < tl)		tl = select.top[i].i.last();	}
+				
+					for(var i = tl - 1; i >= 0; i--){
+						eObj.table.splice(i, 1);
+						eObj.row.splice(i, 1);
+					}
+					for(var i = sl - 1; i >= 0; i--){
+						for(var j = 0; j < eObj.table.length; j++){
+							eObj.table[j].splice(i, 1)
+						}
+						eObj.col.splice(i, 1)
+					}
+				}
+			},
+			mergeTable: function(table){
+				for(var i = 0; i < table.length; i++){
+					for(var j = table[i].length - 1; j > 0; j--){
+						if((table[i][j].type == 'shead' || table[i][j].type == 'thead' || table[i][j].type == 'corn') && table[i][j].text == table[i][j - 1].text){
+							var f = (table[i][j].cols != undefined) ? table[i][j].cols : 1;
+							table[i][j - 1].cols = 1 + f;
+							table[i][j] = undefined;
+						}
+					}
+				}
+				for(var i = table.length - 1; i > 0; i--){
+					for(var j = 0; j < table[i].length; j++){
+						if(!table[i][j] || !table[i - 1][j])	continue;
+						if((table[i][j].type == 'shead' || table[i][j].type == 'thead' || table[i][j].type == 'corn') && table[i][j].text == table[i - 1][j].text){
+							var f = (table[i][j].rows != undefined) ? table[i][j].rows : 1;
+							table[i - 1][j].rows = 1 + f;
+							table[i][j] = undefined;
+						}
+					}
+				}
+			},		
+			removeRepeat: function(table){
+				for(var i = 0; i < table.length; i++){
+					for(var j = table[i].length - 1; j > 0; j--){
+						if((table[i][j].type == 'shead' || table[i][j].type == 'thead' || table[i][j].type == 'corn') && table[i][j].text == table[i][j - 1].text && table[i][j].text != ' '){
+							table[i][j].text = '';
+						}
+					}
+				}
+				for(var i = table.length - 1; i > 0; i--){
+					for(var j = 0; j < table[i].length; j++){
+						if(!table[i][j] || !table[i - 1][j])	continue;
+						if((table[i][j].type == 'shead' || table[i][j].type == 'thead' || table[i][j].type == 'corn') && table[i][j].text == table[i - 1][j].text && table[i][j].text != ' '){
+							table[i][j].text = '';
+						}
+					}
+				}
+			},
+			setLast: function(table){
+				for(var i = 0; i < table.length; i++){
+					for(var j = table[i].length - 1; j >= 0; j--){
+						if(table[i][j] == undefined)	continue;
+						if(table[i][j].type == 'shead'){
+							table[i][j].l = true;
+							break;
+						}
+					}
+				}
+			},
+			separateSplitter: function(table){
+				for(var i = 0; i < table.length; i++){
+					for(var j = 0; j < table[i].length; j++){
+						if(table[i][j] == undefined)	continue
+						if(table[i][j].s == true && table[i][j].cols > 1){
+							table[i][j + table[i][j].cols - 1] = {text: table[i][j].text, type: 'shead'}
+							table[i][j].text = '';
+
+							if(table[i][j].cols != 2)	table[i][j].cols--;
+							else						table[i][j].cols = undefined;
+						}
+					}
+				}
+			}
 		}
+
+		if(typeof options != 'object')			options = {};
+		if(select.table.length == 0)			options.select = false;
+
+		var eObject		= expFunc.getSize(options);
+		eObject.table	= expFunc.getTable(options);
+
+		if(!options.top)				expFunc.cutTop(eObject);				// true - with top headers, false - without
+		if(!options.side)				expFunc.cutSide(eObject);				// true - with side headers, false - without
+		if(options.select)				expFunc.cutSelect(eObject, options);	// true - cut all table except selected cells
+		
+		if(!options.split)				expFunc.mergeTable(eObject.table);		// true - separete merged cells
+		if(options.repeat)				expFunc.removeRepeat(eObject.table);	// true - remove in separeted cells text
+		if(options.separateSplitter)	expFunc.separateSplitter(eObject.table);// true - separete all splitters to 2 cells
+
+		expFunc.setLast(eObject.table);
+
+		eObject.colors = defaultBack.table[0];
+		eObject.round = [setting.round[0],setting.round[1],setting.round[1],setting.round[0], 0, setting.round[2], setting.round[2]];
+		eObject.units = (setting.showPercent) ? ['','%','%', ''] : ['','','',''];
+		eObject.orientation = setting.orientation;
+		eObject.separator = setting.separator;
+
+		return eObject;
 	}
 
 	var create = new function(){
@@ -911,7 +1144,8 @@ function table_ui(options){
 			_Side.tree.children = [];	_Top.tree.children = [];
 			_Top.c = _Top.r = _Table.c = _Table.r = _Side.c = _Side.r = 0;
 			select.table = [];			select.side = [];			select.top = [];
-			sort.side = {};				sort.top = {};
+			sort.side = {};
+			sort.top = {};
 		}
 		function setSize(){
 			_Top.dh = [];				_Side.dw = [];
@@ -2182,10 +2416,17 @@ function table_ui(options){
 
 		this.setSort = function(options){
 			_Corner.html.innerHTML = '';
+			if(!options)	options = {};
+
+			sort.side = {};
+			sort.top = {};
+			sideSort(fDefault);
+			topSort(fDefault);
+
 			if(options.side){
 				if(options.side.sort == 'text' || options.side.sort == 'exp' || options.side.sort == 'label'){
-					sort.side = { sort: options.side.sort, cell: {i: [0], j: [0], types: [0], index: -1 }, objType: options.side.objType, direction: options.side.direction };
-				
+					sort.side = { sort: options.side.sort, cell: {i: [0], j: [0], types: [0], index: -1 }, codeOnly: !!options.side.codeOnly, direction: !!options.side.direction };
+
 					if(options.side.direction){
 						_Corner.html.innerHTML += '<div id="tau-sort-arr-h">◀</div>';
 						sideSort(increaseBy);
@@ -2201,18 +2442,15 @@ function table_ui(options){
 						if(!(cell.types[0] && setting.showType[0]) && cell.floatType)	options.side.type = 0;
 						else{ for(var i = 0; i < cell.types.length; i++){ if(cell.types[i] && setting.showType[i]){ options.side.type = i;		break; } } }
 					}
-	
+
 					sort.side = {cell: cell, type: options.side.type, direction: options.side.direction };
 					if(options.side.direction)						sideSort(increase);
 					else											sideSort(dencrease);
 				}
-			} else {
-				sort.side = { cell: {i: [0], j: [0], types: [0] } };
-				sideSort(fDefault);
 			}
 			if(options.top){
 				if(options.top.sort == 'text' || options.top.sort == 'exp' || options.top.sort == 'label'){
-					sort.top = { sort: options.top.sort, cell: {i: [0], j: [0], types: [0], index: -1 }, objType: options.top.objType, direction: options.top.direction };
+					sort.top = { sort: options.top.sort, cell: {i: [0], j: [0], types: [0], index: -1 }, codeOnly: !!options.top.codeOnly, direction: !!options.top.direction };
 
 					if(options.top.direction){
 						_Corner.html.innerHTML += '<div id="tau-sort-arr-v">▲</div>';
@@ -2223,7 +2461,7 @@ function table_ui(options){
 					}
 				} else {
 					var cell;
-					
+
 					if(options.top.index >= _Top.branches.length)	options.top.index = _Top.branches.length - 1;
 					else if(options.top.index < 0)					options.top.index = 0;
 						_Top.branches.forEach(function(item){	if(item.index == options.top.index) cell = item; });
@@ -2231,21 +2469,18 @@ function table_ui(options){
 						if(!(cell.types[0] && setting.showType[0]) && cell.floatType)	options.top.type = 0;
 						else{ for(var i = 0; i < cell.types.length; i++){ if(cell.types[i] && setting.showType[i]){ options.top.type = i; break; } } }
 					}
-					
+
 					sort.top = {cell: cell, type: options.top.type, direction: options.top.direction};
 					if(options.top.direction)						topSort(increase);
 					else											topSort(dencrease);
 				}
-			} else {
-				sort.top = {cell: {i: [0], j: [0], types: [0] }};
-				topSort(fDefault);
 			}
 			remake.reBuild();
 		}
 		this.getSort = function(){
 			var result = {};
-			if(sort.side.cell != undefined)			result.side = { index: sort.side.cell.index, direction: sort.side.direction, type: sort.side.type, sort: sort.side.sort, objType: sort.side.objType };
-			if(sort.top.cell != undefined)			result.top = { index: sort.top.cell.index, direction: sort.top.direction, type: sort.top.type, sort: sort.top.sort, objType: sort.top.objType };
+			if(sort.side.cell)			result.side = { index: sort.side.cell.index, direction: sort.side.direction, type: sort.side.type, sort: sort.side.sort, codeOnly: sort.side.codeOnly };
+			if(sort.top.cell)			result.top = { index: sort.top.cell.index, direction: sort.top.direction, type: sort.top.type, sort: sort.top.sort, codeOnly: sort.top.codeOnly };
 			return result;
 		}
 
@@ -2265,7 +2500,7 @@ function table_ui(options){
 				sort.side.direction = false;
 				sideSort(dencrease);
 			} else if(sort.side.direction === false){
-				sort.side = {cell: {i: [0], j: [0], types: [0] } };
+				sort.side = {};
 				sideSort(fDefault);
 			}
 			remake.reBuild();
@@ -2286,12 +2521,11 @@ function table_ui(options){
 				sort.top.direction = false;
 				topSort(dencrease);
 			} else if(sort.top.direction === false){
-				sort.top = {cell: {i: [0], j: [0], types: [0] } };
+				sort.top = {};
 				topSort(fDefault);
 			}
 			remake.reBuild();
 		}
-
 		function sideSort(compare){
 			for(var j = 0; j < _Table.c - 1; j++){
 				var p = j, parent = _Top.branches[j].parent, buf; //p - new position, paretn - current parent, buf - variable for reshuffle items
@@ -2299,8 +2533,8 @@ function table_ui(options){
 				for(var k = j + 1; k < _Table.c; k++){
 					if(parent != _Top.branches[k].parent) break;
 
-					if(compare( _Table.cells[sort.side.cell.i[0]][p].obj[sort.side.type],
-								_Table.cells[sort.side.cell.i[0]][k].obj[sort.side.type],
+					if(compare( (sort.side.cell)? _Table.cells[sort.side.cell.i[0]][p].obj[sort.side.type] : null,
+								(sort.side.cell)? _Table.cells[sort.side.cell.i[0]][k].obj[sort.side.type] : null,
 								_Top.branches[p],
 								_Top.branches[k],
 								sort.side, j))		p = k;
@@ -2324,8 +2558,8 @@ function table_ui(options){
 				for(var k = j + 1; k < _Table.r; k++){
 					if(parent != _Side.branches[k].parent) break;
 
-					if(compare( _Table.cells[p][sort.top.cell.j[0]].obj[sort.top.type],
-								_Table.cells[k][sort.top.cell.j[0]].obj[sort.top.type],
+					if(compare( (sort.top.cell)? _Table.cells[p][sort.top.cell.j[0]].obj[sort.top.type] : null,
+								(sort.top.cell)? _Table.cells[k][sort.top.cell.j[0]].obj[sort.top.type] : null,
 								_Side.branches[p],
 								_Side.branches[k],
 								sort.top, j ))	p = k;
@@ -2352,7 +2586,7 @@ function table_ui(options){
 				if(f.index > l.index)	return true;
 				else					return false;
 			} else						return false;
-		}		
+		}
 		function dencrease(a, b, f, l, s){
 			if(a == undefined)			return false;
 			if(b == undefined)			return false;
@@ -2366,7 +2600,7 @@ function table_ui(options){
 		}
 		function increaseBy(a, b, f, l, s){
 			if(f.unsort || l.unsort)			return false;
-			if(s.objType){
+			if(!s.codeOnly){
 				if(f.base != l.base){
 					if(f.base == 1) 			return false;
 					else						return true;
@@ -2377,19 +2611,19 @@ function table_ui(options){
 				}
 			}
 			if(s.sort == 'text'){
-				if(f.obj.text > l.obj.text)		return true;
-				else							return false;
+				if(f.obj.text.toLowerCase() > l.obj.text.toLowerCase())		return true;
+				else														return false;
 			} else if(s.sort == 'exp' && f.obj.type == 5 && l.obj.type == 5) {
-				if( parseFloat(f.obj.exp) > parseFloat(l.obj.exp) )		return true;
-				else							return false;
+				if( parseFloat(f.obj.exp) > parseFloat(l.obj.exp) )			return true;
+				else														return false;
 			} else if(s.sort == 'label') {
-				if(f.obj.label > l.obj.label)	return true;
-				else							return false;
+				if(f.obj.label.toLowerCase() > l.obj.label.toLowerCase())	return true;
+				else														return false;
 			}
 		}
 		function dencreaseBy(a, b, f, l, s){
 			if(f.unsort || l.unsort)			return false;
-			if(s.objType){
+			if(!s.codeOnly){
 				if(f.base != l.base){
 					if(f.base == 1) 			return false;
 					else						return true;
@@ -2400,14 +2634,14 @@ function table_ui(options){
 				}
 			}
 			if(s.sort == 'text'){
-				if(f.obj.text < l.obj.text)		return true;
-				else							return false;
+				if(f.obj.text.toLowerCase() < l.obj.text.toLowerCase())		return true;
+				else														return false;
 			} else if(s.sort == 'exp' && f.obj.type == 5 && l.obj.type == 5) {
-				if( parseFloat(f.obj.exp) < parseFloat(l.obj.exp) )		return true;
-				else							return false;
+				if( parseFloat(f.obj.exp) < parseFloat(l.obj.exp) )			return true;
+				else														return false;
 			} else if(s.sort == 'label') {
-				if(f.obj.label < l.obj.label)	return true;
-				else							return false;
+				if(f.obj.label.toLowerCase() < l.obj.label.toLowerCase())	return true;
+				else														return false;
 			}
 		}
 		function fDefault(a, b, f, l, s, j){	return (l.index == j);	}

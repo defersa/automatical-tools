@@ -715,7 +715,7 @@ function tree_ui(options){
 				}				
 				display.generate();
 
-				if(found.length == 0)	setting.nf = tools.createHTML({tag: 'div', innerHTML: ('Items with "' + text + '" not founded!'), style: 'color: #444;',parent: substrate });
+				if(found.length == 0)	setting.nf = tools.createHTML({tag: 'div', innerHTML: ('Items with "' + text + '" not found!'), style: 'color: #444;',parent: substrate });
 
 			} else {
 				if(setting.searched){
