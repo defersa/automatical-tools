@@ -1,13 +1,13 @@
 function window_ui(options){
 	// variables for changing size
-	var resize;//support container
+	var _resize;//support container
 	var sides;
 	var corners;
 
 	//main controls and containers
 	var parent;
 	var modal;	
-	var main_window;
+	var _window;
 	this.container;
 	var buttons;
 	var header;
@@ -25,7 +25,7 @@ function window_ui(options){
 	var quest_icon	= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 24 24" xml:space="preserve"><style type="text/css">.wu-button .fill {fill: transparent;}.wu-button .cross{fill: #d7ebf5;}.wu-button:hover  .cross{fill: #FFFFFF;}.wu-button:hover  .fill {fill: #1562af;}.wu-button:active .cross{fill: #FFFFFF;}.wu-button:active .fill {fill: #0d3b69;}.wu-button .fill, .wu-button .cross, .wu-button:hover .cross, .wu-button:hover .fill, .wu-button:active .cross, .wu-button:active .fill { -webkit-transition: .3s;-moz-transition: .3s;transition: .3s; }</style><g class="fill"><path d="M 0,0 L 24,0 L 24,24 L 0,24 L 0,0 z" /></g><g class="cross"><path d="M 8,10 C 8,7.5 9.5,6 12,6 C 14.5,6 16,7.5 16,10	L 16,10.25	C 16,10.75 16,11.5 14.5,12.5	Q 13,13.5 13,14.5		L 13,15	L 11,15 	L 11,14	Q 11,13 12.5,12	Q 14,11 14,10	C 14,8.75 13.25,8 12,8	C 10.75,8 10,8.75 10,10	 z" /><path d="M 11,16 L 13,16 L 13,18 L 11,18 L 11,16 z" /></g></svg>';
 
 	link.create = function(options){
-		if(main_window != undefined) this.remove();
+		if(_window != undefined) this.remove();
 
 		//verification of input data and assignment default value
 		if(options.width == undefined)		options.width  = '50%';
@@ -60,19 +60,14 @@ function window_ui(options){
 		buttons = {};	functions = {};		setting = {};
 
 		//create basic control and containers
-		main_window = tools.createHTML( {tag: 'div', className: 'wu-window', onmousedown: self_events.window_main_down});
-		main_window.tabIndex = '-1';
-		main_window.onkeydown = self_events.window_main_keydown; 		main_window.onkeyup = self_events.window_main_keyup;
-		header			= tools.createHTML( {tag: 'div', parent: main_window, className: 'wu-header', onmousedown: window_move.mdown, ondblclick: function(e){if(!tools.closest(e.target, 'wu-button')) self_events.change_minMax_click();}});
-		link.container	= tools.createHTML( {tag: 'div', parent: main_window, className: 'wu-content'});
-		buttons.title	= tools.createHTML( {tag: 'div', parent: header, className: 'wu-title'});
+		create.main();
 
 		this.change(options);
 	}
 	link.remove = function(){
 		if(setting.show){
 			if(setting.modal)	modal.parentNode.removeChild(modal);
-			else				main_window.parentNode.removeChild(main_window);
+			else				_window.parentNode.removeChild(_window);
 		}
 		sides = undefined;		corners = undefined;
 		resize = undefined;		parent = undefined;
@@ -80,105 +75,154 @@ function window_ui(options){
 		header = undefined;		footer = undefined;
 		link.container = undefined;
 
-		main_window = undefined;	functions = undefined;
+		_window = undefined;	functions = undefined;
 		fragment = document.createDocumentFragment();
 		setting = {};
 	}
 	link.change = function(options){
-		if(options.parent != undefined)			self_change.change_parent(options);
-		if(options.footer != undefined)			self_create.footer(options);			
+		if(options.parent != undefined)			changing.parent(options);
+		if(options.footer != undefined)			create.footer(options);			
 		if(options.footer != undefined)			link.container.style.bottom =  ( (options.footer)? '51' : '3' ) + 'px';
-		if(options.resize != undefined)			self_create.resize(options);
-		if(options.footerContent != undefined)	self_change.change_footer_content(options);
+		if(options.resize != undefined)			create.resize(options);
+		if(options.footerContent != undefined)	changing.footerContent(options);
 		if(options.enterKey != undefined)		setting.enterKey = options.enterKey;
 	
 		if(options.ok != undefined || options.close != undefined || options.cancel != undefined 
-			|| options.apply != undefined || options.customButtons != undefined)															self_create.footer_button(options);
-		if(options.picCancel != undefined || options.picMinMax != undefined || options.picHelp != undefined)								self_create.header_icon(options);
-		if(options.move != undefined)																										self_change.change_move(options);
-		if(options.width != undefined || options.height != undefined || options.minWidth != undefined || options.minHeight != undefined)	self_change.change_size(options);
-		if(options.left != undefined || options.top != undefined )																			self_change.change_position(options);
+			|| options.apply != undefined || options.customButtons != undefined)															create.footerButtons(options);
+		if(options.picCancel != undefined || options.picMinMax != undefined || options.picHelp != undefined)								create.headerIcons(options);
+		if(options.move != undefined)																										changing.move(options);
+		if(options.width != undefined || options.height != undefined || options.minWidth != undefined || options.minHeight != undefined)	changing.size(options);
+		if(options.left != undefined || options.top != undefined )																			changing.position(options);
 
 		if(options.title != undefined)			buttons.title.innerHTML = options.title;
-		if(options.picMinMax != undefined)		self_change.change_minMax(options);
-		if(options.modal != undefined)			self_change.change_modal(options);
-		if(options.show != undefined)			self_change.change_visible(options);
-		if(options.content != undefined)		self_change.change_content(options);
-		if(options.functions != undefined)		self_change.set_functions(options);
+		if(options.picMinMax != undefined)		changing.minMax(options);
+		if(options.modal != undefined)			changing.modal(options);
+		if(options.show != undefined)			changing.visible(options);
+		if(options.content != undefined)		changing.content(options);
+		if(options.functions != undefined)		changing.set_functions(options);
 		
-		if(setting.show)	self_change.apply_position();
+		if(setting.show)	changing.apply_position();
 	}
 	link.getOptions = function(){
 		return tools.cloneObject(setting);
 	}
 	link.hasFocus = function(){
-		if(document.activeElement == main_window)	return true;
+		if(document.activeElement == _window)	return true;
 		else										return false;
 	}
 
-	var self_events = {
-		window_main_keydown: function(e){
-
-			if(typeof functions.keyDown == 'function')	functions.keyDown(e, link);
-			else {
-				if(e.keyCode == 27 && (buttons.picCancel || buttons.cancel) ) onclick.cancel_button();
-				if(e.keyCode == 13 && setting.enterKey){
-					if(setting.ok) 			onclick.ok_button();
-					else if(setting.apply)	onclick.apply_button();
+	var events = {
+		down: {
+			window: function(){
+				if(!setting.active){
+					var event = new CustomEvent("activeWindowChanged", {});		
+					window.dispatchEvent(event);
+					setting.active = true;
+					if(setting.modal)			modal.className = 'wu-modal wu-active';
+					else						_window.className = 'wu-window wu-active';
+					_window.focus();
+				}
+			},
+			header: function(e){
+				if(!setting.move || tools.closest(e.target, 'wu-button') ) return;
+				drag.down(e);
+			},
+			resize: function(e, h, v){
+				resize.down(e, h, v);
+			}
+		},
+		click: {
+			minMax: function(e){
+				if(buttons.picMinMax != undefined){
+					changing.minMax({fullSize: !setting.fullSize});
+					changing.apply_position();
+	
+					var event = new CustomEvent("resize", {bubbles: true, cancelable: true});		
+					window.dispatchEvent(event);
+				}
+			},
+			modal: function(e){
+				if(_window != undefined && !tools.closest(e.target, 'wu-window'))
+					_window.focus();
+			},
+			cancel: function(){	
+				if(typeof functions.cancel == 'function'){
+					if(functions.cancel(link)) changing.visible({show: false});
+				} else changing.visible({show: false});
+			},
+			close: function(){
+				if(typeof functions.close == 'function'){
+					if(functions.close(link)) changing.visible({show: false});
+				} else changing.visible({show: false});		 
+			},
+			apply: function(){
+				if(typeof functions.apply == 'function'){
+					if(functions.apply(link)) changing.visible({show: false});
+				} else changing.visible({show: false});
+			},
+			ok: function(){
+				if(typeof functions.ok == 'function'){
+					if(functions.ok(link)) changing.visible({show: false});
+				} else changing.visible({show: false});
+			},
+			help: function(){
+				if(typeof functions.help == 'function'){
+					functions.help(link);
 				}
 			}
-
-			if (e.ctrlKey && ((e.keyCode == 37 || e.which == 37) || (e.keyCode == 39 || e.which == 39)) && setting.modal){
-				tools.stopProp(e);
+		},
+		dbl: {
+			header: function(e){
+				if(!tools.closest(e.target, 'wu-button')) events.click.minMax();
+			}
+		},
+		key: {
+			down: function(e){
+				if(typeof functions.keyDown == 'function')	functions.keyDown(e, link);
+				else {
+					if(e.keyCode == 27 && (buttons.picCancel || buttons.cancel) ) onclick.cancel_button();
+					if(e.keyCode == 13 && setting.enterKey){
+						if(setting.ok) 			onclick.ok_button();
+						else if(setting.apply)	onclick.apply_button();
+					}
+				}
+	
+				if (e.ctrlKey && ((e.keyCode == 37 || e.which == 37) || (e.keyCode == 39 || e.which == 39)) && setting.modal){
+					tools.stopProp(e);
+					return false;
+				}
+			},
+			up: function(e){
+				if(setting.modal)				tools.stopProp(e);
 				return false;
 			}
 		},
-		window_main_keyup: function(e){
-			if(setting.modal)				tools.stopProp(e);
-			return false;
-		},
-		change_minMax_click: function(){ //apply new option minimize/maximize
-			if(buttons.picMinMax != undefined){
-				self_change.change_minMax({fullSize: !setting.fullSize});
-				self_change.apply_position();
-
-				var event = new CustomEvent("resize", {bubbles: true, cancelable: true});		
-				window.dispatchEvent(event);
-			}
-		},
-		activeWindowChanged: function(){//change window on not active
-			if(setting.active){
-				setting.active = false;
-
-				if(setting.modal)			modal.className = 'wu-modal wu-not-active';
-				else						main_window.className = 'wu-window wu-not-active';
-			}
-		},
-		window_main_down: function(){//change window on active
-			if(!setting.active){
-				var event = new CustomEvent("activeWindowChanged", {});		
-				window.dispatchEvent(event);
-				setting.active = true;
-				if(setting.modal)			modal.className = 'wu-modal wu-active';
-				else						main_window.className = 'wu-window wu-active';
-				main_window.focus();
+		custom: {
+			changeActive: function(){
+				if(setting.active){
+					setting.active = false;
+	
+					if(setting.modal)			modal.className = 'wu-modal wu-not-active';
+					else						_window.className = 'wu-window wu-not-active';
+				}
 			}
 		}
 	}
-	var self_change = {
-		change_parent: function(options){
+
+	var changing = {
+		parent: function(options){
 			parent = options.parent;
 			if(setting.show)
-				parent.appendChild(main_window);
+				parent.appendChild(_window);
 		},
-		change_content: function(options){
+		content: function(options){
 			link.container.innerHTML = '';
 			if(typeof options.content == 'object'){
 				link.container.appendChild(options.content);
 				options.content.style.cssText = 'left: 0; right: 0; top: 0; bottom: 0; display: block; position: absolute;';
 			}
 		},
-		change_footer_content: function(options){
+		footerContent: function(options){
 			if(setting.footer){
 				footer.content.innerHTML = '';
 				if(typeof options.footerContent == 'object'){
@@ -187,43 +231,43 @@ function window_ui(options){
 				} 
 			}
 		},
-		change_move: function(options){
+		move: function(options){
 			setting.move = options.move;
 		},
-		change_modal: function(options){
+		modal: function(options){
 			setting.modal = options.modal;
-			self_create.modal(options);		
+			create.modal(options);		
 		},
-		change_visible: function(options){
+		visible: function(options){
 			if(options.show && !setting.show){
-				window.addEventListener('activeWindowChanged', self_events.activeWindowChanged);
+				window.addEventListener('activeWindowChanged', events.custom.changeActive);
 				if(modal)
 					parent.appendChild(modal);
 				else
-					parent.appendChild(main_window);
+					parent.appendChild(_window);
 
-				self_events.window_main_down();
-				main_window.focus();
+				events.down.window();
+				_window.focus();
 			} else if(!options.show && setting.show){
-				window.removeEventListener('activeWindowChanged', self_events.activeWindowChanged);
+				window.removeEventListener('activeWindowChanged', events.custom.changeActive);
 				if(modal)
 					fragment.appendChild(modal);
 				else
-					fragment.appendChild(main_window);
+					fragment.appendChild(_window);
 			} else if(options.show && setting.show){
-				self_events.window_main_down();
-				main_window.focus();
+				events.down.window();
+				_window.focus();
 			}
 			setting.show = options.show;
 		},
-		change_minMax: function(options){
+		minMax: function(options){
 			setting.fullSize = options.fullSize;
 			if(buttons.picMinMax){
 				if(options.fullSize)	buttons.picMinMax.innerHTML = min_icon;
 				else					buttons.picMinMax.innerHTML = max_icon;
 			}
 		},
-		change_size: function(options){// set input size for window
+		size: function(options){// set input size for window
 			if(options.width != undefined){
 				setting.width_type = 1;
 				if(options.width.indexOf('%') != -1){			setting.width = parseFloat(options.width.substring(0, options.width.indexOf('%')));
@@ -253,7 +297,7 @@ function window_ui(options){
 				else											setting.minHeight = options.minHeight;
 			}
 		},
-		change_position: function(options){// set input position for window
+		position: function(options){// set input position for window
 			if(options.left != undefined){
 				setting.left_type = 1;
 				if(options.left == 'left')						setting.left = 0;
@@ -300,8 +344,8 @@ function window_ui(options){
 			
 																			cssText += 'min-height: ' + (setting.minHeight + 'px') + '; min-width: ' + (setting.minWidth + 'px');
 
-				main_window.style.cssText  = cssText;
-			} else main_window.style.cssText = 'left: 0; right: 0; top: 0; bottom:0';
+				_window.style.cssText  = cssText;
+			} else _window.style.cssText = 'left: 0; right: 0; top: 0; bottom:0';
 		},
 		set_functions: function(options){ //set custom (input) functions for buttons
 			if(options.functions.ok !== undefined)				functions.ok = options.functions.ok;
@@ -312,43 +356,62 @@ function window_ui(options){
 			if(options.functions.keyDown !== undefined)			functions.keyDown = options.functions.keyDown;
 		}
 	}
-	var self_create = {
+	var create = {
+		main: function(options){
+			_window = tools.createHTML( {		tag: 'div',
+													className: 'wu-window',
+													onmousedown: events.down.window,
+													tabIndex: '-1',
+													onkeydown: events.key.down,
+													onkeyup: events.key.up });
+			header			= tools.createHTML( {	tag: 'div',
+													parent: _window,
+													className: 'wu-header',
+													onmousedown: events.down.header,
+													ondblclick: events.dbl.header });
+			link.container	= tools.createHTML( {	tag: 'div',
+													parent: _window,
+													className: 'wu-content'});
+			buttons.title	= tools.createHTML( {	tag: 'div',
+													parent: header,
+													className: 'wu-title'});
+		},
 		resize: function(options){ //create and destroy resize controls
 			if(options.resize != setting.resize && options.resize){
 				setting.resize = true;
-				resize = tools.createHTML( {tag: 'div', parent: main_window })
-				resize.style.cssText = 'positon: absolute; left: 0; right: 0; top: 0; bottom: 0;';
+				_resize = tools.createHTML( {tag: 'div', parent: _window })
+				_resize.style.cssText = 'positon: absolute; left: 0; right: 0; top: 0; bottom: 0;';
 		
-				sides = {	r:	tools.createHTML( {tag: 'div', parent: resize, onmousedown: function(e){window_resize.mdown(e,1,0)}, className: 'wu-sides-r'}),
-							b:	tools.createHTML( {tag: 'div', parent: resize, onmousedown: function(e){window_resize.mdown(e,0,1)}, className: 'wu-sides-b'}),
-							l:	tools.createHTML( {tag: 'div', parent: resize, onmousedown: function(e){window_resize.mdown(e,2,0)}, className: 'wu-sides-l'}),
-							t:	tools.createHTML( {tag: 'div', parent: resize, onmousedown: function(e){window_resize.mdown(e,0,2)}, className: 'wu-sides-t'})};
+				sides = {	r:	tools.createHTML( {tag: 'div', parent: _resize, onmousedown: function(e){ events.down.resize( e, 1, 0)}, className: 'wu-sides-r'}),
+							b:	tools.createHTML( {tag: 'div', parent: _resize, onmousedown: function(e){ events.down.resize( e, 0, 1)}, className: 'wu-sides-b'}),
+							l:	tools.createHTML( {tag: 'div', parent: _resize, onmousedown: function(e){ events.down.resize( e, 2, 0)}, className: 'wu-sides-l'}),
+							t:	tools.createHTML( {tag: 'div', parent: _resize, onmousedown: function(e){ events.down.resize( e, 0, 2)}, className: 'wu-sides-t'})};
 		
-				corners = {	rb:	tools.createHTML( {tag: 'div', parent: resize, onmousedown: function(e){window_resize.mdown(e,1,1)}, className: 'wu-corners-rb'}),
-							lb:	tools.createHTML( {tag: 'div', parent: resize, onmousedown: function(e){window_resize.mdown(e,2,1)}, className: 'wu-corners-lb'}),
-							lt:	tools.createHTML( {tag: 'div', parent: resize, onmousedown: function(e){window_resize.mdown(e,2,2)}, className: 'wu-corners-lt'}),
-							rt:	tools.createHTML( {tag: 'div', parent: resize, onmousedown: function(e){window_resize.mdown(e,1,2)}, className: 'wu-corners-rt'})};		
+				corners = {	rb:	tools.createHTML( {tag: 'div', parent: _resize, onmousedown: function(e){ events.down.resize( e, 1, 1)}, className: 'wu-corners-rb'}),
+							lb:	tools.createHTML( {tag: 'div', parent: _resize, onmousedown: function(e){ events.down.resize( e, 2, 1)}, className: 'wu-corners-lb'}),
+							lt:	tools.createHTML( {tag: 'div', parent: _resize, onmousedown: function(e){ events.down.resize( e, 2, 2)}, className: 'wu-corners-lt'}),
+							rt:	tools.createHTML( {tag: 'div', parent: _resize, onmousedown: function(e){ events.down.resize( e, 1, 2)}, className: 'wu-corners-rt'})};		
 		
-			} else if(options.resize != setting.resize && !options.resize && resize != undefined) {
+			} else if(options.resize != setting.resize && !options.resize && _resize != undefined) {
 				setting.resize = false;
-				tools.destroyHTML	(resize);
+				tools.destroyHTML(_resize);
 			} else setting.resize = false;
 		},
 		footer: function(options){ //create and destroy footer
 			if(options.footer != setting.footer){
 				if(options.footer){
-					footer 				=	tools.createHTML( {tag: 'div', parent: main_window, className: 'wu-footer'});
+					footer 				=	tools.createHTML( {tag: 'div', parent: _window, className: 'wu-footer'});
 					footer.buttons		=	tools.createHTML( {tag: 'div', parent: footer, className: 'wu-footer-buttons'});
 					footer.content		=	tools.createHTML( {tag: 'div', parent: footer, className: 'wu-footer-content'});
-					buttons.ok			=	tools.createHTML( {tag: 'div', parent: footer.buttons, className: 'wu-button-dark',  onclick: onclick.ok_button, innerHTML: '<span>OK</span>'});
-					buttons.apply		=	tools.createHTML( {tag: 'div', parent: footer.buttons, className: 'wu-button-dark',  onclick: onclick.apply_button, innerHTML: '<span>Apply</span>'});
-					buttons.cancel		=	tools.createHTML( {tag: 'div', parent: footer.buttons, className: 'wu-button-white', onclick: onclick.cancel_button,  innerHTML: '<span>Cancel</span>'});
-					buttons.close		=	tools.createHTML( {tag: 'div', parent: footer.buttons, className: 'wu-button-white', onclick: onclick.close_button, innerHTML: '<span>Close</span>'});
+					buttons.ok			=	tools.createHTML( {tag: 'div', parent: footer.buttons, className: 'wu-button-dark',  onclick: events.click.ok, innerHTML: '<span>OK</span>'});
+					buttons.apply		=	tools.createHTML( {tag: 'div', parent: footer.buttons, className: 'wu-button-dark',  onclick: events.click.apply, innerHTML: '<span>Apply</span>'});
+					buttons.cancel		=	tools.createHTML( {tag: 'div', parent: footer.buttons, className: 'wu-button-white', onclick: events.click.cancel,  innerHTML: '<span>Cancel</span>'});
+					buttons.close		=	tools.createHTML( {tag: 'div', parent: footer.buttons, className: 'wu-button-white', onclick: events.click.close, innerHTML: '<span>Close</span>'});
 				}
 				setting.footer = options.footer;
 			}
 		},
-		footer_button: function(options){
+		footerButtons: function(options){
 			if(setting.footer){
 				if(options.ok != undefined){
 					if(!options.ok)						buttons.ok.style.display = 'none';
@@ -385,71 +448,50 @@ function window_ui(options){
 				}
 			}
 		},
-		header_icon: function(options){ // create and destriy headers buttons
-			if(options.picHelp && !buttons.picHelp) buttons.picHelp	= tools.createHTML( {tag: 'div', parent: header, className: 'wu-button', onclick: onclick.help_button, innerHTML: quest_icon});
+		headerIcons: function(options){ // create and destriy headers buttons
+			if(options.picHelp && !buttons.picHelp) buttons.picHelp	= tools.createHTML( {tag: 'div', parent: header, className: 'wu-button', onclick: events.click.help, innerHTML: quest_icon});
 			else if(!options.picHelp && buttons.picHelp && options.picHelp != undefined) tools.destroyHTML(buttons.picHelp);
 
-			if(options.picMinMax && !buttons.picMinMax) buttons.picMinMax	= tools.createHTML( {tag: 'div', parent: header, className: 'wu-button', onclick: self_events.change_minMax_click});
+			if(options.picMinMax && !buttons.picMinMax) buttons.picMinMax	= tools.createHTML( {tag: 'div', parent: header, className: 'wu-button', onclick: events.click.minMax});
 			else if(!options.picMinMax && buttons.picMinMax && options.picMinMax != undefined) tools.destroyHTML(buttons.picMinMax);
 
-			if(options.picCancel && !buttons.picCancel) buttons.picCancel	= tools.createHTML( {tag: 'div', parent: header, className: 'wu-button', onclick: onclick.cancel_button, innerHTML: cross_icon});
+			if(options.picCancel && !buttons.picCancel) buttons.picCancel	= tools.createHTML( {tag: 'div', parent: header, className: 'wu-button', onclick: events.click.cancel, innerHTML: cross_icon});
 			else if(!options.picCancel && buttons.picCancel && options.picCancel != undefined) tools.destroyHTML(buttons.picCancel);
 		},
 		modal: function(options){ //set,create and destroy modals block
 			if(options.modal && !modal){
-				modal = tools.createHTML({tag: 'div', className: 'wu-modal', onclick: function(e){if(main_window != undefined && !tools.closest(e.target, 'wu-window')){ main_window.focus();} }});
-				modal.appendChild(main_window);
+				modal = tools.createHTML({tag: 'div', className: 'wu-modal', onclick: events.click.modal });
+				modal.appendChild(_window);
 
 				if(setting.show)	parent.appendChild(modal);
 				else				fragment.appendChild(modal);
 
 			} else if(!options.modal && modal){
-				if(setting.show)	parent.appendChild(main_window);
-				else				fragment.appendChild(main_window);
+				if(setting.show)	parent.appendChild(_window);
+				else				fragment.appendChild(_window);
 
 				tools.destroyHTML(modal);
 			}
 		}
 	}
-	var onclick = {// function onclick for buttons
-		cancel_button: function(){	
-			 if(typeof functions.cancel == 'function'){
-				if(functions.cancel(link)) self_change.change_visible({show: false});
-			} else self_change.change_visible({show: false});
-		},
-		close_button: function(){
-			 if(typeof functions.close == 'function'){
-				if(functions.close(link)) self_change.change_visible({show: false});
-			} else self_change.change_visible({show: false});		 
-		},
-		apply_button: function(){
-			if(typeof functions.apply == 'function'){
-				if(functions.apply(link)) self_change.change_visible({show: false});
-			} else self_change.change_visible({show: false});
-		},
-		ok_button: function(){
-			if(typeof functions.ok == 'function'){
-				if(functions.ok(link)) self_change.change_visible({show: false});
-			} else self_change.change_visible({show: false});
-		},
-		help_button: function(){
-			if(typeof functions.help == 'function'){
-				functions.help(link);
-			}
-		}
-	}
 
-	var window_resize = new function(){//fullstack functions for resize window
+	var resize = new function(){//fullstack functions for resize window
 		var self;
-		this.mdown = function(e, h, v){//h - horizontal move; v - vertical move
-			self = {sx: e.pageX, sy: e.pageY, h: h, v: v, height: main_window.offsetHeight, width: main_window.offsetWidth, left: main_window.offsetLeft, top: main_window.offsetTop, offHeight: parent.clientHeight, offWidth: parent.clientWidth};
+		this.down = function(e, h, v){//h - horizontal move; v - vertical move
+			self = {sx: e.pageX, sy: e.pageY, h: h, v: v,
+					height: _window.offsetHeight,
+					width: _window.offsetWidth,
+					left: _window.offsetLeft,
+					top: _window.offsetTop,
+					offHeight: parent.clientHeight,
+					offWidth: parent.clientWidth};
 			self.rectangle = tools.createHTML({tag:'div', className:'wu-rectangle-resize', parent: parent });
 
-			mmove(e);
-			window.addEventListener("mousemove", mmove);
-			window.addEventListener("mouseup", mup);
+			move(e);
+			window.addEventListener("mousemove", move);
+			window.addEventListener("mouseup", up);
 		}
-		function mmove(e){
+		function move(e){
 			var nself = {left: self.left, top: self.top, height: self.height, width: self.width};
 
 			if(self.h == 1)			nself.width = self.width - (self.sx - e.pageX);
@@ -475,11 +517,11 @@ function window_ui(options){
 			self.nself = nself;
 			self.rectangle.style.cssText = 'left: ' + nself.left + 'px; top: ' + nself.top + 'px; width: ' + nself.width + 'px; height: ' + nself.height + 'px;';
 		}
-		function mup(e){
+		function up(e){
 
-			if(self.nself.left == 0 && self.nself.top == 0 && self.nself.width == self.offWidth && self.nself.height == self.offHeight)	self_change.change_minMax({minMax:true});
+			if(self.nself.left == 0 && self.nself.top == 0 && self.nself.width == self.offWidth && self.nself.height == self.offHeight)	changing.minMax({minMax:true});
 			else {
-				if(setting.minMax) self_change.change_minMax({minMax:false});
+				if(setting.minMax) changing.minMax({minMax:false});
 				if(setting.width_type)										setting.width = tools.roundPlus((self.nself.width*100)/self.offWidth,1);
 				else														setting.width = self.nself.width;
 				if(setting.height_type)										setting.height = tools.roundPlus((self.nself.height*100)/self.offHeight,1);
@@ -495,28 +537,26 @@ function window_ui(options){
 				else														setting.top = self.nself.top;
 			}			
 
-			self_change.apply_position();
+			changing.apply_position();
 			tools.destroyHTML(self.rectangle);
 
 			var event = new CustomEvent("resize", {bubbles: true, cancelable: true});		
 			window.dispatchEvent(event);
 
-			window.removeEventListener("mousemove", mmove);
-			window.removeEventListener("mouseup", mup);
+			window.removeEventListener("mousemove", move);
+			window.removeEventListener("mouseup", up);
 			self = undefined;
 		}
 	}
-	var window_move = new function(){//fullstack functions for moving window
+	var drag = new function(){//fullstack functions for moving window
 		var self;
-		this.mdown = function(e){
-			if(!setting.move || tools.closest(e.target, 'wu-button') ) return;
-			
-			self = {sx: e.pageX, sy: e.pageY, width: parent.clientWidth, height: parent.clientHeight};
 
-			window.addEventListener("mousemove", mmove);
-			window.addEventListener("mouseup", mup);
+		this.down = function(e){
+			self = {sx: e.pageX, sy: e.pageY, width: parent.clientWidth, height: parent.clientHeight};
+			window.addEventListener("mousemove", move);
+			window.addEventListener("mouseup", up);
 		}
-		function mmove(e){
+		function move(e){
 			if(!self.move){
 				if(Math.abs(self.sx - e.pageX) > 3 || Math.abs(self.sy - e.pageY) > 3 ){
 					self.move = true;
@@ -533,11 +573,11 @@ function window_ui(options){
 
 					if(setting.left_type && !setting.width_type)			self.maxLeft = 100 - tools.roundPlus(((setting.width*100)/(self.width*2)),1);
 					else if(setting.left_type)								self.maxLeft = 100 - setting.width;
-					else													self.maxLeft = self.width - main_window.offsetWidth;
+					else													self.maxLeft = self.width - _window.offsetWidth;
 		
 					if(setting.top_type && !setting.height_type)			self.maxTop = 100 - tools.roundPlus(((setting.height*100)/(self.height*2)),1);
 					else if(setting.top_type)								self.maxTop = 100 - setting.height;
-					else													self.maxTop = self.height - main_window.offsetHeight;
+					else													self.maxTop = self.height - _window.offsetHeight;
 				}
 			} else {
 				if(setting.left_type)	setting.left = tools.roundPlus(self.left - ((self.sx - e.pageX)*100)/self.width,1);
@@ -556,12 +596,12 @@ function window_ui(options){
 					if(setting.top_type && !setting.height_type)	setting.top = -1;
 					else 											setting.top = self.maxTop;
 				} 
-				self_change.apply_position();
+				changing.apply_position();
 			}
 		}
-		function mup(e){
-			window.removeEventListener("mousemove", mmove);
-			window.removeEventListener("mouseup", mup);
+		function up(e){
+			window.removeEventListener("mousemove", move);
+			window.removeEventListener("mouseup", up);
 			self = undefined;
 		}
 	}

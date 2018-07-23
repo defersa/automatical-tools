@@ -584,13 +584,14 @@ function tree_ui(options){
 			}
 			if(!e.shiftKey && !e.ctrlKey)				events.singleClick(e, e, item);
 			if(select.items.length > 1)					events.customSelect(e);
+			viewport.focus();
 		}
 
 		this.sMouseDown = function(e){
 			var dragging = tools.closest(e.target, 'tu-select') || tools.closest(e.target, 'tu-caption');
 			var coords = viewport.getBoundingClientRect();
 
-			if(e.which != 1 || dragging)																						return;
+			if(e.which != 1 || dragging)																			return;
 			if(e.pageX - coords.left >= viewport.clientWidth && e.pageX - coords.left <= viewport.offsetWidth)		return;
 
 			self = {event: e, padding: substrate.getBoundingClientRect() };

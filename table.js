@@ -75,6 +75,7 @@ function new_function(){
 
 	var ar = [{text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}];
 
+	new window_ui({});
 }
 
 function some(e){
