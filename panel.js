@@ -37,6 +37,7 @@ function addPanel(){
 	var w = (100 + Math.random()*400);
 	var h = (50 + Math.random()*200);
 	var html = tools.createHTML({tag: 'div', style: 'position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: #' + f + s + t +';'})
+	html.ondrop = function(e){ alert('asf'); }
 	var content = {content: html, left: 0, top: 0, width: w, height: h };
 	panelPanel.addItems([content]);
 }

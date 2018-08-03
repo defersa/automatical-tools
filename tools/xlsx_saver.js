@@ -338,7 +338,7 @@ function toXLSX(options, array){
 			var table = array[l].object.table;
 			
 			for(var i = 0; i < table.length; i++){
-				sheet += '<row r="' + row + '" spans="1:' + array[l].object.col.length + '" x14ac:dyDescent="0.25">'; // ht="' + (array[l].object.row[i]) + '" customHeight="1"
+				sheet += '<row r="' + row + '" spans="1:' + array[l].object.col.length + '"  ht="' + (array[l].object.row[i])/1.33 + '" customHeight="1" x14ac:dyDescent="0.25">'; // ht="' + (array[l].object.row[i]) + '" customHeight="1"
 				for(var j = 0; j < table[i].length; j++){
 					if(table[i][j] != undefined){
 

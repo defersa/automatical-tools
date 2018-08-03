@@ -1,0 +1,100 @@
+.cu-panel {
+	font-family: -apple-system,BlinkMacSystemFont,Roboto,Open Sans,Helvetica Neue,sans-serif;
+	-webkit-user-select:	none;
+	-moz-user-select:		none;
+	-ms-user-select: 		none;
+	font-size: 14px;
+	position: absolute;
+	left: 0; top: 0; bottom: 0; right: 0;
+	margin: 3px;
+	overflow: hidden;
+}
+.cu-panel-header {
+	position: absolute;
+	top: 0;		height: 30px;
+	left: 0;	right: 0;
+}
+.cu-panel-content {
+	position: absolute;
+	top: 72px;	bottom: 12px;
+	left: 0;		right: 0;
+	overflow: hidden;
+}
+.cu-panel-header-left, .cu-panel-header-right {
+	top:0;
+	bottom: 0;	width: 30px;
+}
+.cu-panel-header-left { left: 0; }
+.cu-panel-header-right { right: 0; }
+
+.cu-panel-top, .cu-panel-bottom, .cu-panel-header-title, .cu-panel-header-left, .cu-panel-header-right {
+	display: flex;
+	position: absolute;
+	justify-content: center;
+	align-items: center;
+	transition: .2s;
+}
+
+.cu-panel-header-title {
+	left: 30px;	right: 30px;
+	top: 0;		bottom: 0;
+	color: #444;
+}
+.cu-panel-week-days {
+	position: absolute;
+	left: 0;	right: 0;
+	height: 30px;
+	top: 30px;
+	color: #777;
+}
+.cu-day-name {
+	top: 0; bottom: 0; position: absolute; width: 14%;
+	display: flex;	justify-content: center;	align-items: center;
+}
+
+.cu-panel-bottom {	left: 0;	right: 0;	bottom: 0;	height: 12px;	}
+.cu-panel-top {		left: 0;	right: 0;	top: 60px;	height: 12px;	}
+
+.cu-panel-header-title:hover,  .cu-panel-bottom:hover,  .cu-panel-top:hover,  .cu-panel-header-left:hover,  .cu-panel-header-right:hover  {	color: #000;	background: #eee; }
+.cu-panel-header-title:active, .cu-panel-bottom:active, .cu-panel-top:active, .cu-panel-header-left:active, .cu-panel-header-right:active {	color: white;	background: #666; }
+
+.cu-panel-button		.cu-arrow 		{fill: #aaa; transition: .2s; }
+.cu-panel-button:hover	.cu-arrow		{fill: #444;}
+.cu-panel-button:active	.cu-arrow		{fill: #fff;}
+
+.cu-day, .cu-day-month {
+	transition: .1s;
+	color: #444;
+	position: absolute;
+	width: 14%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-left: 1px solid white;
+	border-top: 1px solid white;
+	box-sizing: border-box;
+	cursor: default;
+}
+.cu-day-month { background: #F1F1F1; }
+.cu-day-month.cu-day-hol { background: #f9eeed;}
+
+.cu-day:hover, .cu-day-month:hover {
+	background: #e1e1e1;
+	color: black;
+}
+.cu-week {
+	position: absolute;
+	height: 30px;
+	left: 0;	right: 0;
+}
+.cu-day-hol {
+	color: #d43f3a;
+}
+.cu-day-hol:hover { background: #f7dcdb;	color: #6e0603; }
+
+.cu-day-month.cu-day-select, .cu-day.cu-day-select {	background: #999; color: white; }
+.cu-day-month.cu-day-hol.cu-day-select, .cu-day-hol.cu-day-select {	background: #e27e7a; }
+
+.cu-day-month.cu-day-hover, .cu-day.cu-day-hover {	background: #666; color: white; }
+.cu-day-hol.cu-day-hover {	background: #d43f3a; }

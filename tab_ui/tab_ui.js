@@ -28,6 +28,7 @@ function tab_ui(options){
 		if(options.close == undefined)					options.close = true;
 		if(options.show == undefined)					options.show = true;
 		if(options.dragAndDrop == undefined)			options.dragAndDrop = true;
+		if(options.direction == undefined)				options.direction = 0;
 
 		setting = {};		functions = {};			tabs = [];
 
@@ -56,6 +57,7 @@ function tab_ui(options){
 		if(options.searchTab != undefined)				set.searchTab(options);
 		if(options.functions != undefined)				set.functions(options);
 		if(options.dragAndDrop != undefined)			set.drag_drop(options);
+		if(options.direction != undefined)				set.direction(options);
 		if(options.tabs != undefined)					link.addTabs(options.tabs);
 	}
 	this.setCurrent = function(tab){
@@ -160,6 +162,7 @@ function tab_ui(options){
 				iTab.content 						= options.content;
 				iTab.content.style.cssText 			= 'right: 0; left: 0; top:0; bottom: 0; position: absolute'; 
 				if(setting.active_tab == iTab)		self_content.appendChild(iTab.content);
+				else								fragment.appendChild(iTab.content);
 			}
 			if(options.name != undefined)			name = options.name;
 			if(options.title != undefined)			title = options.title;
@@ -255,6 +258,13 @@ function tab_ui(options){
 				fragment.appendChild(self_header);	
 			}
 			setting.show = options.show;
+		},
+		direction: function(options){
+			self_parent.className = self_parent.className.replace(/ tbu-top/g, '');
+			self_parent.className = self_parent.className.replace(/ tbu-bot/g, '');
+
+			if(options.direction == 1)	self_parent.className += ' tbu-bot';
+			else						self_parent.className += ' tbu-top';
 		},
 		active: function(tab){
 

@@ -61,21 +61,18 @@ function new_function(){
 	tabs.addTabs([{content: simple}]);
 	tabs.setCurrent( tabs.getTab(0) );
 
-	tau = new table_ui({parent: simple, sort: true, round: [5,4,3], functions: {
-		rightClick: function(e, options){
-			console.log()		
-		}}, size: { corner: {w: [40, 200]} }});
+	tau = new table_ui({parent: simple, sort: true, dashHidden: false, round: [5,4,3], functions: {
+		drop: function(e, o){ console.log(e, o); },
+		rightClick: function(e, o){	console.log(e, o)}},
+		size: { corner: {w: [40, 200]} }});
 
 	thirdTree.focus();
 	thirdTree.setScroll(1400);
 	tau.setTable( dataSet.top[1], dataSet.side[1], dataSet.cells[1]);
 	tau.focus();
 
-	window.tau = tau;
+	tabs.addTabs([{content: document.getElementById('justrec')}]);
 
-	var ar = [{text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}, {text: '----', lvl: 1}, {separator: true }, { unselect: true, text: 'Some header', icon: 'tu-FolderClose'}, { text: 'first', icon: 'tu-TableIcon', lvl: 1}, { text: 'second', icon: 'tu-TableIcon', lvl: 1}, { text: 'third', icon: 'tu-TableIcon', lvl: 1}];
-
-	new window_ui({});
 }
 
 function some(e){
@@ -164,8 +161,8 @@ function xlsx(){
 	b = toHTML({color: true, annotation: ['alex', 'sfssda', ['sdsfs', 'sdsfsd'], ['asdfas', 'dsfsdfsdf', 'dsfsdf'] ]}, b);
 	console.log(b);
 */
-	b = tau.export({ top: true, side: true, fullHeader: true, select: true, separateSplitter: true});
-	console.log(b);
+	b = tau.export({ top: true, side: true, fullHeader: true, select: true, separateSplitter: true });
 	toXLSX( {descPrefix: ['1','2','3','4','5','6','7'], TOC: true, annotation: true, background: true}, [{description: ['first string', 'second string', 'third string', 'fourth string', 'fifth string'], annotation: 'annotation'}, {description: ['first string', 'second string', 'third string', 'fourth string', 'fifth string'], object: b, annotation: 'annotation'}] );
-	toHTML({color: true, annotation: ['alex', 'sfssda', ['sdsfs', 'sdsfsd'], ['asdfas', 'dsfsdfsdf', 'dsfsdf'] ]}, b);
+	b = toHTML({color: true, annotation: ['alex', 'sfssda', ['sdsfs', 'sdsfsd'], ['asdfas', 'dsfsdfsdf', 'dsfsdf'] ]}, b);
+	console.log(b);
 }

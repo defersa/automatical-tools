@@ -7,11 +7,12 @@ function window_ui(options){
 	//main controls and containers
 	var parent;
 	var modal;	
-	var _window;
 	this.container;
 	var buttons;
-	var header;
-	var footer;
+	
+	var _window;
+	var _header;
+	var _footer;
 
 	var fragment = document.createDocumentFragment(); //inner parent
 	var link = this; //link
@@ -19,13 +20,14 @@ function window_ui(options){
 	var functions; //functions for buttons and events
 
 	//icons for header bar
-	var cross_icon	= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 24 24" xml:space="preserve"><style type="text/css">.wu-button .fill {fill: transparent;}.wu-button .cross{fill: #d7ebf5;}.wu-button:hover  .cross{fill: #FFFFFF;}.wu-button:hover  .fill {fill: #1562af;}.wu-button:active .cross{fill: #FFFFFF;}.wu-button:active .fill {fill: #0d3b69;}.wu-button .fill, .wu-button .cross, .wu-button:hover .cross, .wu-button:hover .fill, .wu-button:active .cross, .wu-button:active .fill { -webkit-transition: .3s;-moz-transition: .3s;transition: .3s; }</style><g class="fill"><path d="M 0,0 L 24,0 L 24,24 L 0,24 L 0,0 z" /></g><g class="cross"><path d="M 5.5,7 L 7,5.5 L 18.5,17 L 17,18.5 L 5.5,7 z" /><path d="M 5.5,17 L 7,18.5 L 18.5,7 L 17,5.5 L 5.5,17 z" /></g></svg>';
-	var max_icon	= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 24 24" xml:space="preserve"><style type="text/css">.wu-button .fill {fill: transparent;}.wu-button .cross{fill: #d7ebf5;}.wu-button:hover  .cross{fill: #FFFFFF;}.wu-button:hover  .fill {fill: #1562af;}.wu-button:active .cross{fill: #FFFFFF;}.wu-button:active .fill {fill: #0d3b69;}.wu-button .fill, .wu-button .cross, .wu-button:hover .cross, .wu-button:hover .fill, .wu-button:active .cross, .wu-button:active .fill { -webkit-transition: .3s;-moz-transition: .3s;transition: .3s; }</style><g class="fill"><path d="M 0,0 L 24,0 L 24,24 L 0,24 L 0,0 z" /></g><g class="cross"><path d="M 6,6 L 18,6 L 18,18 L 6,18 L 6,10 L 7,10 L 7,17 L 17,17 L 17,10 L 6,10 L 6,6 z" /></g></svg>';
-	var min_icon	= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 24 24" xml:space="preserve"><style type="text/css">.wu-button .fill {fill: transparent;}.wu-button .cross{fill: #d7ebf5;}.wu-button:hover  .cross{fill: #FFFFFF;}.wu-button:hover  .fill {fill: #1562af;}.wu-button:active .cross{fill: #FFFFFF;}.wu-button:active .fill {fill: #0d3b69;}.wu-button .fill, .wu-button .cross, .wu-button:hover .cross, .wu-button:hover .fill, .wu-button:active .cross, .wu-button:active .fill { -webkit-transition: .3s;-moz-transition: .3s;transition: .3s; }</style><g class="fill"><path d="M 0,0 L 24,0 L 24,24 L 0,24 L 0,0 z" /></g><g class="cross"><path d="M 5,10 L 15,10 L 15,18 L 5,18 L 5,12 L 6,12 L 6,17 L 14,17 L 14,12 L 5,12 L 5,10 z" /><path d="M 8,6 L 19,6 L 19,14 L 16,14 L 16,13 L 18,13 L 18,8 L 10,8 L 10,9 L 9,9 L 9,6 z" /></g></svg>';
-	var quest_icon	= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 24 24" xml:space="preserve"><style type="text/css">.wu-button .fill {fill: transparent;}.wu-button .cross{fill: #d7ebf5;}.wu-button:hover  .cross{fill: #FFFFFF;}.wu-button:hover  .fill {fill: #1562af;}.wu-button:active .cross{fill: #FFFFFF;}.wu-button:active .fill {fill: #0d3b69;}.wu-button .fill, .wu-button .cross, .wu-button:hover .cross, .wu-button:hover .fill, .wu-button:active .cross, .wu-button:active .fill { -webkit-transition: .3s;-moz-transition: .3s;transition: .3s; }</style><g class="fill"><path d="M 0,0 L 24,0 L 24,24 L 0,24 L 0,0 z" /></g><g class="cross"><path d="M 8,10 C 8,7.5 9.5,6 12,6 C 14.5,6 16,7.5 16,10	L 16,10.25	C 16,10.75 16,11.5 14.5,12.5	Q 13,13.5 13,14.5		L 13,15	L 11,15 	L 11,14	Q 11,13 12.5,12	Q 14,11 14,10	C 14,8.75 13.25,8 12,8	C 10.75,8 10,8.75 10,10	 z" /><path d="M 11,16 L 13,16 L 13,18 L 11,18 L 11,16 z" /></g></svg>';
+	var cross_icon	= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 24 24" xml:space="preserve"><g class="fill"><path d="M 0,0 L 24,0 L 24,24 L 0,24 L 0,0 z" /></g><g class="cross"><path d="M 5.5,7 L 7,5.5 L 18.5,17 L 17,18.5 L 5.5,7 z" /><path d="M 5.5,17 L 7,18.5 L 18.5,7 L 17,5.5 L 5.5,17 z" /></g></svg>';
+	var max_icon	= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 24 24" xml:space="preserve"><g class="fill"><path d="M 0,0 L 24,0 L 24,24 L 0,24 L 0,0 z" /></g><g class="cross"><path d="M 6,6 L 18,6 L 18,18 L 6,18 L 6,10 L 7,10 L 7,17 L 17,17 L 17,10 L 6,10 L 6,6 z" /></g></svg>';
+	var min_icon	= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 24 24" xml:space="preserve"><g class="fill"><path d="M 0,0 L 24,0 L 24,24 L 0,24 L 0,0 z" /></g><g class="cross"><path d="M 5,10 L 15,10 L 15,18 L 5,18 L 5,12 L 6,12 L 6,17 L 14,17 L 14,12 L 5,12 L 5,10 z" /><path d="M 8,6 L 19,6 L 19,14 L 16,14 L 16,13 L 18,13 L 18,8 L 10,8 L 10,9 L 9,9 L 9,6 z" /></g></svg>';
+	var quest_icon	= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 24 24" xml:space="preserve"><g class="fill"><path d="M 0,0 L 24,0 L 24,24 L 0,24 L 0,0 z" /></g><g class="cross"><path d="M 8,10 C 8,7.5 9.5,6 12,6 C 14.5,6 16,7.5 16,10	L 16,10.25	C 16,10.75 16,11.5 14.5,12.5	Q 13,13.5 13,14.5		L 13,15	L 11,15 	L 11,14	Q 11,13 12.5,12	Q 14,11 14,10	C 14,8.75 13.25,8 12,8	C 10.75,8 10,8.75 10,10	 z" /><path d="M 11,16 L 13,16 L 13,18 L 11,18 L 11,16 z" /></g></svg>';
 
 	link.create = function(options){
-		if(_window != undefined) this.remove();
+		if(!options)						options = {};
+		if(_window != undefined)			this.remove();
 
 		//verification of input data and assignment default value
 		if(options.width == undefined)		options.width  = '50%';
@@ -69,20 +71,20 @@ function window_ui(options){
 			if(setting.modal)	modal.parentNode.removeChild(modal);
 			else				_window.parentNode.removeChild(_window);
 		}
-		sides = undefined;		corners = undefined;
-		resize = undefined;		parent = undefined;
-		modal = undefined;		buttons = undefined;
-		header = undefined;		footer = undefined;
+		sides = undefined;			corners = undefined;
+		parent = undefined;			modal = undefined;
+		_header = undefined;		buttons = undefined;
+		_footer = undefined;		resize = undefined;
 		link.container = undefined;
 
-		_window = undefined;	functions = undefined;
+		_window = undefined;		functions = undefined;
 		fragment = document.createDocumentFragment();
 		setting = {};
 	}
 	link.change = function(options){
 		if(options.parent != undefined)			changing.parent(options);
 		if(options.footer != undefined)			create.footer(options);			
-		if(options.footer != undefined)			link.container.style.bottom =  ( (options.footer)? '51' : '3' ) + 'px';
+		if(options.footer != undefined)			link.container.style.bottom = (options.footer)? '51px' : '';
 		if(options.resize != undefined)			create.resize(options);
 		if(options.footerContent != undefined)	changing.footerContent(options);
 		if(options.enterKey != undefined)		setting.enterKey = options.enterKey;
@@ -102,13 +104,16 @@ function window_ui(options){
 		if(options.functions != undefined)		changing.set_functions(options);
 		
 		if(setting.show)	changing.apply_position();
+
+		var event = new CustomEvent("resize", {bubbles: true, cancelable: true});		
+		window.dispatchEvent(event);
 	}
 	link.getOptions = function(){
 		return tools.cloneObject(setting);
 	}
 	link.hasFocus = function(){
 		if(document.activeElement == _window)	return true;
-		else										return false;
+		else									return false;
 	}
 
 	var events = {
@@ -180,10 +185,10 @@ function window_ui(options){
 			down: function(e){
 				if(typeof functions.keyDown == 'function')	functions.keyDown(e, link);
 				else {
-					if(e.keyCode == 27 && (buttons.picCancel || buttons.cancel) ) onclick.cancel_button();
+					if(e.keyCode == 27 && (buttons.picCancel || buttons.cancel) ) events.click.cancel();
 					if(e.keyCode == 13 && setting.enterKey){
-						if(setting.ok) 			onclick.ok_button();
-						else if(setting.apply)	onclick.apply_button();
+						if(setting.ok) 			events.click.ok();
+						else if(setting.apply)	events.click.apply();
 					}
 				}
 	
@@ -224,36 +229,27 @@ function window_ui(options){
 		},
 		footerContent: function(options){
 			if(setting.footer){
-				footer.content.innerHTML = '';
+				_footer.content.innerHTML = '';
 				if(typeof options.footerContent == 'object'){
-					footer.content.appendChild(options.footerContent);
+					_footer.content.appendChild(options.footerContent);
 					options.footerContent.style.cssText = 'left: 0; right: 0; top: 0; bottom: 0; display: block; position: absolute;';
 				} 
 			}
 		},
-		move: function(options){
-			setting.move = options.move;
-		},
-		modal: function(options){
-			setting.modal = options.modal;
-			create.modal(options);		
-		},
+		move: function(options){		setting.move = options.move;	},
+		modal: function(options){		setting.modal = options.modal;		create.modal(options);	},
 		visible: function(options){
 			if(options.show && !setting.show){
 				window.addEventListener('activeWindowChanged', events.custom.changeActive);
-				if(modal)
-					parent.appendChild(modal);
-				else
-					parent.appendChild(_window);
+				if(modal)				parent.appendChild(modal);
+				else					parent.appendChild(_window);
 
 				events.down.window();
 				_window.focus();
 			} else if(!options.show && setting.show){
 				window.removeEventListener('activeWindowChanged', events.custom.changeActive);
-				if(modal)
-					fragment.appendChild(modal);
-				else
-					fragment.appendChild(_window);
+				if(modal)				fragment.appendChild(modal);
+				else					fragment.appendChild(_window);
 			} else if(options.show && setting.show){
 				events.down.window();
 				_window.focus();
@@ -302,10 +298,10 @@ function window_ui(options){
 				setting.left_type = 1;
 				if(options.left == 'left')						setting.left = 0;
 				else if(options.left == 'center'){
-					if(setting.width_type)					setting.left = 50 - tools.roundPlus(setting.width/2,1);
+					if(setting.width_type)						setting.left = 50 - tools.roundPlus(setting.width/2,1);
 					else										setting.left = 50;
 				} else if(options.left == 'right'){
-					if(setting.width_type)					setting.left = 100 - setting.width;
+					if(setting.width_type)						setting.left = 100 - setting.width;
 					else										setting.left = -1;
 				} else if(options.left.indexOf('%') != -1){		setting.left = parseFloat(options.left.substring(0, options.left.indexOf('%')));
 				} else if(options.left.indexOf('px') != -1){	setting.left = parseFloat(options.left.substring(0, options.left.indexOf('px')));
@@ -318,10 +314,10 @@ function window_ui(options){
 				setting.top_type = 1;
 				if(options.top == 'top')						setting.top = 0;
 				else if(options.top == 'center'){
-					if(setting.height_type)				setting.top = 50 - tools.roundPlus(setting.height/2,1);
+					if(setting.height_type)						setting.top = 50 - tools.roundPlus(setting.height/2,1);
 					else										setting.top = 50;
 				} else if(options.top == 'bottom'){
-					if(setting.height_type)				setting.top = 100 - setting.height;
+					if(setting.height_type)						setting.top = 100 - setting.height;
 					else										setting.top = -1;
 				} else if(options.top.indexOf('%') != -1){		setting.top = parseFloat(options.top.substring(0, options.top.indexOf('%')));
 				} else if(options.top.indexOf('px') != -1){		setting.top = parseFloat(options.top.substring(0, options.top.indexOf('px')));
@@ -364,7 +360,7 @@ function window_ui(options){
 													tabIndex: '-1',
 													onkeydown: events.key.down,
 													onkeyup: events.key.up });
-			header			= tools.createHTML( {	tag: 'div',
+			_header			= tools.createHTML( {	tag: 'div',
 													parent: _window,
 													className: 'wu-header',
 													onmousedown: events.down.header,
@@ -373,7 +369,7 @@ function window_ui(options){
 													parent: _window,
 													className: 'wu-content'});
 			buttons.title	= tools.createHTML( {	tag: 'div',
-													parent: header,
+													parent: _header,
 													className: 'wu-title'});
 		},
 		resize: function(options){ //create and destroy resize controls
@@ -400,13 +396,13 @@ function window_ui(options){
 		footer: function(options){ //create and destroy footer
 			if(options.footer != setting.footer){
 				if(options.footer){
-					footer 				=	tools.createHTML( {tag: 'div', parent: _window, className: 'wu-footer'});
-					footer.buttons		=	tools.createHTML( {tag: 'div', parent: footer, className: 'wu-footer-buttons'});
-					footer.content		=	tools.createHTML( {tag: 'div', parent: footer, className: 'wu-footer-content'});
-					buttons.ok			=	tools.createHTML( {tag: 'div', parent: footer.buttons, className: 'wu-button-dark',  onclick: events.click.ok, innerHTML: '<span>OK</span>'});
-					buttons.apply		=	tools.createHTML( {tag: 'div', parent: footer.buttons, className: 'wu-button-dark',  onclick: events.click.apply, innerHTML: '<span>Apply</span>'});
-					buttons.cancel		=	tools.createHTML( {tag: 'div', parent: footer.buttons, className: 'wu-button-white', onclick: events.click.cancel,  innerHTML: '<span>Cancel</span>'});
-					buttons.close		=	tools.createHTML( {tag: 'div', parent: footer.buttons, className: 'wu-button-white', onclick: events.click.close, innerHTML: '<span>Close</span>'});
+					_footer 			=	tools.createHTML( {tag: 'div', parent: _window, className: 'wu-footer'});
+					_footer.buttons		=	tools.createHTML( {tag: 'div', parent: _footer, className: 'wu-footer-buttons'});
+					_footer.content		=	tools.createHTML( {tag: 'div', parent: _footer, className: 'wu-footer-content'});
+					buttons.ok			=	tools.createHTML( {tag: 'div', parent: _footer.buttons, className: 'wu-button-dark',  onclick: events.click.ok, innerHTML: '<span>OK</span>'});
+					buttons.apply		=	tools.createHTML( {tag: 'div', parent: _footer.buttons, className: 'wu-button-dark',  onclick: events.click.apply, innerHTML: '<span>Apply</span>'});
+					buttons.cancel		=	tools.createHTML( {tag: 'div', parent: _footer.buttons, className: 'wu-button-white', onclick: events.click.cancel,  innerHTML: '<span>Cancel</span>'});
+					buttons.close		=	tools.createHTML( {tag: 'div', parent: _footer.buttons, className: 'wu-button-white', onclick: events.click.close, innerHTML: '<span>Close</span>'});
 				}
 				setting.footer = options.footer;
 			}
@@ -449,13 +445,13 @@ function window_ui(options){
 			}
 		},
 		headerIcons: function(options){ // create and destriy headers buttons
-			if(options.picHelp && !buttons.picHelp) buttons.picHelp	= tools.createHTML( {tag: 'div', parent: header, className: 'wu-button', onclick: events.click.help, innerHTML: quest_icon});
+			if(options.picHelp && !buttons.picHelp) buttons.picHelp	= tools.createHTML( {tag: 'div', parent: _header, className: 'wu-button', onclick: events.click.help, innerHTML: quest_icon});
 			else if(!options.picHelp && buttons.picHelp && options.picHelp != undefined) tools.destroyHTML(buttons.picHelp);
 
-			if(options.picMinMax && !buttons.picMinMax) buttons.picMinMax	= tools.createHTML( {tag: 'div', parent: header, className: 'wu-button', onclick: events.click.minMax});
+			if(options.picMinMax && !buttons.picMinMax) buttons.picMinMax	= tools.createHTML( {tag: 'div', parent: _header, className: 'wu-button', onclick: events.click.minMax});
 			else if(!options.picMinMax && buttons.picMinMax && options.picMinMax != undefined) tools.destroyHTML(buttons.picMinMax);
 
-			if(options.picCancel && !buttons.picCancel) buttons.picCancel	= tools.createHTML( {tag: 'div', parent: header, className: 'wu-button', onclick: events.click.cancel, innerHTML: cross_icon});
+			if(options.picCancel && !buttons.picCancel) buttons.picCancel	= tools.createHTML( {tag: 'div', parent: _header, className: 'wu-button', onclick: events.click.cancel, innerHTML: cross_icon});
 			else if(!options.picCancel && buttons.picCancel && options.picCancel != undefined) tools.destroyHTML(buttons.picCancel);
 		},
 		modal: function(options){ //set,create and destroy modals block
@@ -606,7 +602,5 @@ function window_ui(options){
 		}
 	}
 
-	if(!options)
-		options = {};	
 	link.create(options);
 }

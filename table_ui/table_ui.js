@@ -30,6 +30,7 @@ function table_ui(options){
 		if(options.orientation == undefined)	options.orientation = false;
 		if(options.size == undefined)			options.size = { };
 		if(options.sort == undefined)			options.sort = false;
+		if(options.dashHidden == undefined)		options.dashHidden = true;
 		if(options.sharpOverflow == undefined)	options.sharpOverflow = true;
 
 
@@ -53,23 +54,24 @@ function table_ui(options){
 	link.change = function(options){
 		if( typeof options != 'object')			options = {};
 
-		if( options.sort != undefined)			setting.sort = options.sort;
-		if( options.hideCol != undefined)		setting.hideCol = options.hideCol;
-		if( options.hideRow != undefined)		setting.hideRow = options.hideRow;
-		if( options.hideZero != undefined)		setting.hideZero = options.hideZero;
-		if( options.showZero != undefined)		setting.showZero = options.showZero;
-		if( options.showPercent != undefined)	setting.showPercent = options.showPercent;
-		if( options.separator != undefined)		setting.separator = options.separator;
-		if( options.orientation != undefined)	setting.orientation = options.orientation;
-		if( options.sharpOverflow != undefined)	setting.sharpOverflow = options.sharpOverflow;
+		if( options.sort !== undefined)				setting.sort = options.sort;
+		if( options.hideCol !== undefined)			setting.hideCol = options.hideCol;
+		if( options.hideRow !== undefined)			setting.hideRow = options.hideRow;
+		if( options.hideZero !== undefined)			setting.hideZero = options.hideZero;
+		if( options.showZero !== undefined)			setting.showZero = options.showZero;
+		if( options.showPercent !== undefined)		setting.showPercent = options.showPercent;
+		if( options.separator !== undefined)		setting.separator = options.separator;
+		if( options.orientation !== undefined)		setting.orientation = options.orientation;
+		if( options.sharpOverflow !== undefined)	setting.sharpOverflow = options.sharpOverflow;
+		if( options.dashHidden !== undefined)		setting.dashHidden = options.dashHidden;
 
-		if( options.parent != undefined)		set.parent(options);
-		if( options.showType != undefined)		set.showType(options);
-		if( options.round != undefined)			set.round(options);
-		if( options.functions != undefined)		set.functions(options);
-		if( options.size != undefined)			set.size(options);
+		if( options.parent !== undefined)			set.parent(options);
+		if( options.showType !== undefined)			set.showType(options);
+		if( options.round !== undefined)			set.round(options);
+		if( options.functions !== undefined)		set.functions(options);
+		if( options.size !== undefined)				set.size(options);
 
-		if( options.table != undefined)			create.setTable( options.table.top, options.table.side, options.table.table);
+		if( options.table !== undefined)			create.setTable( options.table.top, options.table.side, options.table.table);
 
 		remake.reBuild();
 	}
@@ -106,11 +108,18 @@ function table_ui(options){
 
 	var creating = {
 		parent: function() {
-			container = tools.createHTML({ tag: 'div', className: 'tau-parent', tabIndex: 0, onkeydown: events.key.down, onkeyup: events.key.up, onblur: events.key.blur, oncontextmenu: events.context  });
+			container = tools.createHTML({ tag: 'div', className: 'tau-parent', tabIndex: 0,	onkeydown: events.key.down,
+																								onkeyup: events.key.up,
+																								ondragover: events.dd.over,
+																								onblur: events.key.blur,
+																								oncontextmenu: events.context  });
 			return container;
 		},
 		corner: function() {
-			_Corner = { html: tools.createHTML({ tag: 'div', className: 'tau-corner', parent: container, onmousemove: events.move.corn, onmousedown: events.down.corn }) };
+			_Corner = { html: tools.createHTML({ tag: 'div', className: 'tau-corner', parent: container,
+																					onmousemove: events.move.corn,
+																					ondrop: events.dd.drop.corner,
+																					onmousedown: events.down.corn }) };
 			return _Corner;
 		},
 		table: function() {
@@ -118,6 +127,7 @@ function table_ui(options){
 																					onmousedown: events.down.table,
 																					onmousemove: events.move.table,
 																					onmouseout: events.out.table,
+																					ondrop: events.dd.drop.table,
 																					onwheel: scroll.wheelVertical })};
 			_Table.ctx = _Table.html.getContext("2d");
 			return _Table;
@@ -127,6 +137,7 @@ function table_ui(options){
 																					ondblclick: events.dbl.side, 
 																					onmousedown: events.down.side, 
 																					onmousemove: events.move.side,
+																					ondrop: events.dd.drop.side,
 																					onwheel: scroll.wheelVertical })};
 			_Side.ctx = _Side.html.getContext("2d");
 			return _Side;
@@ -136,6 +147,7 @@ function table_ui(options){
 																					ondblclick: events.dbl.top,
 																					onmousedown: events.down.top,
 																					onmousemove: events.move.top,
+																					ondrop: events.dd.drop.top,
 																					onwheel: scroll.wheelHorizontal })};
 			_Top.ctx = _Top.html.getContext("2d");
 			return _Top;
@@ -165,6 +177,7 @@ function table_ui(options){
 			if( typeof options.functions.rightClick == 'function' )		functions.rightClick = options.functions.rightClick;
 			if( typeof options.functions.afterSelect == 'function' )	functions.afterSelect = options.functions.afterSelect;
 			if( typeof options.functions.keyDown == 'function' )		functions.keyDown = options.functions.keyDown;
+			if( typeof options.functions.drop == 'function' )			functions.drop = options.functions.drop;
 		},
 		size: function(options){
 			if(options.size.corner){
@@ -621,7 +634,42 @@ function table_ui(options){
 				display.s.corn = {};
 				display.table();
 			}
-		}
+		},
+		dd: {
+			drop: {
+				side: function(e){
+					var cell = get.cell.side(e);
+					if(cell) {
+						cell = cell[0];
+						functions.drop(e, { area: 'side', cell: cell, i: cell.i, j: cell.j,} );
+					} else {
+						functions.drop(e, { area: 'side', cell: undefined, i: undefined, j: undefined,} );
+					}
+				},
+				top: function(e){
+					var cell = get.cell.top(e);
+					if(cell) {
+						cell = cell[0];
+						functions.drop(e, { area: 'top', cell: cell, i: cell.i, j: cell.j,} );
+					} else {
+						functions.drop(e, { area: 'top', cell: undefined, i: undefined, j: undefined,} );
+					}
+				},
+				corner: function(e){
+					functions.drop(e, { area: 'corner'} );
+				},
+				table: function(e){
+					var cell = get.cell.table(e);
+					if(cell) 	functions.drop(e, { area: 'table', cell: cell, i: cell.i, j: cell.j,} );
+					else		functions.drop(e, { area: 'table', cell: undefined, i: undefined, j: undefined,} );
+				}
+			},
+			over: function(e){
+				if( typeof functions.drop == 'function')	return false;
+				else return true;
+
+			}
+		}		
 	}
 	var exp = {
 		xlsxExport: function(options){
@@ -910,7 +958,11 @@ function table_ui(options){
 						row.push({ type: 'corn', text: '' });
 					}
 					for(var j = 0; j < _Top.c; j++){
-						if(_Top.branches[j].visible)		row.push({ type: 'thead', text: _Top.visual[i][j].obj.text });
+						if(_Top.branches[j].visible)
+							row.push({	type: 'thead',
+										code: ('t' + _Top.visual[i][j].i[0] + '-' + _Top.visual[i][j].j[0]), 
+										text: _Top.visual[i][j].obj.text,
+										s: (_Top.visual[i][j].obj.type == undefined) ? true : false });
 					}
 				}
 	
@@ -922,6 +974,7 @@ function table_ui(options){
 						for(var j = 0; j < _Side.c; j++){
 							row.push({	type: 'shead',
 										text: _Side.visual[i][j].obj.text,
+										code: ('s' + _Side.visual[i][j].i[0] + '-' + _Side.visual[i][j].j[0]), 
 										s: (_Side.visual[i][j].obj.type == undefined) ? true : false });
 						}
 						row[0].i = i;
@@ -1018,7 +1071,7 @@ function table_ui(options){
 			mergeTable: function(table){
 				for(var i = 0; i < table.length; i++){
 					for(var j = table[i].length - 1; j > 0; j--){
-						if((table[i][j].type == 'shead' || table[i][j].type == 'thead' || table[i][j].type == 'corn') && table[i][j].text == table[i][j - 1].text){
+						if((table[i][j].type == 'shead' || table[i][j].type == 'thead' || table[i][j].type == 'corn') && table[i][j].code == table[i][j - 1].code){
 							var f = (table[i][j].cols != undefined) ? table[i][j].cols : 1;
 							table[i][j - 1].cols = 1 + f;
 							table[i][j] = undefined;
@@ -1028,7 +1081,7 @@ function table_ui(options){
 				for(var i = table.length - 1; i > 0; i--){
 					for(var j = 0; j < table[i].length; j++){
 						if(!table[i][j] || !table[i - 1][j])	continue;
-						if((table[i][j].type == 'shead' || table[i][j].type == 'thead' || table[i][j].type == 'corn') && table[i][j].text == table[i - 1][j].text){
+						if((table[i][j].type == 'shead' || table[i][j].type == 'thead' || table[i][j].type == 'corn') && table[i][j].code == table[i - 1][j].code){
 							var f = (table[i][j].rows != undefined) ? table[i][j].rows : 1;
 							table[i - 1][j].rows = 1 + f;
 							table[i][j] = undefined;
@@ -1039,16 +1092,18 @@ function table_ui(options){
 			removeRepeat: function(table){
 				for(var i = 0; i < table.length; i++){
 					for(var j = table[i].length - 1; j > 0; j--){
-						if((table[i][j].type == 'shead' || table[i][j].type == 'thead' || table[i][j].type == 'corn') && table[i][j].text == table[i][j - 1].text && table[i][j].text != ' '){
+						if((table[i][j].type == 'shead' || table[i][j].type == 'thead' || table[i][j].type == 'corn') && table[i][j].code == table[i][j - 1].code && table[i][j].code != null){
 							table[i][j].text = '';
+							table[i][j].code = null;
 						}
 					}
 				}
 				for(var i = table.length - 1; i > 0; i--){
 					for(var j = 0; j < table[i].length; j++){
 						if(!table[i][j] || !table[i - 1][j])	continue;
-						if((table[i][j].type == 'shead' || table[i][j].type == 'thead' || table[i][j].type == 'corn') && table[i][j].text == table[i - 1][j].text && table[i][j].text != ' '){
+						if((table[i][j].type == 'shead' || table[i][j].type == 'thead' || table[i][j].type == 'corn') && table[i][j].code == table[i - 1][j].code && table[i][j].code != null){
 							table[i][j].text = '';
+							table[i][j].code = null;
 						}
 					}
 				}
@@ -1068,12 +1123,19 @@ function table_ui(options){
 				for(var i = 0; i < table.length; i++){
 					for(var j = 0; j < table[i].length; j++){
 						if(table[i][j] == undefined)	continue
-						if(table[i][j].s == true && table[i][j].cols > 1){
+						if(table[i][j].s == true && table[i][j].cols > 1 && table[i][j].type == 'shead'){
 							table[i][j + table[i][j].cols - 1] = {text: table[i][j].text, type: 'shead'}
 							table[i][j].text = '';
 
 							if(table[i][j].cols != 2)	table[i][j].cols--;
 							else						table[i][j].cols = undefined;
+						}
+						if(table[i][j].s == true && table[i][j].rows > 1 && table[i][j].type == 'thead'){
+							table[i + table[i][j].rows - 1][j] = {text: table[i][j].text, type: 'thead'}
+							table[i][j].text = '';
+
+							if(table[i][j].rows != 2)	table[i][j].rows--;
+							else						table[i][j].rows = undefined;
 						}
 					}
 				}
@@ -1582,12 +1644,18 @@ function table_ui(options){
 			});
 			c.fillStyle = '#555';
 
-			s.rows.forEach(function(i){			
-				if(!_Side.branches[i].visible)		drawDashLine(c, '#555', '#fff', 0, s.tp[i + 1] - 0.5 - s.t, (s.vw > s.lp.last()) ? s.lp.last() : s.vw, s.tp[i + 1] - 0.5 - s.t);	
-				else if(_Side.branches[i].line)		c.fillRect(0, s.tp[i + 1] - 1 - s.t, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), 1);			});
+			s.rows.forEach(function(i){	
+				if(!_Side.branches[i].visible){
+					if(setting.dashHidden)			drawDashLine(c, '#555', '#fff', 0, s.tp[i + 1] - 0.5 - s.t, (s.vw > s.lp.last()) ? s.lp.last() : s.vw, s.tp[i + 1] - 0.5 - s.t);
+					else							c.fillRect(0, s.tp[i + 1] - 1 - s.t, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), 1);	
+				} else if(_Side.branches[i].line)	c.fillRect(0, s.tp[i + 1] - 1 - s.t, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), 1);			
+			});
 			s.cols.forEach(function(i){
-				if(!_Top.branches[i].visible)		drawDashLine(c, '#555', '#fff', s.lp[i + 1] - 0.5 - s.l, 0, s.lp[i + 1] - 0.5 - s.l, (s.vh > s.tp.last()) ? s.tp.last() : s.vh);
-				else if(_Top.branches[i].line)		c.fillRect(s.lp[i + 1] - 1 - s.l, 0, 1, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh)); 			});
+				if(!_Top.branches[i].visible){
+					if(setting.dashHidden)			drawDashLine(c, '#555', '#fff', s.lp[i + 1] - 0.5 - s.l, 0, s.lp[i + 1] - 0.5 - s.l, (s.vh > s.tp.last()) ? s.tp.last() : s.vh);
+					else							c.fillRect(s.lp[i + 1] - 1 - s.l, 0, 1, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh));
+				} else if(_Top.branches[i].line)	c.fillRect(s.lp[i + 1] - 1 - s.l, 0, 1, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh));
+			});
 
 			c.fillStyle = '#F1F1F1';				c.fillRect(0, s.vh, s.vw + 18, 18);	c.fillRect(s.vw, 0, 18, s.vh);
 			c.fillStyle = '#aaa'
@@ -1645,7 +1713,7 @@ function table_ui(options){
 				var cell = _Top.visual[i][j];
 				if(cell.displayed) continue;
 				if(!cell.visible){
-					drawDashLine(c, '#000', '#f1f1f1', s.lp[cell.j.last() + 1] - 0.5 - s.l, _Top.tp[cell.i[0]], s.lp[cell.j.last() + 1] - 0.5 - s.l, _Top.tp[cell.i.last() + 1]  );
+					if(setting.dashHidden)	drawDashLine(c, '#000', '#f1f1f1', s.lp[cell.j.last() + 1] - 0.5 - s.l, _Top.tp[cell.i[0]], s.lp[cell.j.last() + 1] - 0.5 - s.l, _Top.tp[cell.i.last() + 1]  );
 					continue;
 				}
 				cell.displayed = true;
@@ -1694,7 +1762,7 @@ function table_ui(options){
 				var cell = _Side.visual[i][j];
 				if(cell.displayed) continue;
 				if(!cell.visible){
-					drawDashLine(c, '#000', '#f1f1f1', _Side.lp[cell.j[0]], s.tp[cell.i.last() + 1] - 0.5 - s.t, _Side.lp[cell.j.last() + 1], s.tp[cell.i.last() + 1] - 0.5 - s.t );
+					if(setting.dashHidden)		drawDashLine(c, '#000', '#f1f1f1', _Side.lp[cell.j[0]], s.tp[cell.i.last() + 1] - 0.5 - s.t, _Side.lp[cell.j.last() + 1], s.tp[cell.i.last() + 1] - 0.5 - s.t );
 					continue;
 				}
 				cell.displayed = true;
@@ -1959,7 +2027,10 @@ function table_ui(options){
 		}
 		this.cSide = new function(){
 			this.down = function(e){
-				s = {e: e, start: get.position.side(e) };
+				s = {e: e };
+				if(e.shiftKey && select.shift1st)	s.start = { j:_Side.c - 1, i: select.shift1st.i };
+				else 								s.start = get.position.side(e);
+
 				s.sort = (_Side.visual[s.start.i][s.start.j].select && select.side.length == 1 && select.click == _Side) ? true : false;
 				
 				if(!e.ctrlKey)				select.clearAll();
@@ -2004,7 +2075,10 @@ function table_ui(options){
 		}
 		this.cTop = new function(){
 			this.down = function(e){
-				s = {e: e, start: get.position.top(e) };
+				s = {e: e };
+				if(e.shiftKey && select.shift1st)	s.start = { i:_Top.r - 1, j: select.shift1st.j };
+				else 								s.start = get.position.top(e);
+
 				s.sort = (_Top.visual[s.start.i][s.start.j].select && select.top.length == 1 && select.click == _Top) ? true : false;
 			
 				if(!e.ctrlKey)				select.clearAll();
@@ -2032,8 +2106,8 @@ function table_ui(options){
 				timer = undefined;
 				var p = get.sortedPosition.top(s.start, s.end);
 
-				select.shift1st = [0, p.l];
-				select.shift2nd = [_Table.r - 1, p.r];
+				select.shift1st = { i: 0, j: p.l };
+				select.shift2nd = { i: _Table.r - 1, j: p.r };
 	
 				select.selectTop(  p.t,  p.b,  p.l,  p.r, e.ctrlKey );
 

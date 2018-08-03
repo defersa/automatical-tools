@@ -22,36 +22,41 @@ if (!Array.prototype.last){
 var tools = {
 	createHTML: function(options){
 		if(typeof options == 'object' && options != null){
-			var new_element = 	document.createElement(options.tag);
-			if(options.parent != undefined) 			options.parent.appendChild(new_element);
-			if(options.className != undefined) 			new_element.className = options.className;
-			if(options.id != undefined) 				new_element.id = options.id;
-			if(options.innerHTML != undefined)			new_element.innerHTML = options.innerHTML;
-			if(options.src != undefined)				new_element.src = options.src;
-			if(options.style != undefined)				new_element.style.cssText = options.style;
-			if(options.title != undefined)				new_element.title = options.title;
+			var obj = 	document.createElement(options.tag);
+			if(options.parent != undefined) 			options.parent.appendChild(obj);
+			if(options.className != undefined) 			obj.className = options.className;
+			if(options.id != undefined) 				obj.id = options.id;
+			if(options.innerHTML != undefined)			obj.innerHTML = options.innerHTML;
+			if(options.src != undefined)				obj.src = options.src;
+			if(options.style != undefined)				obj.style.cssText = options.style;
+			if(options.title != undefined)				obj.title = options.title;
 
-			if(options.onmousedown != undefined)		new_element.onmousedown = options.onmousedown;
-			if(options.onclick != undefined)			new_element.onclick = options.onclick;
-			if(options.ondblclick != undefined)			new_element.ondblclick = options.ondblclick;
-			if(options.oncontextmenu != undefined)		new_element.oncontextmenu = options.oncontextmenu;
+			if(options.onmousedown != undefined)		obj.onmousedown = options.onmousedown;
+			if(options.onclick != undefined)			obj.onclick = options.onclick;
+			if(options.ondblclick != undefined)			obj.ondblclick = options.ondblclick;
+			if(options.oncontextmenu != undefined)		obj.oncontextmenu = options.oncontextmenu;
 
-			if(options.onmouseover != undefined)		new_element.onmouseover = options.onmouseover;
-			if(options.onmouseout != undefined)			new_element.onmouseout = options.onmouseout;
-			if(options.onmousemove != undefined)		new_element.onmousemove = options.onmousemove;
+			if(options.onmouseover != undefined)		obj.onmouseover = options.onmouseover;
+			if(options.onmouseout != undefined)			obj.onmouseout = options.onmouseout;
+			if(options.onmouseenter != undefined)		obj.onmouseenter = options.onmouseenter;
+			if(options.onmousemove != undefined)		obj.onmousemove = options.onmousemove;
+			if(options.onmouseleave != undefined)		obj.onmouseleave = options.onmouseleave;
 			
-			if(options.onscroll != undefined)			new_element.onscroll = options.onscroll;
-			if(options.onkeydown != undefined)			new_element.onkeydown = options.onkeydown;
-			if(options.onkeyup != undefined)			new_element.onkeyup = options.onkeyup;
-			if(options.onblur != undefined)				new_element.onblur = options.onblur;
+			if(options.onscroll != undefined)			obj.onscroll = options.onscroll;
+			if(options.onkeydown != undefined)			obj.onkeydown = options.onkeydown;
+			if(options.onkeyup != undefined)			obj.onkeyup = options.onkeyup;
+			if(options.onblur != undefined)				obj.onblur = options.onblur;
+
+			if(options.ondrop != undefined)				obj.ondrop = options.ondrop;
+			if(options.ondragover != undefined)			obj.ondragover = options.ondragover;
 
 			if(options.onwheel != undefined){
-				if(window.clipboardData)				new_element.onmousewheel = options.onwheel;
-				else									new_element.onwheel = options.onwheel;
+				if(window.clipboardData)				obj.onmousewheel = options.onwheel;
+				else									obj.onwheel = options.onwheel;
 			}			
 				
-			if(options.tabIndex != undefined)			new_element.tabIndex = options.tabIndex;
-			return new_element;
+			if(options.tabIndex != undefined)			obj.tabIndex = options.tabIndex;
+			return obj;
 		} else console.warn('function "%c%s%c" has incorrect format', 'color: blue; font-style: italic;', 'tools.createHTML', '');	},
 	destroyHTML: function(object){
 		if(object.parentNode != undefined) object.parentNode.removeChild(object);

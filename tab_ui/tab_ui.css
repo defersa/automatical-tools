@@ -1,23 +1,27 @@
-.tbu-tab, .tbu-pageTab, .tbu-title, .tbu-icon, 
-.tbu-search, .tbu-loop, .tbu-searchInput {
-	position: relative;				box-sizing: border-box;				display: flex;					
+.tbu-tab, .tbu-pageTab, .tbu-title, .tbu-icon, .tbu-search, .tbu-loop, .tbu-searchInput {
+	position: relative;
+	box-sizing: border-box;
+	display: flex;					
 }
 /* header for tabs */
 .tbu-header {
 	position: absolute;				overflow: visible;
-	left: 9px;		right: 3px;		top: 0;			height: 31px;
+	left: 9px;		right: 3px;		height: 31px;
 	display: flex;
 }
+
 .tbu-header:focus {
 	border: none;					outline: none;
 }
 /* Container */
 .tbu-container {
-	position: absolute;				z-index: 5;
-	left: 0;		right: 0;		top: 30px;		bottom: 0;
-	border-top: 1px solid #1976d2;
-	background: white;				box-sizing: border-box; 
+	position: absolute;
+	z-index: 5;
+	left: 0;			right: 0;
+	background: white;
+	box-sizing: border-box; 
 }
+
 .tbu-default {
 	border: 1px solid #8eafc1;		border-top: 0;	
 	position: absolute;
@@ -26,11 +30,11 @@
 
 /* Tab and its children */
 .tbu-tab {	
-	border-radius: 12px 12px 0 0;	overflow: hidden;
-	border-width: 1px 1px 0 1px;	cursor: default;
+	overflow: hidden;				cursor: default;
 	border-style: solid;			margin-left: -6px; 
 	min-width: 30px;				width: 150px;
 }
+
 .tbu-icon {	
 	margin: 2px;					flex-shrink: 1;
 	width: 12px;					height: 12px;
@@ -49,16 +53,16 @@
 
 /* tabs behavior */
 .tbu-tab-active	{
-	padding: 7px 4px 0 6px;			z-index: 6;						
+	z-index: 6;						font-weight: bold;					
 	color: #333;					border-color: #1976d2;	
-	height: 29px;					top: 2px;
-	font-weight: bold;
+	height: 29px;
 }
+
+
 .tbu-tab-nactive	{
-	padding: 4px 4px 0 6px;			transition: .3s;
-	z-index: 4;						color: #555;
-	border-color: #8AAED1; 			
-	height: 27px;					top: 5px;
+	transition: .3s;		border-color: #8AAED1; 	
+	z-index: 4;				color: #555;	
+	height: 27px;		
 }
 .tbu-tab-nactive::after {
 	background: #555;				content: '.';
@@ -72,8 +76,10 @@
 	flex-shrink: 0;					z-index: 4;
 	width: 24px;					height: 24px;
 	padding: 3px;					margin-left: 2px;
-	top: 5px;
 }
+
+.tbu-top .tbu-pageTab {		top: 5px;	}
+.tbu-bot .tbu-pageTab {		top: 5px;	}
 
 /* Search tab */
 .tbu-searchTab {
@@ -84,10 +90,33 @@
 	float: right;					margin-top: 8px; 
 	height: 18px;					width: 18px;
 }
-.tbu-searchInput{
-	float: right;
-	height: 22px;					width: 150px;
-	margin: 6px 4px 0 4px;			padding: 1px 8px;
-	border: 1px solid #1976d2;		border-radius: 11px;	
+
+.tbu-searchInput {
+	float: right;				padding: 1px 8px;
+	height: 22px;				width: 150px;
+	border: 1px solid #1976d2;	border-radius: 11px;	
 }
 .tbu-searchInput:focus { outline: none; }
+
+.tbu-top .tbu-header{	top: 0;	}
+.tbu-bot .tbu-header{	bottom: 0;}
+
+.tbu-top .tbu-container {	top: 30px;		bottom: 0;		border-top: 1px solid #1976d2;		}
+.tbu-bot .tbu-container {	top: 0;		bottom: 30px;		border-bottom: 1px solid #1976d2;	}
+
+
+.tbu-top .tbu-tab  {	border-radius: 12px 12px 0 0;	border-width: 1px 1px 0 1px; }
+.tbu-bot .tbu-tab  {	border-radius: 0 0 12px 12px;	border-width: 0 1px 1px 1px;	}
+
+.tbu-top .tbu-tab-nactive {	padding: 4px 4px 0 6px;		top: 5px;	}
+.tbu-bot .tbu-tab-nactive {	padding: 4px 4px 0 6px;		top: 1px;	}
+
+.tbu-top .tbu-tab-active  {	padding: 7px 4px 0 6px;				top: 2px; }
+.tbu-bot .tbu-tab-active  {	padding: 5px 4px 0 6px;				top: 0px; }
+
+.tbu-top .tbu-loop {		margin-top: 8px; 	}
+.tbu-bot .tbu-loop {		margin-top: 8px; 	}
+
+.tbu-top .tbu-searchInput {		margin: 6px 4px 0 4px;	}
+.tbu-bot .tbu-searchInput {		margin: 6px 4px 0 4px;	}
+
