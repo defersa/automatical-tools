@@ -3,9 +3,11 @@ function calendar_ui(options){
 	var _calendar;
 	var setting;
 
-	var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+	var monthName = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+	var monthNameShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 	var dayNames = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 	var vDay = 86400000;
+	var animationSpeed = 6;
 
 
 	var leftButton = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="8px" height="12px" viewBox="0 0 8 12" xml:space="preserve"><path class="cu-arrow" d="M 0,6 L 6,0 L 8,2 L 4,6 L 8,10 L 6,12 z" /></svg>';
@@ -21,7 +23,7 @@ function calendar_ui(options){
 		if(_calendar)							link.remove();
 		var cd = new Date();
 
-		if(options.panels == undefined)			options.panels = 1;
+		if(options.preRow == undefined)			options.preRow = true;
 		if(options.month == undefined)			options.month = cd.getMonth();
 		if(options.year == undefined)			options.year = cd.getFullYear();
 		if(options.startDay == undefined)		options.startDay = 1;
@@ -29,8 +31,8 @@ function calendar_ui(options){
 		if(options.parent == undefined)			options.parent = document.body;
 
 
-		window.addEventListener('resize', display.month);
-		setting = { startDay: options.startDay };
+		window.addEventListener('resize', display.generate);
+		setting = { type: true };
 		create.panel();
 
 		link.change(options);
@@ -39,14 +41,16 @@ function calendar_ui(options){
 	link.change = function(options){
 		if(options.parent !== undefined)			changing.parent(options);
 		if(options.startDay !== undefined)			setting.startDay = options.startDay;
-		if(options.month !== undefined)				setting.sMonth = options.month;
-		if(options.year !== undefined)				setting.sYear = options.year;
 
-		display.month();
+		if(options.type !== undefined)										setting.type = options.type;
+		if(options.month !== undefined || options.year !== undefined)		changing.date(options);
+		if(options.preRow !== undefined)									changing.preRow(options);
+		if(options.startDay !== undefined)									create.dayName(options);
+
+		display.generate();
 		changing.title();
 	}
 	link.remove = function(options){
-
 	}
 
 	link.setSelect = function(dates){
@@ -65,6 +69,13 @@ function calendar_ui(options){
 
 	var events = {
 		click: {
+			title: function(e){
+				if(setting.type){
+					setting.sMonth = setting.month;
+					setting.sYear = setting.year;
+					display.slideToYear.start();
+				}
+			},
 			right: function(e){
 				display.nextMonth();
 			},
@@ -72,16 +83,24 @@ function calendar_ui(options){
 				display.prevMonth();
 			},
 			top: function(e){
-				display.monthUp.start();
+				if(setting.type)		display.month.up.start();
+				else					display.year.up.start();
 			},
 			bottom: function(e){
-				display.monthDown.start();
+				if(setting.type)		display.month.down.start();
+				else					display.year.down.start();
 			}
 		},
 		down: {
 			date: function(e){
 				if(e.which != 1)	return;
 				select.down(e);
+			},
+			month: function(e){
+				if(e.which != 1)	return;
+				setting.sMonth = e.target.date.month;
+				setting.sYear = e.target.date.year;
+				display.slideToMonth.start();
 			}
 		},
 		enter: {
@@ -105,8 +124,13 @@ function calendar_ui(options){
 				if(e.ctrlKey)			return;
 				var delta = (e.deltaY || -e.wheelDelta)/2;
 
-				if(delta < 0)	display.monthUp.start();
-				else			display.monthDown.start();
+				if(delta < 0){
+					if(setting.type)	display.month.up.start();
+					else				display.year.up.start();
+				} else {
+					if(setting.type)	display.month.down.start();
+					else				display.year.down.start();
+				}
 
 				tools.stopProp(e);		return false;
 			}
@@ -119,10 +143,11 @@ function calendar_ui(options){
 
 			_calendar.html = tools.createHTML({tag: 'div', className: 'cu-panel'})
 
-			_calendar.header = tools.createHTML({tag: 'div', parent: _calendar.html, className: 'cu-panel-header' });
+			_calendar.header = tools.createHTML({tag: 'div', parent: _calendar.html, className: 'cu-panel-header'});
 			_calendar.content = tools.createHTML({tag: 'div', parent: _calendar.html, className: 'cu-panel-content', onwheel: events.wheel.content });
 			_calendar.title = tools.createHTML({	tag: 'div',
 													parent: _calendar.header,
+													onclick: events.click.title,
 													className: 'cu-panel-header-title'});
 
 
@@ -139,7 +164,6 @@ function calendar_ui(options){
 													onclick: events.click.top,
 													onmouseenter: events.enter.top});
 
-
 			_calendar.toLeft = tools.createHTML({	tag: 'div',
 													parent: _calendar.header,
 													className: 'cu-panel-header-left cu-panel-button',
@@ -154,10 +178,18 @@ function calendar_ui(options){
 			_calendar.weekDays =  tools.createHTML({tag: 'div', parent: _calendar.html, className: 'cu-panel-week-days' });
 			
 			_calendar.weekDays.days = [];
-			_calendar.table = [];
+			_calendar.month = [];
+			_calendar.year = [];
+		},
+		dayName: function(options){
+			if(options.startDay >= 0 && options.startDay <= 6 )	setting.startDay = options.startDay;
+			else												setting.startDay = 0;
+			_calendar.weekDays.innerHTML = '';
 			for(var i = 0; i < 7; i++){
 				_calendar.weekDays.days[i] =  tools.createHTML({tag: 'div', parent: _calendar.weekDays, style: ('left: ' + (1 + i * 14) + '%;' ), className: 'cu-day-name', innerHTML: dayNames[(i + setting.startDay)%7] });
 			}
+			_calendar.content.innerHTML = '';
+			_calendar.month = [];
 		}
 	}
 
@@ -166,100 +198,348 @@ function calendar_ui(options){
 			setting.parent = options.parent;
 			options.parent.appendChild(_calendar.html);
 		},
-		date: function(des){
-			setting.month += des;
-			while(setting.month < 0 || setting.month > 11){
-				if(setting.month < 0){
-					setting.month += 12;
-					setting.year += -1;
-				}
-				if(setting.month > 11){
-					setting.month += -12;
-					setting.year += 1;
-				}
-			}	
+		date: function(options){
+			if(options.year)				setting.sYear = options.year;
+			if(options.month !== undefined)	setting.sMonth = options.month;
+			_calendar.content.innerHTML = '';
+			_calendar.month = [];			
 		},
 		title: function(){
-			if(_calendar.table.length < 1)	return false;
-			setting.month = _calendar.table[1].r[3].date.getMonth();
-			setting.year = _calendar.table[1].r[3].date.getFullYear();
-			_calendar.title.innerHTML = monthNames[setting.month] + ' ' + setting.year;
+			if(setting.type){
+				if(_calendar.month.length < 1)	return false;
+				setting.month = _calendar.month[1].r[3].date.getMonth();
+				setting.year = _calendar.month[1].r[3].date.getFullYear();
+				_calendar.title.innerHTML = monthName[setting.month] + ' ' + setting.year;
+			} else {
+				_calendar.title.innerHTML = _calendar.year[0].d.year;
+			}
+		},
+		preRow: function(options){
+			if(options.preRow)			_calendar.html.className = 'cu-panel cu-pre-row';
+			else						_calendar.html.className = 'cu-panel';
+			setting.preRow = options.preRow;
 		}
 	}
 	var display = new function(){
 
-		this.month = function(){
-			var d;
+		this.month = new function(){
+			this.generate = function(){
+				var d;
 
-			if(_calendar.table.length <= 0){
-				d = new Date(setting.sYear, setting.sMonth, 1 );
-				if(d.getDay() < setting.startDay)		d.setDate(d.getDate() - d.getDay() + setting.startDay - 7);
-				else									d.setDate(d.getDate() - d.getDay() + setting.startDay);
-			} else {
-				d = new Date( _calendar.table[0].s );
+				if(_calendar.month.length <= 0){
+					d = new Date(setting.sYear, setting.sMonth, 1 );
+					if(d.getDay() < setting.startDay)		d.setDate(d.getDate() - d.getDay() + setting.startDay - 7);
+					else									d.setDate(d.getDate() - d.getDay() + setting.startDay);
+				} else {
+					d = new Date( _calendar.month.last().s.valueOf() + vDay*7 );
+				}
+				var rows = display.month.getRowCount();
+	
+				for(var i = _calendar.month.length; i < rows; i++){
+					makeWeek(d, i);
+					d.setDate(d.getDate() + 7);
+				}
+				while(_calendar.month.length != rows)	removeWeek(_calendar.month.length - 1);
+			
+				changing.title();
 			}
-			var rows = display.getRowCount();
+			this.getRowCount = function(){
+				var height = _calendar.content.offsetHeight;
+   				return Math.floor(height / 30);
+			}
 
-			for(var i = _calendar.table.length; i < rows; i++){
-				var sd = new Date(d.valueOf() + vDay*7*i);
-				var ed = new Date(d.valueOf() + vDay*(7*i+6));
-				var row = [];
-				var container = tools.createHTML({ tag: 'div', parent: _calendar.content, className: 'cu-week', style: 'top: ' + (30*i) + 'px;' })
-				_calendar.table.push({r: row, c: container, s: sd, e: ed });
-				display.week(row, container, sd);
+			function makeWeek(d, p){
+				var sd = new Date(d.valueOf());
+				var ad = new Date(d.valueOf() + vDay*3)
+				var ed = new Date(d.valueOf() + vDay*6);
+				var r = [];
+				var n = tools.createHTML({ tag: 'div', parent: _calendar.content, className: 'cu-month-name', style: 'top: ' + (30*p) + 'px;' , innerHTML: monthNameShort[ad.getMonth()]})
+				var c = tools.createHTML({ tag: 'div', parent: _calendar.content, className: 'cu-week', style: 'top: ' + (30*p) + 'px;' })
+				_calendar.month.splice(p, 0, {r: r, c: c, s: sd, e: ed, n: n });
+				display.month.days(r, c, sd);
 			}
-			if(_calendar.table.length > rows){
-				while(_calendar.table.length != rows){
-					tools.destroyHTML( _calendar.table.last().c );
-					_calendar.table.splice( _calendar.table.length - 1, 1);
+			function removeWeek(p){
+				tools.destroyHTML( _calendar.month[p].c );
+				tools.destroyHTML( _calendar.month[p].n );
+				_calendar.month.splice( p, 1);				
+			}
+
+			this.days = function(r, html, d) {
+				for(var i = 0; i < 7; i++){
+					r[i] = { date: new Date(d.valueOf() + vDay*i) }
+
+					var className = ( ((r[i].date.getMonth() + setting.sMonth)%2) ? 'cu-day' : 'cu-day-month' );
+					if(r[i].date.getUTCDay() == 5 || r[i].date.getUTCDay() == 6)	className += ' cu-day-hol';
+					if(select.is(r[i].date))										className += ' cu-day-select';
+					if(select.hover.s <= r[i].date && select.hover.e >= r[i].date)	className += ' cu-day-hover';	
+
+					r[i].html = tools.createHTML({	tag: 'div',
+												className: className,
+												parent: html,
+												onmousedown: events.down.date,
+												onmouseenter: events.enter.date,
+												innerHTML: r[i].date.getDate(),
+												style: 'left:' + (1 + i*14) + '%;'});
+					r[i].html.date = r[i];
 				}
 			}
-			changing.title();
-		}
 
-		this.getRowCount = function(){
-			var height = _calendar.content.offsetHeight;
-   			return Math.floor(height / 30);
-		}
+			this.up = new function(){
+				var lCount;
+				this.roll = function(count){
+					if(count >= 0)	lCount = count;
+					if(lCount > 0)	display.month.up.start();
+				},
+				this.start = function(){
+					_calendar.content.style.height = (_calendar.month.length*30) + 'px';
+					var d = new Date(_calendar.month[0].s.valueOf() - vDay*7);
+					makeWeek(d, 0);
+					step(15);
+				}
+				function step(dif){
+					for(var i = 0; i < _calendar.month.length; i++)
+						_calendar.month[i].c.style.top = _calendar.month[i].n.style.top = (30*i - 2*dif) + 'px';
 
-		this.week = function(row, html, d) {
-			for(var i = 0; i < 7; i++){
-				row[i] = {}
-				var nd = new Date(d);
-				nd.setDate(nd.getDate() + i);
-				var cn = ( ((nd.getMonth() + setting.sMonth)%2) ? 'cu-day' : 'cu-day-month' );
-				cn += ((nd.getUTCDay() == 5 || nd.getUTCDay() == 6) ? ' cu-day-hol' : '');
-				row[i].html = tools.createHTML({	tag: 'div',
-											className: cn,
-											parent: html,
-											onmousedown: events.down.date,
-											onmouseenter: events.enter.date,
-											innerHTML: nd.getDate(),
-											style: 'left:' + (1 + i*14) + '%;'});
-				row[i].html.date = row[i];
-				row[i].date = nd;
-				if(select.is(nd))									row[i].html.className += ' cu-day-select';
-				if(select.hover.s <= nd && select.hover.e >= nd)	row[i].html.className += ' cu-day-hover';	
+					if(dif > 0)											setTimeout( step, animationSpeed, dif - 3);
+					else												end();
+				}
+				function end(){
+					removeWeek(_calendar.month.length - 1);
+					_calendar.content.style.height = '';
+					changing.title();
+					display.month.up.roll(lCount - 1);
+				}
+			}
+			this.down = new function(){
+				var lCount;
+				this.roll = function(count){
+					if(count >= 0)	lCount = count;
+					if(lCount > 0)	display.month.down.start();
+				}
+				this.start = function(){
+					_calendar.content.style.height = (_calendar.month.length*30) + 'px';
+					var d = new Date(_calendar.month.last().s.valueOf() + vDay*7);
+					makeWeek(d, _calendar.month.length);
+					step(0);
+				}
+				function step(dif){
+					for(var i = 0; i < _calendar.month.length; i++)		_calendar.month[i].c.style.top = _calendar.month[i].n.style.top = (30*(i) - 2*dif) + 'px';
+					if(dif != 15)										setTimeout( step, animationSpeed, dif + 3);
+					else												end();
+				}
+				function end(){
+					removeWeek(0);
+					_calendar.content.style.height = '';
+					changing.title();
+					display.month.down.roll(lCount - 1);
+				}	
+			}
+		}
+		this.year = new function(){
+			this.generate = function(){
+				var d;
+
+				if(_calendar.year.length <= 0){
+					d = {year: setting.sYear, month: 0 };
+				} else {
+					d = {year: _calendar.year.last().d.year, month: _calendar.year.last().d.month };
+					nextPeriod(d);
+				}
+
+				var rows = display.year.getRowCount();
+
+				for(var i = _calendar.year.length; i < rows; i++){
+					makeHalfYear(d, i);
+					nextPeriod(d);
+				}
+				while(rows < _calendar.year.length){
+					removeHalfYear(_calendar.year.length - 1);
+				}
+			}
+			this.getRowCount = function(){
+				var height = _calendar.content.offsetHeight;
+   				return Math.floor(height / 45);				
+			}
+
+			function nextPeriod(d){
+				if(d.month == 4){
+					d.month = 8
+				} else if(d.month == 8){
+					d.month = 0;
+					d.year++;
+				} else {
+					d.month = 4;
+				}
+			}
+			function prevPeriod(d){
+				if(d.month == 4){
+					d.month = 0;
+				} else if(d.month == 8){
+					d.month = 4;
+				} else {
+					d.year--;
+					d.month = 8;
+				}
+			}
+
+			function makeHalfYear(d, p){
+				var r = [];
+				var year = d.year + '';
+				var n = tools.createHTML({ tag: 'div', parent: _calendar.content, className: 'cu-year-name', style: 'top: ' + (45*p) + 'px;' , innerHTML: year[0] + '' + year[1] + '<br/>' + year[2] + '' + year[3] })
+				var c = tools.createHTML({ tag: 'div', parent: _calendar.content, className: 'cu-half-year', style: 'top: ' + (45*p) + 'px;' })
+				_calendar.year.splice(p, 0, {r: r, c: c, n: n, d: tools.cloneObject(d) });
+				for(var i = 0; i < 4; i++){
+					r[i] = { month: d.month + i, year: d.year }
+					var className = 'cu-month';
+					if(select.monthIs(r[i]))	className += ' cu-month-select';
+					r[i].html = tools.createHTML({	tag: 'div',
+												className: className,
+												parent: c,
+												onmousedown: events.down.month,
+												innerHTML: monthNameShort[r[i].month],
+												style: 'left:' + (2 + i*24) + '%;'});
+					r[i].html.date = r[i];
+				}
+			}
+			function removeHalfYear(p){
+				tools.destroyHTML( _calendar.year[p].c );
+				tools.destroyHTML( _calendar.year[p].n );
+				_calendar.year.splice( p, 1);
+			}
+
+			this.up = new function(){
+				var lCount;
+				this.roll = function(count){
+					if(count >= 0)	lCount = count;
+					if(lCount > 0)	display.year.up.start();
+				},
+				this.start = function(){
+					_calendar.content.style.height = (_calendar.year.length*45) + 'px';
+					var d = tools.cloneObject(_calendar.year[0].d);
+					prevPeriod(d);
+					makeHalfYear(d, 0);
+					step(15);
+				}
+				function step(dif){
+					for(var i = 0; i < _calendar.year.length; i++)
+						_calendar.year[i].c.style.top = _calendar.year[i].n.style.top = (45*i - 3*dif) + 'px';
+
+					if(dif > 0)											setTimeout( step, animationSpeed, dif - 3);
+					else												end();
+				}
+				function end(){
+					removeHalfYear(_calendar.year.length - 1);
+					_calendar.content.style.height = '';
+					changing.title();
+					display.year.up.roll(lCount - 1);
+				}
+			}
+			this.down = new function(){
+				var lCount;
+				this.roll = function(count){
+					if(count >= 0)	lCount = count;
+					if(lCount > 0)	display.year.down.start();
+				}
+				this.start = function(){
+					_calendar.content.style.height = (_calendar.year.length*45) + 'px';
+					var d = tools.cloneObject(_calendar.year.last().d);
+					nextPeriod(d);
+					makeHalfYear(d, _calendar.year.length);
+					step(0);
+				}
+				function step(dif){
+					for(var i = 0; i < _calendar.year.length; i++)		_calendar.year[i].c.style.top = _calendar.year[i].n.style.top = (45*(i) - 3*dif) + 'px';
+					if(dif != 15)										setTimeout( step, animationSpeed, dif + 3);
+					else												end();
+				}
+				function end(){
+					removeHalfYear(0);
+					_calendar.content.style.height = '';
+					changing.title();
+					display.year.down.roll(lCount - 1);
+				}	
 			}
 		}
 
 		this.nextMonth = function(){
 			var count = 0;
-			var d = new Date(_calendar.table[1].r[0].date);
-			while(d.getMonth() == _calendar.table[1].r[0].date.getMonth()){
-				d.setDate(d.getDate() + 7);
-				count++;
+			if(setting.type){
+				var d = new Date(_calendar.month[1].r[0].date);
+				while(d.getMonth() == _calendar.month[1].r[0].date.getMonth()){
+					d.setDate(d.getDate() + 7);
+					count++;
+				}
+				display.month.down.roll(count);
+			} else {
+				if(_calendar.year[0].d.month == 0)		count = 3;
+				else if(_calendar.year[0].d.month == 4)	count = 2;
+				else									count = 1;
+				display.year.down.roll(count);
 			}
-			display.monthDown.roll(count);
 		}
 		this.prevMonth = function(){
 			var count = 0;
-			var d = new Date(_calendar.table[0].r[0].date);
-			while(d.getMonth() == _calendar.table[0].r[0].date.getMonth()){
-				d.setDate(d.getDate() - 7);
-				count++;
+			if(setting.type){
+				var d = new Date(_calendar.month[0].r[0].date);
+				while(d.getMonth() == _calendar.month[0].r[0].date.getMonth()){
+					d.setDate(d.getDate() - 7);
+					count++;
+				}
+				display.month.up.roll(count);
+			} else {
+				if(_calendar.year[0].d.month == 0)		count = 3;
+				else if(_calendar.year[0].d.month == 4)	count = 1;
+				else									count = 2;
+				display.year.up.roll(count);
+			}		
+		}
+
+		this.slideToYear = new function(){
+			this.start = function(){
+				setting.type = false;
+				_calendar.oldContent = _calendar.content;
+				_calendar.content = tools.createHTML({tag: 'div', parent: _calendar.html, style: 'left: 100%; width: 100%', className: 'cu-panel-content', onwheel: events.wheel.content });
+				_calendar.month = [];
+				display.year.generate();
+				changing.title();
+				step(100);
 			}
-			display.monthUp.roll(count);			
+			function step(des){
+				_calendar.content.style.cssText = 'left: ' + des + '%; width: 100%;';
+				_calendar.oldContent.style.cssText = 'left: -' + (100 - des) + '%; width: 100%;';
+				if(des != 0) 	setTimeout(step, animationSpeed, des - 2.5);
+				else			end();
+			}
+			function end(){
+				tools.destroyHTML( _calendar.oldContent );
+				_calendar.oldContent = undefined;
+			}
+		}
+		this.slideToMonth = new function(){
+			this.start = function(){
+				setting.type = true;
+				_calendar.oldContent = _calendar.content;
+				_calendar.content = tools.createHTML({tag: 'div', parent: _calendar.html, style: 'left: 100%; width: 100%', className: 'cu-panel-content', onwheel: events.wheel.content });
+				_calendar.year = [];
+				display.month.generate();
+				changing.title();
+				step(100);
+			}
+			function step(des){
+				_calendar.content.style.cssText = 'left: ' + des + '%; width: 100%;';
+				_calendar.oldContent.style.cssText = 'left: -' + (100 - des) + '%; width: 100%;';
+				if(des != 0) 	setTimeout(step, animationSpeed, des - 2.5);
+				else			end();
+			}
+			function end(){
+				tools.destroyHTML( _calendar.oldContent );
+				_calendar.oldContent = undefined;
+			}
+		}
+
+		this.generate = function(){
+			if(setting.type)	display.month.generate();
+			else				display.year.generate();
 		}
 
 		this.scroll = new function(){
@@ -271,7 +551,7 @@ function calendar_ui(options){
 				top();
 			}
 			function top(){
-				display.monthUp.start();
+				display.month.up.start();
 				timer = setTimeout(top, 230);
 			}
 			
@@ -281,7 +561,7 @@ function calendar_ui(options){
 				bot();
 			}
 			function bot(){
-				display.monthDown.start();
+				display.month.down.start();
 				timer = setTimeout(bot, 230);
 			}
 
@@ -289,69 +569,6 @@ function calendar_ui(options){
 				clearTimeout(timer);		timer = null;
 			}
 		}
-
-
-		this.monthUp = new function(){
-			var lCount;
-			this.roll = function(count){
-				if(count >= 0)	lCount = count;
-				if(lCount > 0)	display.monthUp.start();
-			},
-			this.start = function(){
-				_calendar.content.style.height = (_calendar.table.length*30) + 'px';
-				var sd = new Date(_calendar.table[0].s.valueOf() - vDay*7);
-				var ed = new Date(sd.valueOf() + vDay*6);
-				var row = [];
-				var container = tools.createHTML({ tag: 'div', parent: _calendar.content, className: 'cu-week', style: 'top: -30px;' })
-				_calendar.table.splice(0, 0, {r: row, c: container, s: sd, e: ed });
-				display.week(row, container, sd);
-				step(15);
-			}
-			function step(dif){
-				for(var i = 0; i < _calendar.table.length; i++)		_calendar.table[i].c.style.top = (30*i - 2*dif) + 'px';
-				if(dif > 0)											setTimeout( step, 6, dif - 3);
-				else												end();
-			}
-			function end(){
-				tools.destroyHTML(_calendar.table.last().c);
-				_calendar.table.splice(_calendar.table.length - 1, 1);
-				_calendar.content.style.height = '';
-				changing.title();
-				display.monthUp.roll(lCount - 1);
-			}
-		}
-
-		this.monthDown = new function(){
-			var lCount;
-			this.roll = function(count){
-				if(count >= 0)	lCount = count;
-				if(lCount > 0)	display.monthDown.start();
-			}
-			this.start = function(){
-				_calendar.content.style.height = (_calendar.table.length*30) + 'px';
-				var sd = new Date(_calendar.table.last().s.valueOf() + vDay*7);
-				var ed = new Date(sd.valueOf() + vDay*6);
-				var row = [];
-				var container = tools.createHTML({ tag: 'div', parent: _calendar.content, className: 'cu-week', style: 'top: ' + _calendar.table.length*30 + 'px;' })
-				_calendar.table.push({r: row, c: container, s: sd, e: ed });
-				display.week(row, container, sd);
-				step(0);
-			}
-			function step(dif){
-				for(var i = 0; i < _calendar.table.length; i++)		_calendar.table[i].c.style.top = (30*(i) - 2*dif) + 'px';
-				if(dif != 15)										setTimeout( step, 6, dif + 3);
-				else												end();
-			}
-			function end(){
-				tools.destroyHTML(_calendar.table[0].c);
-				_calendar.table.splice(0, 1);
-				_calendar.content.style.height = '';
-				changing.title();
-				display.monthDown.roll(lCount - 1);
-			}	
-		}
-
-
 	}
 
 	var select = new function(){
@@ -373,9 +590,9 @@ function calendar_ui(options){
 			}
 			if(!has){
 				select.items.splice(i, 0, time);
-				for(var i = 0; i < _calendar.table.length; i++){
-					if(_calendar.table[i].s > time || _calendar.table[i].e < time)		continue;
-					var r = _calendar.table[i].r;
+				for(var i = 0; i < _calendar.month.length; i++){
+					if(_calendar.month[i].s > time || _calendar.month[i].e < time)		continue;
+					var r = _calendar.month[i].r;
 					for(var j = 0; j < r.length; j++){
 						if(r[j].date.valueOf() == time.valueOf() && !tools.hasClass(r[j].html,'cu-day-select')){
 							r[j].html.className += ' cu-day-select';
@@ -396,9 +613,9 @@ function calendar_ui(options){
 					break;
 				}
 			}
-			for(var i = 0; i < _calendar.table.length; i++){
-				if(_calendar.table[i].s <= time && _calendar.table[i].e >= time){
-					var r = _calendar.table[i].r;
+			for(var i = 0; i < _calendar.month.length; i++){
+				if(_calendar.month[i].s <= time && _calendar.month[i].e >= time){
+					var r = _calendar.month[i].r;
 					for(var j = 0; j < r.length; j++){
 						if(r[j].date.valueOf() == time.valueOf()){
 							r[j].html.className = r[j].html.className.replace(/ cu-day-select/g, '');
@@ -409,8 +626,8 @@ function calendar_ui(options){
 		}
 		this.removeAll = function(){
 			select.items = [];
-			for(var i = 0; i < _calendar.table.length; i++){
-				var r = _calendar.table[i].r;
+			for(var i = 0; i < _calendar.month.length; i++){
+				var r = _calendar.month[i].r;
 				for(var j = 0; j < r.length; j++){
 					r[j].html.className = r[j].html.className.replace(/ cu-day-select/g, '');
 				}
@@ -425,6 +642,15 @@ function calendar_ui(options){
 			}
 			return false;
 		}
+		this.monthIs = function(d){
+			for(var i = 0; i < select.items.length; i++){
+				if( select.items[i].getMonth() == d.month && select.items[i].getFullYear() == d.year ){
+					return true;
+				}
+			}
+			return false;			
+		}
+
 
 		this.down = function(e){
 			var sDate = e.target.date;
@@ -454,8 +680,8 @@ function calendar_ui(options){
 					s = d;
 				}
 
-				for(var i = 0; i < _calendar.table.length; i++){
-					var row = _calendar.table[i].r;
+				for(var i = 0; i < _calendar.month.length; i++){
+					var row = _calendar.month[i].r;
 					for(var j = 0; j < row.length; j++){
 						if(row[j].date >= select.hover.s && row[j].date <= select.hover.e ){
 							row[j].html.className = row[j].html.className.replace(/ cu-day-hover/g, '');
@@ -465,8 +691,8 @@ function calendar_ui(options){
 				select.hover.s = s;
 				select.hover.e = e;
 
-				for(var i = 0; i < _calendar.table.length; i++){
-					var row = _calendar.table[i].r;
+				for(var i = 0; i < _calendar.month.length; i++){
+					var row = _calendar.month[i].r;
 					for(var j = 0; j < row.length; j++){
 						if(row[j].date >= select.hover.s && row[j].date <= select.hover.e ){
 							row[j].html.className += ' cu-day-hover'
@@ -477,22 +703,17 @@ function calendar_ui(options){
 
 			this.removeAll = function(){
 
-				for(var i = 0; i < _calendar.table.length; i++){
-					var row = _calendar.table[i].r;
+				for(var i = 0; i < _calendar.month.length; i++){
+					var row = _calendar.month[i].r;
 					for(var j = 0; j < row.length; j++){
 						if(row[j].date >= select.hover.s && row[j].date <= select.hover.e ){
 							row[j].html.className = row[j].html.className.replace(/ cu-day-hover/g, '');
 						}
 					}
 				}
-
 				select.hover.s = 0;
 				select.hover.e = 0;
 			}
-		}
-
-		function move(e){
-
 		}
 
 		function up(){
@@ -518,7 +739,6 @@ function calendar_ui(options){
 			select.s = undefined;
 			window.removeEventListener("mouseup", up);
 		}
-
 	}
 
 	link.create(options);

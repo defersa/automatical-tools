@@ -29,7 +29,7 @@ function tree_ui(options){
 		if(options.defaultFolderClose == undefined)		options.defaultFolderClose = 'tu-FolderClose';
 		if(options.defaultTableIcon == undefined)		options.defaultTableIcon = 'tu-TableIcon';
 
-		if(options.parent == undefined)					options.parent = document.body;
+		if(options.parent == undefined)					options.parent = fragment;
 		if(options.show == undefined)					options.show = true;
 
 		changing.viewport();

@@ -47,6 +47,30 @@
 	top: 30px;
 	color: #777;
 }
+.cu-week {
+	position: absolute;
+	height: 30px;
+	left: 0;	right: 0;
+}
+.cu-month-name, .cu-year-name {
+	position: absolute;
+	height: 30px;
+	width: 0;
+	left: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+	color: #777;
+	font-size: 10px;
+}
+
+
+.cu-pre-row .cu-panel-week-days { left: 10%; }
+.cu-pre-row .cu-week, .cu-pre-row .cu-half-year {left: 10%; }
+.cu-pre-row .cu-month-name, .cu-pre-row .cu-year-name {width: 10%; }
+
+
 .cu-day-name {
 	top: 0; bottom: 0; position: absolute; width: 14%;
 	display: flex;	justify-content: center;	align-items: center;
@@ -83,11 +107,6 @@
 	background: #e1e1e1;
 	color: black;
 }
-.cu-week {
-	position: absolute;
-	height: 30px;
-	left: 0;	right: 0;
-}
 .cu-day-hol {
 	color: #d43f3a;
 }
@@ -98,3 +117,39 @@
 
 .cu-day-month.cu-day-hover, .cu-day.cu-day-hover {	background: #666; color: white; }
 .cu-day-hol.cu-day-hover {	background: #d43f3a; }
+
+.cu-month {
+	background: #f7f7f7; 
+	transition: .1s;
+	color: #444;
+	position: absolute;
+	width: 24%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-left: 2px solid white;
+	border-top: 2px solid white;
+	box-sizing: border-box;
+	cursor: default;
+}
+.cu-month:hover {
+	color: #000;	background: #ddd;
+}
+.cu-half-year {
+	position: absolute;
+	height: 45px;
+	left: 0; right: 0;
+}
+.cu-year-name {
+	height: 45px;
+}
+
+.cu-month-select {
+	background: #e3eff5;
+	color: #1f5e7d;
+}
+.cu-month-select:hover {
+	background: #c2dfed;
+	color: #0f2f3e;
+}
