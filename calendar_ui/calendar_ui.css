@@ -74,7 +74,10 @@
 .cu-day-name {
 	top: 0; bottom: 0; position: absolute; width: 14%;
 	display: flex;	justify-content: center;	align-items: center;
+	box-sizing: border-box;
+	border-left: 1px solid white;
 }
+.cu-day-name-select { background: #eff8fc; color: #0f3f53;}
 
 .cu-panel-bottom {	left: 0;	right: 0;	bottom: 0;	height: 12px;	}
 .cu-panel-top {		left: 0;	right: 0;	top: 60px;	height: 12px;	}

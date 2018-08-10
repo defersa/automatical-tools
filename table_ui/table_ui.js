@@ -34,7 +34,15 @@ function table_ui(options){
 		if(options.sharpOverflow == undefined)	options.sharpOverflow = true;
 
 
-		main = {	html: creating.parent(),	_Corner: creating.corner(),		_Table: creating.table(),	_Side: creating.side(),	_Top: creating.top() };
+		main = {	html: creating.parent(),
+					_Corner: creating.corner(),
+					_Table: creating.table(),
+					_Side: creating.side(),
+					_Top: creating.top(),
+					select: select, 
+					display: display,
+					sort: sort,
+					scroll: scroll};
 		size = {	corner: { w: [], h: [] },	table: { w: [], h: [] },  w: 50, h: 20, ttext: 13, font: 'sans-serif', dpi: 1, scale: 1 };
 		functions = {};							setting = { showType: [true, true, true], size: size };
 
@@ -70,6 +78,7 @@ function table_ui(options){
 		if( options.round !== undefined)			set.round(options);
 		if( options.functions !== undefined)		set.functions(options);
 		if( options.size !== undefined)				set.size(options);
+		if( options.scroll !== undefined)			set.scroll(options);
 
 		if( options.table !== undefined)			create.setTable( options.table.top, options.table.side, options.table.table);
 
@@ -83,16 +92,75 @@ function table_ui(options){
 	link.getSort = function(){					return sort.getSort();				}
 	link.getSetting = function(){				return tools.cloneObject(setting);	}
 	link.focus = function(){					main.html.focus();					}
-	link.getTop = function(){
+	link.getSetting = function(){
+		var result = tools.cloneObject(setting);
+		result.scroll = {x: display.s.l, y: display.s.t };
+		return result;
+	}
+	link.getTop = function(){		
 		return _Top.branches.concat();
 	}
 	link.getSide = function(){
 		return _Side.branches.concat();
 	}
+	link.getCells = function(){
+		var result = [];
+		for(var i = 0; i < _Table.cells.length; i++){
+			result[i] = [];
+			for(var j = 0; j < _Table.cells[i].length; j++){
+				result[i][j] = _Table.cells[i][j].obj;
+			}
+		}
+		return result;
+	}
 	link.getSelected = function(){
 		var cells = [];
 		select.table.forEach(function(item){ cells.push(item.obj);});
 		return cells;
+	}
+	link.setSelect = function(obj){
+		select.clearAll();
+
+		if(obj.side != undefined){
+			select.click = _Side;
+			for(var i = 0; i < obj.side.length; i++){
+				select.tree.down(obj.side[i], select.add.side, true);
+			}
+			for(var i = 0; i < _Side.branches.length; i++){
+				if(!_Side.branches[i].select)		continue;
+				for(var j = 0; j < _Table.c; j++){
+					select.add.table(_Table.cells[i][j]);
+				}
+			}
+		}
+		if(obj.top != undefined){
+			select.click = _Top;
+			for(var i = 0; i < obj.top.length; i++){
+				select.tree.down(obj.top[i], select.add.top, true);
+			}
+			for(var j = 0; j < _Top.branches.length; j++){
+				if(!_Top.branches[j].select)		continue;
+				for(var i = 0; i < _Table.r; i++){
+					select.add.table(_Table.cells[i][j]);
+				}
+			}
+		}
+		if(obj.side != undefined){
+			if(obj.side.length > 0){
+				for(var i = 0; i < _Top.branches.length; i++){
+					select.add.top(_Top.branches[i]);
+				}
+			}
+		}
+		if(obj.top != undefined){
+			if(obj.top.length > 0){
+				for(var i = 0; i < _Side.branches.length; i++){
+					select.add.side(_Side.branches[i]);
+				}
+			}			
+		}
+		if(obj.top != undefined && obj.side != undefined) select.click = _Table;
+		display.all();
 	}
 	link.clearAll = function(){
 		select.clearAll();
@@ -104,7 +172,8 @@ function table_ui(options){
 		display.all();
 		if(functions.afterSelect)	functions.afterSelect(link);
 	}
-	link.export = function(options){	return exp1(options); }
+	link.export = function(options){	return exp(options); }
+
 
 	var creating = {
 		parent: function() {
@@ -118,6 +187,7 @@ function table_ui(options){
 		corner: function() {
 			_Corner = { html: tools.createHTML({ tag: 'div', className: 'tau-corner', parent: container,
 																					onmousemove: events.move.corn,
+																					onclick: events.click.corner,
 																					ondrop: events.dd.drop.corner,
 																					onmousedown: events.down.corn }) };
 			return _Corner;
@@ -127,7 +197,9 @@ function table_ui(options){
 																					onmousedown: events.down.table,
 																					onmousemove: events.move.table,
 																					onmouseout: events.out.table,
+																					ondblclick: events.dbl.table,
 																					ondrop: events.dd.drop.table,
+																					onclick: events.click.table,
 																					onwheel: scroll.wheelVertical })};
 			_Table.ctx = _Table.html.getContext("2d");
 			return _Table;
@@ -138,6 +210,7 @@ function table_ui(options){
 																					onmousedown: events.down.side, 
 																					onmousemove: events.move.side,
 																					ondrop: events.dd.drop.side,
+																					onclick: events.click.side,
 																					onwheel: scroll.wheelVertical })};
 			_Side.ctx = _Side.html.getContext("2d");
 			return _Side;
@@ -148,6 +221,7 @@ function table_ui(options){
 																					onmousedown: events.down.top,
 																					onmousemove: events.move.top,
 																					ondrop: events.dd.drop.top,
+																					onclick: events.click.top,
 																					onwheel: scroll.wheelHorizontal })};
 			_Top.ctx = _Top.html.getContext("2d");
 			return _Top;
@@ -177,7 +251,9 @@ function table_ui(options){
 			if( typeof options.functions.rightClick == 'function' )		functions.rightClick = options.functions.rightClick;
 			if( typeof options.functions.afterSelect == 'function' )	functions.afterSelect = options.functions.afterSelect;
 			if( typeof options.functions.keyDown == 'function' )		functions.keyDown = options.functions.keyDown;
-			if( typeof options.functions.drop == 'function' )			functions.drop = options.functions.drop;
+			if( options.functions.drop !== undefined )					functions.drop = options.functions.drop;
+			if( options.functions.dbl !== undefined )					functions.dbl = options.functions.dbl;
+			if( options.functions.click !== undefined )					functions.click = options.functions.click;
 		},
 		size: function(options){
 			if(options.size.corner){
@@ -224,6 +300,12 @@ function table_ui(options){
 			size.table.h.forEach(	function(item){ item = Math.round(item * ( _scale / size.scale )); } );
 
 			size.scale = _scale;
+		},
+		scroll: function(options){
+			if(options.scroll.x >= 0 && typeof options.scroll.x == 'number')	display.s.l = options.scroll.x;
+			if(options.scroll.y >= 0 && typeof options.scroll.y == 'number')	display.s.t = options.scroll.y;
+			if(options.scroll.x == -1)											display.s.l = display.s.lp.last();
+			if(options.scroll.y == -1)											display.s.t = display.s.tp.last();
 		}
 	}
 	var get = {
@@ -494,12 +576,43 @@ function table_ui(options){
 				return;
 			}
 		},
+		click: {
+			side: function(e){
+				var cell = get.cell.side(e);
+				if(typeof functions.click == 'function'){
+					if(cell)	functions.click(e, {cell: cell[0], i: cell[0].i[0], j: cell[0].j[0], area: 'side' });
+					else		functions.click(e, { area: 'side' });
+				}
+			},
+			top: function(e){
+				var cell = get.cell.top(e);
+				if(typeof functions.click == 'function'){
+					if(cell)	functions.click(e, {cell: cell[0], i: cell[0].i[0], j: cell[0].j[0], area: 'top' });
+					else		functions.click(e, { area: 'top' });
+				}
+			},
+			table: function(e){
+				var cell = get.cell.table(e);
+				if(typeof functions.click == 'function'){
+					if(cell)	functions.click(e, {cell: cell, i: cell.i[0], j: cell.j[0], area: 'table' });
+					else		functions.click(e, { area: 'table' });
+				}
+			},
+			corner: function(e){
+				if(typeof functions.click == 'function'){
+					functions.click(e, { area: 'corner' });
+				}
+			}
+		},
 		dbl: {
 			side: function(e){
 				var cell = get.cell.side(e);
 				if(cell){
 					if(cell[2])		resize.dbl.sideWidth(cell[0]);
 					if(cell[1])		resize.dbl.sideHeight(cell[0]);
+					if(!cell[1] && !cell[2] && typeof functions.dbl == 'function'){
+						functions.dbl(e, {cell: cell[0], i: cell[0].i[0], j: cell[0].j[0], area: 'side' });
+					}
 				}
 			},
 			top: function(e){				
@@ -507,8 +620,17 @@ function table_ui(options){
 				if(cell){
 					if(cell[2])		resize.dbl.topWidth(cell[0]);
 					if(cell[1])		resize.dbl.topHeight(cell[0]);
+					if(!cell[1] && !cell[2] && typeof functions.dbl == 'function'){
+						functions.dbl(e, {cell: cell[0], i: cell[0].i[0], j: cell[0].j[0], area: 'top' });
+					}
 				}
-			}	
+			},
+			table: function(e){
+				var cell = get.cell.table(e);
+				if(typeof functions.dbl == 'function' && cell){
+					functions.dbl(e, {cell: cell, i: cell.i[0], j: cell.j[0], area: 'table' });
+				}
+			}
 		},
 		context: function(e){
 			if(functions.rightClick){
@@ -645,6 +767,7 @@ function table_ui(options){
 					} else {
 						functions.drop(e, { area: 'side', cell: undefined, i: undefined, j: undefined,} );
 					}
+					return false;
 				},
 				top: function(e){
 					var cell = get.cell.top(e);
@@ -654,14 +777,17 @@ function table_ui(options){
 					} else {
 						functions.drop(e, { area: 'top', cell: undefined, i: undefined, j: undefined,} );
 					}
+					return false;
 				},
 				corner: function(e){
 					functions.drop(e, { area: 'corner'} );
+					return false;
 				},
 				table: function(e){
 					var cell = get.cell.table(e);
 					if(cell) 	functions.drop(e, { area: 'table', cell: cell, i: cell.i, j: cell.j,} );
 					else		functions.drop(e, { area: 'table', cell: undefined, i: undefined, j: undefined,} );
+					return false;
 				}
 			},
 			over: function(e){
@@ -671,262 +797,7 @@ function table_ui(options){
 			}
 		}		
 	}
-	var exp = {
-		xlsxExport: function(options){
-			if(typeof options != 'object')					options = {};
-			var result = { row: [], col: []};	
-			var fi = _Table.r, li = 0, fj = _Table.r, lj = 0, ci = 0, cj = 0;
-			if(options.select){
-				for(var i = 0; i < select.table.length; i++){
-					if( select.table[i].i[0] < fi )			fi = select.table[i].i[0];
-					if( select.table[i].i[0] > li )			li = select.table[i].i[0];
-					if( select.table[i].j[0] < fj )			fj = select.table[i].j[0];
-					if( select.table[i].j[0] > lj )			lj = select.table[i].j[0];
-				}
-				if(select.table.length == 0){				fi = 0;		fj = 0;	}
-				if(select.side.length != 0){				cj = _Side.c;
-					for(var i = 0; i < select.side.length; i++){	if(select.side[i].j.last() < cj)	cj = select.side[i].j.last();	}		}
-				if(select.top.length != 0){					ci = _Top.r;
-					for(var i = 0; i < select.top.length; i++){		if(select.top[i].i.last() < ci)		ci = select.top[i].i.last();	}		}
-			} else {
-				fi = 0; li = _Table.r - 1;
-				fj = 0; lj = _Table.c - 1;
-			}
-			for(var i = cj; i < _Side.c; i++)	result.col.push(_Side.w[i]);
-			for(var i = ci; i < _Top.r; i++)	result.row.push(_Top.h[i]);
-			for(var i = fj; i <= lj; i++)		{ if(_Top.branches[i].visible) result.col.push(_Top.branches[i].width); }
-			for(var i = fi; i <= li; i++)		{ if(_Side.branches[i].visible) for(var j = 0; j < _Side.branches[i].rcount; j++) result.row.push(Math.round(_Side.branches[i].height)/_Side.branches[i].rcount); } 
-	
-			var rows = [[]];
-			rows.last().push({ type: 'corner', rowspan: (_Top.r - ci), colspan: (_Side.c - cj), j: 0 });
-	
-			for(var i = 0; i < _Top.r; i++){	for(var j = 0; j < _Top.c; j++)	 _Top.visual[i][j].export = true;	}
-			for(var i = ci; i < _Top.r; i++){
-				var nj = _Side.c - cj;
-				for(var j = fj; j <= lj; j++){
-					if(!_Top.branches[j].visible)	continue;
-					var cell = _Top.visual[i][j];
-	
-					if( cell.export && !options.split){
-						var colSpan = 0;
-						cell.j.forEach(function(item){  if(_Top.branches[item].visible) colSpan++;  });
-						rows.last().push({ type: 'header', text: cell.obj.text, colspan: colSpan, rowspan: (cell.i.last() - i + 1), j: nj})
-						cell.export = false;
-					} else if(options.split){	rows.last().push({ type: 'header', text: cell.obj.text, colspan: 1, rowspan: 1, j: nj})}
-					nj++;
-				}
-				rows.push([]);
-			}
-			for(var i = 0; i < _Side.r; i++){	for(var j = 0; j < _Side.c; j++)	 _Side.visual[i][j].export = true;	}
-	
-			for(var i = fi; i <= li; i++){
-				if( !_Side.branches[i].visible )				continue;	
-				if(!options.split){
-					for(var j = cj; j < _Side.c; j++){
-						var cell = _Side.visual[i][j];
-						if(cell.export){
-							var rowSpan = 0;
-							cell.i.forEach(function(item){ if(_Side.branches[item].visible)	rowSpan += _Side.branches[item].rcount; });
-	
-							if(cell.j.last() == _Side.c - 1)	rows.last().push({ rowspan: rowSpan, colspan: (cell.j.last() - j + 1), j: (j - cj), text: cell.obj.text, type: 'header left' });
-							else if(!setting.orientation)		rows.last().push({ rowspan: rowSpan, colspan: (cell.j.last() - j + 1), j: (j - cj), text: cell.obj.text, type: 'header vert' });
-							else								rows.last().push({ rowspan: rowSpan, colspan: (cell.j.last() - j + 1), j: (j - cj), text: cell.obj.text, type: 'header' });						
-							cell.export = false;
-						}
-					}
-				}
-				var rowc = _Side.branches[i].rcount;
-	
-				for(var k = 0; k < rowc; k++){
-					if(options.split){		for(var j = cj; j < _Side.c; j++)		rows.last().push({ rowspan: 1, colspan: 1, j: (j - cj), text: _Side.visual[i][j].obj.text, type: 'header' });	}
-					var nj = _Side.c - cj;
-	
-					for(var j = fj; j <= lj; j++){
-						if(!_Top.branches[j].visible)								continue;
-						if(_Table.cells[i][j].visual[k]){
-
-							var sep = (_Side.branches[i].obj.type == undefined || _Top.branches[j].obj.type == undefined);
-							var item = _Table.cells[i][j].visual[k];
-							var text = _Table.cells[i][j].obj[( item.type == 3) ? 0 : item.type];
-							var type = item.type, round;
-
-							if(type == 0 && _Table.cells[i][j].round == 2){				type = 5;	round = setting.round[2];
-							} else if(type == 3 && _Table.cells[i][j].round == 2){		type = 6;	round = setting.round[2];							
-							} else if(type != 0 && type != 3)							round = setting.round[1];
-							else 														round = setting.round[0];
-
-							if(text === null)							text = (setting.showZero && !sep) ? 0 : ' '; 
-							else if(text === 0 && setting.hideZero)		text = ' ';
-							else if(isNaN(text) || text == 'NaN' )		text = ' ';
-							else										text = tools.roundPlus(text, round);
-
-							rows.last().push({ j: nj, type: type, text: text});
-
-						} else rows.last().push({ j: nj, type: 0, text: ' '});
-						nj++;
-					}
-					rows.push([]);
-				}
-			}
-			rows.length = rows.length - 1;
-			result.array = rows;
-	
-			result.round_types = [setting.round[0],setting.round[1],setting.round[1],setting.round[0], 0, setting.round[2], setting.round[2]];
-			result.units_types = (setting.showPercent) ? ['','%','%', ''] : ['','','',''];
-	
-			return result;
-		},
-		htmlExport: function(options){
-			if(typeof options != 'object')					options = {};
-			if(select.table.length == 0)					options.select = false;
-
-			var html	= '<!DOCTYPE HTML><html><head><style>'
-						+ 'table { vertical-align: middle; font-family: Verdana, serif; padding: 1px; font-size: 11px; border-collapse: collapse; white-space:nowrap;}'
-						+ '.t{background:#F1F1F1; text-align:center;} .r{background:#F1F1F1; text-align:center;  white-space:normal;}'
-						+ '.s{background:#F1F1F1;} .b {background:#fffcec;}'
-						+ '.v {background:#e5fbff;} .h {background:#FFECF1;}</style></head><body>';
-
-			if(options.annotation){
-				html += '<table>';
-				for(var i = 0; i < options.annotation.length; i++){
-					html += '<tr>';
-					if(Array.isArray(options.annotation[i]) ){
-						for(var j = 0; j < options.annotation[i].length; j++)
-							html += '<td>' + options.annotation[i][j] + '</td>';
-
-					} else {
-						html += '<td>' + options.annotation[i] + '</td>';
-					}					
-					html += '</tr>';
-				}
-				html += '</table>';
-			}
-
-			var fi = _Table.r, li = 0, fj = _Table.r, lj = 0, ci = 0, cj = 0;
-			if(options.select){
-				for(var i = 0; i < select.table.length; i++){
-					if( select.table[i].i[0] < fi )			fi = select.table[i].i[0];
-					if( select.table[i].i[0] > li )			li = select.table[i].i[0];
-					if( select.table[i].j[0] < fj )			fj = select.table[i].j[0];
-					if( select.table[i].j[0] > lj )			lj = select.table[i].j[0];
-				}
-				if(select.table.length == 0){	fi = 0; fj = 0;	}
-				if(options.side && select.side.length != 0){
-					cj = _Side.c;
-					for(var i = 0; i < select.side.length; i++){	if(select.side[i].j.last() < cj)	cj = select.side[i].j.last();	}
-				}
-				if(options.top && select.top.length != 0){
-					ci = _Top.r;
-					for(var i = 0; i < select.top.length; i++){		if(select.top[i].i.last() < ci)		ci = select.top[i].i.last();	}
-				}
-			} else {
-				fi = 0; li = _Table.r - 1;
-				fj = 0; lj = _Table.c - 1;
-			}
-
-			if(options.fullHeader){
-				if(options.top)	ci = 0;
-				if(options.side) cj = 0;
-			}
-
-			html += '<table border="1" bordercolor="silver" style="text-align: center;">';
-
-			if(options.top){
-				html += '<tr>'; 
-				if(options.side){
-					html += '<td' + ( (options.color) ? ' class="t"' : '' )
-							+ ( (_Top.r - ci > 1 ) ? (' rowspan="' + (_Top.r - ci) + '"') : '' )
-							+ ( (_Side.c - cj > 1 ) ? (' colspan="' + (_Side.c - cj) + '" />') : ' />' );
-				}
-
-				for(var i = 0; i < _Top.r; i++){	for(var j = 0; j < _Top.c; j++)	 _Top.visual[i][j].export = true;	}
-
-				for(var i = ci; i < _Top.r; i++){
-					for(var j = fj; j <= lj; j++){
-						if(!_Top.branches[j].visible)	continue;
-						var cell = _Top.visual[i][j];
-
-						if( cell.export && !options.split){
-							var colSpan = 0;
-							cell.j.forEach(function(item){  if(_Top.branches[item].visible && item >= fj && item <= lj ) colSpan++;  });
-
-							html += '<td' + ( (options.color) ? ' class="t"' : '' )
-								+ ( ((cell.i.last() - i + 1) > 1 ) ? (' rowspan="' + (cell.i.last() - i + 1) + '"') : '' )
-								+ ( (colSpan > 1 ) ? (' colspan="' + (colSpan) + '">') : '>' )
-								+ cell.obj.text + '</td>';
-							cell.export = false;
-						} else if(options.split){	html += '<td' + ( (options.color) ? ' class="t"">' : '>' )	+ cell.obj.text + '</td>';		}
-					}
-					html += '</tr><tr>';
-				}
-				html = html.substring(0, html.length - 4);
-			}
-			if(options.side){ select.side.forEach(function(item){ item.export = true; });	}
-			for(var i = 0; i < _Side.r; i++){	for(var j = 0; j < _Side.c; j++)	 _Side.visual[i][j].export = true;	}
-
-
-			html += '<tr>';
-			for(var i = fi; i <= li; i++){
-				if( !_Side.branches[i].visible ) continue;
-
-				if(options.side && !options.split){
-					for(var j = cj; j < _Side.c; j++){
-						var cell = _Side.visual[i][j];
-						if(cell.export){
-							var rowSpan = 0;
-							cell.i.forEach(function(item){ if(_Side.branches[item].visible && item >= fi && item <= li ) rowSpan += _Side.branches[item].rcount; });
-
-							html += '<td' + ( (options.color) ? ( (cell.j.last() == _Side.c - 1) ? ' class="s"' : ' class="r"') : '' )
-								+ ( (rowSpan > 1 ) ? (' rowspan="' + (rowSpan) + '"') : '' )
-								+ ( ((cell.j.last() - j + 1) > 1 ) ? (' colspan="' + (cell.j.last() - j + 1) + '">') : '>' )
-								+ cell.obj.text + '</td>';
-							cell.export = false;
-						}
-					}
-				}
-
-				var rows = _Side.branches[i].rcount;
-
-				for(var k = 0; k < rows; k++){
-					if(options.side && options.split){
-						for(var j = cj; j < _Side.c; j++)		html += '<td' + ( (options.color) ? '  class="t">' : '>' ) + _Side.visual[i][j].obj.text + '</td>';
-					}
-					for(var j = fj; j <= lj; j++){
-						if(_Table.cells[i][j].visual[k]){
-
-							var sep = (_Side.branches[i].obj.type == undefined || _Top.branches[j].obj.type == undefined);
-							var item = _Table.cells[i][j].visual[k];
-							var text = _Table.cells[i][j].obj[( item.type == 3) ? 0 : item.type];
-							var type = item.type, round;
-
-							if(type == 0 && _Table.cells[i][j].round == 2){				type = 5;	round = setting.round[2];
-							} else if(type == 3 && _Table.cells[i][j].round == 2){		type = 6;	round = setting.round[2];
-							} else if(type != 0 && type != 3)							round = setting.round[1];
-							else 														round = setting.round[0];
-
-							if(text === null)							text = (setting.showZero && !sep) ? '0' : ''; 
-							else if(text === 0 && setting.hideZero)		text = '';
-							else if(isNaN(text))						text = '';
-							else										text = tools.roundPlus(text, round) + '';
-							
-							text = text.replace(/\./g, setting.separator);
-
-							if((type == 1 || type == 2) && setting.showPercent && text !== '')	text += '%'; 
-							var cellClass = (type == 3) ? (' class="b"') : ( (type == 2) ? (' class="h"') : ( (type == 1) ? (' class="v"') : ('') ) )
-
-							html += '<td' + ( (options.color) ? cellClass : '' ) + '>' + text + '</td>';
-
-						} else html += '<td></td>';
-					}
-					html += '</tr><tr>';
-				}
-			}
-			html = html.substring(0, html.length - 4);
-			html += '</table></body></html>';
-			return html;
-		}		
-	}
-	var exp1 = function(options){
+	var exp = function(options){
 		var expFunc = {
 			getSize: function(options){
 				var rRow = [];
@@ -1278,7 +1149,7 @@ function table_ui(options){
 
 			for(var i = 0; i < items.length; i++){
 				var branch = {visible: true, obj: items[i], parent: parent, base: items[i].base,  unsort: items[i].unsort};
-				if(items[i].type == undefined)	branch.aShow = items[i].aShow;
+				branch.aShow = items[i].aShow;
 				parent.children.push(branch);
 
 				if(items[i].children != undefined)	setBranches(items[i].children, branch);
@@ -1645,16 +1516,12 @@ function table_ui(options){
 			c.fillStyle = '#555';
 
 			s.rows.forEach(function(i){	
-				if(!_Side.branches[i].visible){
-					if(setting.dashHidden)			drawDashLine(c, '#555', '#fff', 0, s.tp[i + 1] - 0.5 - s.t, (s.vw > s.lp.last()) ? s.lp.last() : s.vw, s.tp[i + 1] - 0.5 - s.t);
-					else							c.fillRect(0, s.tp[i + 1] - 1 - s.t, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), 1);	
-				} else if(_Side.branches[i].line)	c.fillRect(0, s.tp[i + 1] - 1 - s.t, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), 1);			
+				if(!_Side.branches[i].visible && setting.dashHidden)	drawDashLine(c, '#555', '#fff', 0, s.tp[i + 1] - 0.5 - s.t, (s.vw > s.lp.last()) ? s.lp.last() : s.vw, s.tp[i + 1] - 0.5 - s.t);
+				else if(_Side.branches[i].line)							c.fillRect(0, s.tp[i + 1] - 1 - s.t, ((s.vw > s.lp.last()) ? s.lp.last() : s.vw), 1);			
 			});
 			s.cols.forEach(function(i){
-				if(!_Top.branches[i].visible){
-					if(setting.dashHidden)			drawDashLine(c, '#555', '#fff', s.lp[i + 1] - 0.5 - s.l, 0, s.lp[i + 1] - 0.5 - s.l, (s.vh > s.tp.last()) ? s.tp.last() : s.vh);
-					else							c.fillRect(s.lp[i + 1] - 1 - s.l, 0, 1, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh));
-				} else if(_Top.branches[i].line)	c.fillRect(s.lp[i + 1] - 1 - s.l, 0, 1, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh));
+				if(!_Top.branches[i].visible && setting.dashHidden)		drawDashLine(c, '#555', '#fff', s.lp[i + 1] - 0.5 - s.l, 0, s.lp[i + 1] - 0.5 - s.l, (s.vh > s.tp.last()) ? s.tp.last() : s.vh);
+				else if(_Top.branches[i].line)							c.fillRect(s.lp[i + 1] - 1 - s.l, 0, 1, ((s.vh > s.tp.last()) ? s.tp.last() : s.vh));
 			});
 
 			c.fillStyle = '#F1F1F1';				c.fillRect(0, s.vh, s.vw + 18, 18);	c.fillRect(s.vw, 0, 18, s.vh);
@@ -2063,7 +1930,7 @@ function table_ui(options){
 
 				select.selectSide(  p.t,  p.b,  p.l,  p.r,  e.ctrlKey);
 
-				if(s.start.i == s.end.i && s.start.j == s.end.j && s.start.j == (_Side.c - 1) && setting.sort && s.sort )
+				if(s.start.i == s.end.i && s.start.j == s.end.j && s.start.j == (_Side.c - 1) && setting.sort && s.sort && !e.ctrlKey )
 					sort.sdown(_Side.visual[s.start.i][s.start.j], e);
 				else
 					display.all(); 
@@ -2108,10 +1975,10 @@ function table_ui(options){
 
 				select.shift1st = { i: 0, j: p.l };
 				select.shift2nd = { i: _Table.r - 1, j: p.r };
-	
-				select.selectTop(  p.t,  p.b,  p.l,  p.r, e.ctrlKey );
 
-				if(s.start.j == s.end.j && s.start.i == s.end.i && s.start.i == (_Top.r - 1) && setting.sort && s.sort )
+				select.selectTop(  p.t,  p.b,  p.l,  p.r,  e.ctrlKey);
+
+				if(s.start.j == s.end.j && s.start.i == s.end.i && s.start.i == (_Top.r - 1) && setting.sort && s.sort && !e.ctrlKey)
 					sort.tdown(_Top.visual[s.start.i][s.start.j], e);			
 				else
 					display.all();
@@ -2137,7 +2004,133 @@ function table_ui(options){
 			if(_Table.coords.bottom - 18 >= e.pageY && (_Table.coords.bottom - 28) < e.pageY)	display.s.t += 10;
 			else if(_Table.coords.bottom - 18 < e.pageY)										display.s.t += 20;
 		}
+
+		this.tree = {
+			top: function( t, b, l, r ){
+				for(var i = l; i <= r; i++){
+					if(_Top.visual[t][i].select){
+						select.tree.up(_Top.visual[t][i].parent, select.remove.top, false);
+						select.tree.down(_Top.visual[t][i], select.remove.top, false);
+					} else {
+						select.tree.down(_Top.visual[t][i], select.add.top, true);
+					}
+					i = _Top.visual[t][i].j.last();
+				}
+				select.side.forEach(function(item){ item.select = false; });		select.side = [];
+				select.table.forEach(function(item){ item.select = false; });		select.table = [];
+				for(var j = 0; j < _Top.branches.length; j++){
+					if(!_Top.branches[j].select)	continue;
+					for(var i = 0; i < _Table.r; i++){
+						select.add.table(_Table.cells[i][j]);
+					}
+				}
+				select.select.side();
+			},
+			side: function( t, b, l, r ){
+				for(var i = t; i <= b; i++){
+					if(_Side.visual[i][l].select){
+						select.tree.up(_Side.visual[i][l].parent, select.remove.side, false);
+						select.tree.down(_Side.visual[i][l], select.remove.side, false);
+					} else {
+						select.tree.down(_Side.visual[i][l], select.add.side, true);
+					}
+					i = _Side.visual[i][l].i.last();
+				}
+				select.top.forEach(function(item){ item.select = false; });			select.top = [];
+				select.table.forEach(function(item){ item.select = false; });		select.table = [];
+				for(var i = 0; i < _Side.branches.length; i++){
+					if(!_Side.branches[i].select)	continue;
+					for(var j = 0; j < _Table.c; j++){
+						select.add.table(_Table.cells[i][j]);
+					}
+				}
+				select.select.top();
+			},
+			up: function(cell, func, bool){
+				if(cell.parent != undefined && bool != cell.select){
+					func(cell);
+					select.tree.up(cell.parent, func, bool);
+				}
+			},
+			down: function(cell, func, bool){
+				if(cell.select != bool){
+					func(cell);
+					if(cell.children){
+						for(var i = 0; i < cell.children.length; i++)
+							select.tree.down(cell.children[i], func, bool);
+					}
+				}
+			}
+		}
 		
+		this.add = {
+			table: function( arr ){
+				if(!Array.isArray(arr))		arr = [arr];
+				for(var i = 0; i < arr.length; i++){
+					if(!arr[i].select){
+						select.table.push(arr[i]);
+						arr[i].select = true;
+					}
+				}
+			},
+			top: function( arr ){
+				if(!Array.isArray(arr))		arr = [arr];
+				for(var i = 0; i < arr.length; i++){
+					if(!arr[i].select){
+						select.top.push(arr[i]);
+						arr[i].select = true;
+					}
+				}
+			},
+			side: function( arr ){
+				if(!Array.isArray(arr))		arr = [arr];
+				for(var i = 0; i < arr.length; i++){
+					if(!arr[i].select){
+						select.side.push(arr[i]);
+						arr[i].select = true;
+					}
+				}
+			}
+		}
+		this.remove = {
+			table: function( arr ){
+				if(!Array.isArray(arr))		arr = [arr];
+				for(var i = 0; i < arr.length; i++){
+					for(var j = 0; j < select.table.length; j++){
+						if(arr[i] == select.table[j]){
+							select.table.splice(j, 1);
+							arr[i].select = false;
+							break;
+						}
+					}
+				}
+			},
+			top: function( arr ){
+				if(!Array.isArray(arr))		arr = [arr];
+				for(var i = 0; i < arr.length; i++){
+					for(var j = 0; j < select.top.length; j++){
+						if(arr[i] == select.top[j]){
+							select.top.splice(j, 1);
+							arr[i].select = false;
+							break;
+						}
+					}
+				}
+			},
+			side: function( arr ){
+				if(!Array.isArray(arr))		arr = [arr];
+				for(var i = 0; i < arr.length; i++){
+					for(var j = 0; j < select.side.length; j++){
+						if(arr[i] == select.side[j]){
+							select.side.splice(j, 1);
+							arr[i].select = false;
+							break;
+						}
+					}
+				}
+			}
+		}
+
 		this.hover = new function(){
 			var table = [];
 			var top = [];
@@ -2205,6 +2198,18 @@ function table_ui(options){
 					if(!_Top.branches[j].select){	_Top.branches[j].select = true; select.top.push(_Top.branches[j]); }
 				})
 			}
+			this.top = function(){
+				select.table.forEach(function(item){
+					var i = item.i[0]; var j = item.j[0];
+					if(!_Top.branches[j].select){	_Top.branches[j].select = true; select.top.push(_Top.branches[j]); }
+				})				
+			}
+			this.side = function(){
+				select.table.forEach(function(item){
+					var i = item.i[0]; var j = item.j[0];
+					if(!_Side.branches[i].select){	_Side.branches[i].select = true; select.side.push(_Side.branches[i]); };
+				})				
+			}
 			this.header = function(l, r, t, b, area, array){	
 				for(var i = t; i <= b; i++ ){
 					for(var j = l; j <= r; j++){
@@ -2228,16 +2233,15 @@ function table_ui(options){
 		}
 		this.selectSide = function( t, b, l, r, ctrl){
 			select.click = _Side;
-
-			if(!ctrl)	select.clearAll();
-			select.select.clearHeaders();
 			select.hover.clear();
 
-			select.select.table(0, _Table.c - 1, t, b);
+			if(ctrl){
+				select.tree.side(t, b, l, r);
+			} else {
+				select.clearAll();
+				select.select.clearHeaders();
+				select.select.table(0, _Table.c - 1, t, b);
 
-			if(ctrl)
-				select.select.headers();
-			else {
 				select.select.header(l, r, t, b, _Side, select.side );
 				select.select.header(0, _Table.c - 1, _Top.r - 1, _Top.r - 1, _Top, select.top );
 			}
@@ -2246,16 +2250,15 @@ function table_ui(options){
 		}		
 		this.selectTop = function( t, b, l, r, ctrl){
 			select.click = _Top;
-
-			if(!ctrl) select.clearAll();
-			select.select.clearHeaders();
 			select.hover.clear();
 
-			select.select.table( l, r, 0, _Table.r - 1);
 
 			if(ctrl)
-				select.select.headers();
+				select.tree.top(t, b, l, r);
 			else {
+				select.clearAll();
+				select.select.clearHeaders();
+				select.select.table( l, r, 0, _Table.r - 1);
 				select.select.header(_Side.c - 1, _Side.c - 1,  0, _Table.r - 1, _Side, select.side );
 				select.select.header(l, r, t, b, _Top, select.top );				
 			}
@@ -2375,20 +2378,28 @@ function table_ui(options){
 
 		this.dbl = {
 			sideWidth: function(cell){
+				var result = false;
 				if((cell.j.last() + 1) != _Side.c && setting.orientation){
+					result = true;
 					resize.side.width(cell.j, resize.dbl.getHeight(cell.obj.text, cell.height - 5), cell.width);
 				} else {
+					result = true;
 					resize.side.width(cell.j, resize.dbl.getWidth(cell.obj.text, cell.height - 4), cell.width);
 				}
 				remake.reDrow();
+				return result;
 			},
 			sideHeight: function(cell){
+				var result = false;
 				if((cell.j.last() + 1) != _Side.c && setting.orientation){
+					result = true;
 					resize.side.height(cell.i, resize.dbl.getWidth(cell.obj.text, cell.width - 4) + 1, cell.height);
 				} else {
+					result = true;
 					resize.side.height(cell.i, resize.dbl.getHeight(cell.obj.text, cell.width - 5), cell.height);
 				}
 				remake.reDrow();
+				return result;
 			},
 			topWidth: function(cell){
 

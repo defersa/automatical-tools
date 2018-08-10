@@ -5,7 +5,7 @@ function calendar_ui(options){
 
 	var monthName = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 	var monthNameShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-	var dayNames = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+	var dayNames = ['Mo','Tu','We','Th','Fr','Sa','Su'];
 	var vDay = 86400000;
 	var animationSpeed = 6;
 
@@ -26,7 +26,8 @@ function calendar_ui(options){
 		if(options.preRow == undefined)			options.preRow = true;
 		if(options.month == undefined)			options.month = cd.getMonth();
 		if(options.year == undefined)			options.year = cd.getFullYear();
-		if(options.startDay == undefined)		options.startDay = 1;
+		if(options.startDay == undefined)		options.startDay = 0;
+		if(options.week == undefined)			options.week = [true, true, true, true, true, true, true];
 
 		if(options.parent == undefined)			options.parent = document.body;
 
@@ -36,7 +37,6 @@ function calendar_ui(options){
 		create.panel();
 
 		link.change(options);
-
 	}
 	link.change = function(options){
 		if(options.parent !== undefined)			changing.parent(options);
@@ -45,6 +45,7 @@ function calendar_ui(options){
 		if(options.type !== undefined)										setting.type = options.type;
 		if(options.month !== undefined || options.year !== undefined)		changing.date(options);
 		if(options.preRow !== undefined)									changing.preRow(options);
+		if(options.week !== undefined)										changing.week(options);
 		if(options.startDay !== undefined)									create.dayName(options);
 
 		display.generate();
@@ -74,6 +75,8 @@ function calendar_ui(options){
 					setting.sMonth = setting.month;
 					setting.sYear = setting.year;
 					display.slideToYear.start();
+				} else {
+					console.log(_calendar);
 				}
 			},
 			right: function(e){
@@ -89,6 +92,18 @@ function calendar_ui(options){
 			bottom: function(e){
 				if(setting.type)		display.month.down.start();
 				else					display.year.down.start();
+			},
+			day: function(e){
+				var cell = e.target;
+				if( _calendar.week[ cell.d ] ){
+					cell.className = 'cu-day-name';
+					for(var i = select.items.length - 1; i >= 0; i--){
+						if(select.items[i].getUTCDay() == cell.d)	select.remove(select.items[i]);
+					}
+				} else {
+					cell.className = 'cu-day-name cu-day-name-select';
+				}
+				_calendar.week[ cell.d ] = !_calendar.week[ cell.d ];
 			}
 		},
 		down: {
@@ -178,6 +193,7 @@ function calendar_ui(options){
 			_calendar.weekDays =  tools.createHTML({tag: 'div', parent: _calendar.html, className: 'cu-panel-week-days' });
 			
 			_calendar.weekDays.days = [];
+			_calendar.week = [true, true, true, true, true, true, true]
 			_calendar.month = [];
 			_calendar.year = [];
 		},
@@ -186,7 +202,14 @@ function calendar_ui(options){
 			else												setting.startDay = 0;
 			_calendar.weekDays.innerHTML = '';
 			for(var i = 0; i < 7; i++){
-				_calendar.weekDays.days[i] =  tools.createHTML({tag: 'div', parent: _calendar.weekDays, style: ('left: ' + (1 + i * 14) + '%;' ), className: 'cu-day-name', innerHTML: dayNames[(i + setting.startDay)%7] });
+				var cn = (_calendar.week[(i + setting.startDay)%7]) ? 'cu-day-name cu-day-name-select' : 'cu-day-name';
+				_calendar.weekDays.days[i] =  tools.createHTML({	tag: 'div',
+																	parent: _calendar.weekDays,
+																	style: ('left: ' + (1 + i * 14) + '%;' ),
+																	className: cn,
+																	onclick: events.click.day,
+																	innerHTML: dayNames[(i + setting.startDay)%7] });
+				_calendar.weekDays.days[i].d = (i + setting.startDay)%7;
 			}
 			_calendar.content.innerHTML = '';
 			_calendar.month = [];
@@ -214,12 +237,20 @@ function calendar_ui(options){
 				_calendar.title.innerHTML = _calendar.year[0].d.year;
 			}
 		},
+		week: function(options){
+			_calendar.week = options.week;
+			for(var i = select.items.length - 1; i >= 0; i-- ){
+				if( !_calendar.week[ select.items[i].getUTCDay()] ) select.remove(select.items[i]);
+			}
+			create.dayName({startDay: setting.startDay});
+		},
 		preRow: function(options){
 			if(options.preRow)			_calendar.html.className = 'cu-panel cu-pre-row';
 			else						_calendar.html.className = 'cu-panel';
 			setting.preRow = options.preRow;
 		}
 	}
+
 	var display = new function(){
 
 		this.month = new function(){
@@ -228,8 +259,8 @@ function calendar_ui(options){
 
 				if(_calendar.month.length <= 0){
 					d = new Date(setting.sYear, setting.sMonth, 1 );
-					if(d.getDay() < setting.startDay)		d.setDate(d.getDate() - d.getDay() + setting.startDay - 7);
-					else									d.setDate(d.getDate() - d.getDay() + setting.startDay);
+					if(d.getUTCDay() < setting.startDay)		d.setDate(d.getDate() - d.getUTCDay() + setting.startDay - 7);
+					else										d.setDate(d.getDate() - d.getUTCDay() + setting.startDay);
 				} else {
 					d = new Date( _calendar.month.last().s.valueOf() + vDay*7 );
 				}
@@ -271,7 +302,8 @@ function calendar_ui(options){
 					var className = ( ((r[i].date.getMonth() + setting.sMonth)%2) ? 'cu-day' : 'cu-day-month' );
 					if(r[i].date.getUTCDay() == 5 || r[i].date.getUTCDay() == 6)	className += ' cu-day-hol';
 					if(select.is(r[i].date))										className += ' cu-day-select';
-					if(select.hover.s <= r[i].date && select.hover.e >= r[i].date)	className += ' cu-day-hover';	
+					if(select.hover.s <= r[i].date && select.hover.e >= r[i].date
+								 && _calendar.week[r[i].date.getUTCDay()] )		className += ' cu-day-hover';	
 
 					r[i].html = tools.createHTML({	tag: 'div',
 												className: className,
@@ -588,7 +620,7 @@ function calendar_ui(options){
 					break;
 				}
 			}
-			if(!has){
+			if(!has && _calendar.week[time.getUTCDay()] ){
 				select.items.splice(i, 0, time);
 				for(var i = 0; i < _calendar.month.length; i++){
 					if(_calendar.month[i].s > time || _calendar.month[i].e < time)		continue;
@@ -651,7 +683,6 @@ function calendar_ui(options){
 			return false;			
 		}
 
-
 		this.down = function(e){
 			var sDate = e.target.date;
 			if(!e.ctrlKey)	select.removeAll();
@@ -660,7 +691,6 @@ function calendar_ui(options){
 
 			window.addEventListener("mouseup", up);
 		}
-
 		this.enter = function(e){
 			display.scroll.leave();
 			if(!select.s)		return;
@@ -694,7 +724,7 @@ function calendar_ui(options){
 				for(var i = 0; i < _calendar.month.length; i++){
 					var row = _calendar.month[i].r;
 					for(var j = 0; j < row.length; j++){
-						if(row[j].date >= select.hover.s && row[j].date <= select.hover.e ){
+						if(row[j].date >= select.hover.s && row[j].date <= select.hover.e && _calendar.week[row[j].date.getUTCDay()] ){
 							row[j].html.className += ' cu-day-hover'
 						}
 					}

@@ -13,7 +13,6 @@ var dataSet = { top: [], side: [], cells: []};
 var displayed = [true, true, true, true];
 var setting = { orientation: true, hideRow: false, hideCol: false };
 
-
 var dpi = 1;
 
 function new_function(){
@@ -63,6 +62,8 @@ function new_function(){
 
 	tau = new table_ui({parent: simple, sort: true, dashHidden: false, round: [5,4,3], functions: {
 		drop: function(e, o){ console.log(e, o); },
+		dbl: function(e, o){ console.log( o)},
+		click: function(e, o){ console.log( o) },
 		rightClick: function(e, o){	console.log(e, o)}},
 		size: { corner: {w: [40, 200]} }});
 
@@ -73,6 +74,12 @@ function new_function(){
 
 	tabs.addTabs([{content: document.getElementById('justrec')}]);
 
+	var ccc = new combobox_ui({
+		parent: document.getElementById('c-c-c-combo'),
+		tree: [{text: 'kek'}, {text: 'kek2'}, {separator: true }, {text: 'kek', unselect: true}, {text: 'kek2'}, {text: 'kek'}, {text: 'kek2'}],
+		functions: {
+			currentChange: function(a, b){ console.log(a, b); } 
+		}});
 }
 
 function some(e){

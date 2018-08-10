@@ -24,15 +24,19 @@ function combobox_ui(options){
 		button = tools.createHTML({tag: 'div', className: 'cbb-arrow', parent: banner, innerHTML: arrow });
 		caption = tools.createHTML({tag: 'div', className: 'cbb-caption', parent: banner});
 		list = [];							setting = {};
+		functions = {};
 
 		link.change(options);
 	}
 
 	link.change = function(options){
 		if(options.parent != undefined)		options.parent.appendChild(banner);
-		if(options.tree != undefined)		create.list(options.tree);
+		if(options.functions)				set.functions(options);
+
 		if(options.maxHeight)				setting.maxHeight = options.maxHeight;
 		if(options.minWidth)				setting.minWidth = options.minWidth;
+
+		if(options.tree != undefined)		create.list(options.tree);
 	}
 
 	link.remove = function(){
@@ -80,7 +84,6 @@ function combobox_ui(options){
 			fragment.appendChild(panel);
 		},
 		key: function(e){
-
 			if(e.keyCode == 38 || e.keyCode == 37){
 				for(var i = select.item.index - 1; i >= 0; i--){
 					if(list[i].select){
@@ -129,6 +132,9 @@ function combobox_ui(options){
 		},
 		list: function(){
 			for(var i = 0; i < list.length; i++){				panel.appendChild(list[i].html);				list[i].index = i;	}
+		},
+		functions: function(options){
+			if(options.functions.currentChange !== undefined)	functions.currentChange = options.functions.currentChange;
 		}
 	}
 	var create = {
@@ -174,6 +180,8 @@ function combobox_ui(options){
 		this.swichSelect = function(item){			
 			if(select.item)	select.item.html.className = 'cbb-item';
 			if(item)		item.html.className = 'cbb-item cbb-select';
+
+			if( typeof functions.currentChange == 'function')	functions.currentChange( select.item, item);
 
 			select.item = item;
 			var iconClasses = (item.tree.icon) ? ( 'cbb-icon ' + item.tree.icon ) :  '';
