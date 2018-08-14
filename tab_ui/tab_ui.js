@@ -29,6 +29,7 @@ function tab_ui(options){
 		if(options.show == undefined)					options.show = true;
 		if(options.dragAndDrop == undefined)			options.dragAndDrop = true;
 		if(options.direction == undefined)				options.direction = 0;
+		if(options.width == undefined)					options.width = 150;
 
 		setting = {};		functions = {};			tabs = [];
 
@@ -58,6 +59,7 @@ function tab_ui(options){
 		if(options.functions != undefined)				set.functions(options);
 		if(options.dragAndDrop != undefined)			set.drag_drop(options);
 		if(options.direction != undefined)				set.direction(options);
+		if(options.width != undefined)					set.width(options);
 		if(options.tabs != undefined)					link.addTabs(options.tabs);
 	}
 	this.setCurrent = function(tab){
@@ -151,12 +153,14 @@ function tab_ui(options){
 		var docket						= tools.createHTML({tag: 'div', parent: iTab.html, className: 'tbu-docket'});
 		var close						= tools.createHTML({tag: 'div', parent: iTab.html, onclick: events.closeClick});
 		var background					= '#fff';
+		var width;
 
 		iTab.html.tab = iTab;
 		var name = 'New tab';
 		var title;
 
 		iTab.change = function(options){
+			if(!options)							options = {};
 			if(options.content != undefined){
 				if(setting.active_tab == iTab)		tools.destroyHTML(iTab.content);
 				iTab.content 						= options.content;
@@ -167,12 +171,16 @@ function tab_ui(options){
 			if(options.name != undefined)			name = options.name;
 			if(options.title != undefined)			title = options.title;
 			if(options.background != undefined)		background = options.background;
+			if(options.width != undefined)			width = options.width;
 
 			if(options.icon != undefined){
 				if(options.icon) {					icon.style.backgroundImage = 'url(' + options.icon + ')';
 													icon.className = 'tbu-icon';
 				} else 								icon.className = '';
 			}
+			if(width != undefined)					iTab.html.style.width = width + 'px';
+			else 									iTab.html.style.width = setting.width + 'px';
+
 			if(options.close != undefined){
 				if(options.close){					close.className = 'tbu-close';
 													close.innerHTML = close_button;
@@ -247,6 +255,12 @@ function tab_ui(options){
 			if(setting.show){
 				self_parent.appendChild(self_content);
 				self_parent.appendChild(self_header);
+			}
+		},
+		width: function(options){
+			if(options.width > 0 &&  options.width <= 500)	 setting.width = options.width;
+			for(var i = 0; i < tabs.length; i++){
+				tabs[i].change();
 			}
 		},
 		show: function(options){

@@ -1,0 +1,18 @@
+.log-main {
+	position: absolute;
+	left: 0;	top: 0;
+	right: 0;	bottom: 0;
+	background: white;
+}
+.log-canvas {
+	position: absolute;
+	top: 0;		left: 0;
+	right: 0;	bottom: 200px;
+	
+}
+.log-edit {
+	position: absolute;
+	bottom: 0;	left: 0;
+	right: 0;	height: 200px;
+	background: #f7f7f7;
+}

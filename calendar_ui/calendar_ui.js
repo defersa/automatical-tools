@@ -52,6 +52,10 @@ function calendar_ui(options){
 		changing.title();
 	}
 	link.remove = function(options){
+		tools.destroyHTML(_calendar.html);
+		_calendar = undefined;
+		setting = undefined;
+		select.items = [];
 	}
 
 	link.setSelect = function(dates){
@@ -622,9 +626,9 @@ function calendar_ui(options){
 			}
 			if(!has && _calendar.week[time.getUTCDay()] ){
 				select.items.splice(i, 0, time);
-				for(var i = 0; i < _calendar.month.length; i++){
-					if(_calendar.month[i].s > time || _calendar.month[i].e < time)		continue;
-					var r = _calendar.month[i].r;
+				for(var k = 0; k < _calendar.month.length; k++){
+					if(_calendar.month[k].s > time || _calendar.month[k].e < time)		continue;
+					var r = _calendar.month[k].r;
 					for(var j = 0; j < r.length; j++){
 						if(r[j].date.valueOf() == time.valueOf() && !tools.hasClass(r[j].html,'cu-day-select')){
 							r[j].html.className += ' cu-day-select';
