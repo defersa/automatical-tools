@@ -13,11 +13,21 @@ try {  new CustomEvent("IE has CustomEvent, but doesn't support constructor");
   };
   CustomEvent.prototype = Object.create(window.Event.prototype);
 }
+if (!Array.prototype.has){
+    Array.prototype.has = function(item){
+    	for(var i = 0; i < this.length; i++){
+    		if(this[i] == item)		return true;
+    	}
+        return false;
+    };
+};
+
 if (!Array.prototype.last){
     Array.prototype.last = function(){
         return this[this.length - 1];
     };
 };
+
 
 var tools = {
 	createHTML: function(options){

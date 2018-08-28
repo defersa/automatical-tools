@@ -45,6 +45,14 @@ function combobox_ui(options){
 		functions = undefined;				setting = undefined;
 	}
 
+
+	link.getItems = function(){
+		var result = [];
+		for(var i = 0; i < list.length; i++){
+			result.push(list[i].tree);
+		}
+		return result;
+	}
 	link.clearSelect = function(){ select.setDefault();	}
 	link.getSelected = function(){ if(select.item)	return select.item.tree; }
 	link.setSelected = function(item){

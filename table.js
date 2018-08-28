@@ -76,13 +76,15 @@ function new_function(){
 	document.oncontextmenu = function(e) { menu_ui({tree: [{text: 'asdasd'},{text: 'asdasd', check: true }] });  return false; }
 
 	tabs.addTabs([{ width: 50, content: document.getElementById('justrec')}]);
+	var treeToCombo = [{text: 'kek'}, {text: 'kek2'}, {separator: true }, {text: 'kek', unselect: true}, {text: 'kek2'}, {text: 'kek'}, {text: 'kek2'}];
 
 	var ccc = new combobox_ui({
 		parent: document.getElementById('c-c-c-combo'),
-		tree: [{text: 'kek'}, {text: 'kek2'}, {separator: true }, {text: 'kek', unselect: true}, {text: 'kek2'}, {text: 'kek'}, {text: 'kek2'}],
+		tree: treeToCombo,
 		functions: {
 			currentChange: function(a, b){ console.log(a, b); } 
 		}});
+	ccc.setSelected(ccc.getItems()[4]);
 }
 
 function some(e){

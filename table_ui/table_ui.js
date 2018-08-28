@@ -90,6 +90,7 @@ function table_ui(options){
 	link.htmlExport = function(options){		return exp.htmlExport(options);		}
 	link.setSort = function(options){			sort.setSort(options);				}
 	link.getSort = function(){					return sort.getSort();				}
+	link.getCorner = function(){				return _Corner.cont;				}
 	link.getSetting = function(){				return tools.cloneObject(setting);	}
 	link.focus = function(){					main.html.focus();					}
 	link.getSetting = function(){
@@ -190,6 +191,8 @@ function table_ui(options){
 																					onclick: events.click.corner,
 																					ondrop: events.dd.drop.corner,
 																					onmousedown: events.down.corn }) };
+			_Corner.sort = tools.createHTML({  tag: 'div', className: 'tau-corner-content', parent: _Corner.html });
+			_Corner.cont = tools.createHTML({  tag: 'div', className: 'tau-corner-content', parent: _Corner.html });
 			return _Corner;
 		},
 		table: function() {
@@ -547,7 +550,7 @@ function table_ui(options){
 				var cell = get.cell.side(e);
 
 				if(cell){
-					if(cell[1] || cell[2]){
+					if((cell[1] || cell[2]) && cell[0].visible){
 						resize.side.down(e, cell[0], cell[1], cell[2]);
 						return;
 					}
@@ -564,7 +567,7 @@ function table_ui(options){
 				var cell = get.cell.top(e);
 
 				if(cell){
-					if(cell[1] || cell[2]){
+					if((cell[1] || cell[2]) && cell[0].visible){
 						resize.top.down(e, cell[0], cell[1], cell[2]);
 						return;
 					}
@@ -1624,7 +1627,7 @@ function table_ui(options){
 			c.textBaseline = "middle";
 			c.textAlign = "left";
 			c.font = size.text + "px " + size.font;
-
+			
 			s.rows.forEach( function(i){		for(var j = 0; j < _Side.c; j++) {
 				var cell = _Side.visual[i][j];
 				if(cell.displayed) continue;
@@ -2500,7 +2503,7 @@ function table_ui(options){
 		this.top = {};
 
 		this.setSort = function(options){
-			_Corner.html.innerHTML = '';
+			_Corner.sort.innerHTML = '';
 			if(!options)	options = {};
 
 			sort.side = {};
@@ -2513,10 +2516,10 @@ function table_ui(options){
 					sort.side = { sort: options.side.sort, cell: {i: [0], j: [0], types: [0], index: -1 }, codeOnly: !!options.side.codeOnly, direction: !!options.side.direction };
 
 					if(options.side.direction){
-						_Corner.html.innerHTML += '<div id="tau-sort-arr-h">◀</div>';
+						_Corner.sort.innerHTML += '<div id="tau-sort-arr-h">◀</div>';
 						sideSort(increaseBy);
 					} else {
-						_Corner.html.innerHTML += '<div id="tau-sort-arr-h">▶</div>';
+						_Corner.sort.innerHTML += '<div id="tau-sort-arr-h">▶</div>';
 						sideSort(dencreaseBy);
 					}
 				} else {
@@ -2538,10 +2541,10 @@ function table_ui(options){
 					sort.top = { sort: options.top.sort, cell: {i: [0], j: [0], types: [0], index: -1 }, codeOnly: !!options.top.codeOnly, direction: !!options.top.direction };
 
 					if(options.top.direction){
-						_Corner.html.innerHTML += '<div id="tau-sort-arr-v">▲</div>';
+						_Corner.sort.innerHTML += '<div id="tau-sort-arr-v">▲</div>';
 						topSort(increaseBy);
 					} else {
-						_Corner.html.innerHTML += '<div id="tau-sort-arr-v">▼</div>';
+						_Corner.sort.innerHTML += '<div id="tau-sort-arr-v">▼</div>';
 						topSort(dencreaseBy);
 					}
 				} else {

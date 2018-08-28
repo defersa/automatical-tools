@@ -610,6 +610,7 @@ function calendar_ui(options){
 	var select = new function(){
 		this.items = [];
 		this.s;
+		this.shift;
 
 		this.add = function(time){
 			var i = 0;
@@ -689,8 +690,13 @@ function calendar_ui(options){
 
 		this.down = function(e){
 			var sDate = e.target.date;
-			if(!e.ctrlKey)	select.removeAll();
-			select.s = { s: sDate, e: sDate };
+			var eDate = e.target.date;
+
+			if(!e.ctrlKey)					select.removeAll();
+			if(e.shiftKey && select.shift)	sDate = select.shift;
+			else							select.shift = sDate;
+
+			select.s = { s: sDate, e: eDate };
 			select.hover.reAdd(select.s.s.date, select.s.e.date);
 
 			window.addEventListener("mouseup", up);

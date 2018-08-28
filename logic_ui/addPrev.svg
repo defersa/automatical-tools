@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 32 32" xml:space="preserve">
+
+<path class="log-s-fill" d="M 3,3 L 13,3 L 13,13 L 3,13 L 5,11 L 11,11 L 11,5 L 5,5 L 5,11 L 3,13  z" />
+<path class="log-s-fill" d="M 21,21 L 31,21 L 31,11 L 21,11 L 23,13 L 29,13 L 29,19 L 23,19 L 23,13 L 21,11  z" />
+
+<path class="log-s-plus" d="M 1,23 L 13,23 L 13,27 L 1,27 z" />
+<path class="log-s-plus" d="M 5,19 L 9,19 L 9,31 L 5,31 z" />
+
+<path class="log-s-fill" d="M 14,7.5  L 17.5,7.5  L 17.5,14.5 L 19,14.5 L 19,15.5 L 16.5,15.5 L 16.5,8.5  L 14,8.5 z" />
+<path class="log-s-fill" d="M 14,25.5 L 17.5,25.5 L 17.5,17.5 L 19,17.5 L 19,16.5 L 16.5,16.5 L 16.5,24.5 L 14,24.5 z" />
+
+</svg>

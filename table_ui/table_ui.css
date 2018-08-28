@@ -28,6 +28,11 @@
 	border-bottom: 1px solid #555;
 	z-index: 3;
 }
+.tau-corner-content {
+	position: absolute;
+	top:0;			bottom: 0;
+	left: 0; 		right: 0;
+}
 .tau-resize {
 	box-sizing: border-box;			position: absolute;
 	border: 1px solid #fff;			box-shadow: 0 0 10px #222;
