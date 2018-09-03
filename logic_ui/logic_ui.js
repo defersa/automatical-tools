@@ -13,14 +13,15 @@ function logic_ui(options){
 	var delay = 5;
 
 	//temp variable;
-	var defWidth = 60;
-	var defHeight = 30;
-	var defType = "OR";
+	var defWidth = 80;
+	var defHeight = 26;
+	var defType = "AND";
 
 	var svgPlus = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 32 32" xml:space="preserve"><path class="log-s-fill" d="M 7,14.25 L 27,14.25 L 27,19.75 L 7,19.75 z" /><path class="log-s-fill" d="M 14.25,7 L 14.25,27 L 19.75,27 L 19.75,7 z" /></svg>';
 	var svgMinus = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 32 32" xml:space="preserve"><path class="log-s-fill" d="M 7,14.25 L 27,14.25 L 27,19.75 L 7,19.75 z" /></svg>';
 	var svgCenter = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 32 32" xml:space="preserve"><circle class="log-s-back" transform="translate(16,16)" stroke-width="2" r="11" /><circle class="log-s-fill" transform="translate(16,16)" r="7" /><path class="log-s-fill" d="M 0,15 L 6,15 L 6,17 L 0,17 z" /><path class="log-s-fill" d="M 15,0 L 15,6 L 17,6 L 17,0 z" /><path class="log-s-fill" d="M 32,15 L 26,15 L 26,17 L 32,17 z" /><path class="log-s-fill" d="M 15,32 L 15,26 L 17,26 L 17,32 z" /></svg>';
 	var svgSwap = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 32 32" xml:space="preserve"><path class="log-s-fill" d="M 3,10 L 15,2 L 15,7 L 27,7 L 27,13 L 15,13 L 15,18 z" /><path class="log-s-fill" d="M 29,22 L 17,30 L 17,25 L 5,25 L 5,19 L 17,19 L 17,14 z" /></svg>';
+	var svgMax = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 32 32" xml:space="preserve"><path class="log-s-fill"  d="M28,2h-6c-1.104,0-2,0.896-2,2s0.896,2,2,2h1.2l-4.6,4.601C18.28,10.921,18,11.344,18,12c0,1.094,0.859,2,2,2  c0.641,0,1.049-0.248,1.4-0.6L26,8.8V10c0,1.104,0.896,2,2,2s2-0.896,2-2V4C30,2.896,29.104,2,28,2z M12,18  c-0.641,0-1.049,0.248-1.4,0.6L6,23.2V22c0-1.104-0.896-2-2-2s-2,0.896-2,2v6c0,1.104,0.896,2,2,2h6c1.104,0,2-0.896,2-2  s-0.896-2-2-2H8.8l4.6-4.601C13.72,21.079,14,20.656,14,20C14,18.906,13.141,18,12,18z"/></svg>';
 
 	var svgChange = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 459 459" style="enable-background:new 0 0 459 459;" xml:space="preserve"><circle class="log-s-color" transform="translate(229.5,229.5)" r="90" /><path class="log-s-fill" d="M0,229.5c0,56.1,22.95,107.1,61.2,142.8L0,433.5h153v-153l-56.1,56.1C68.85,311.1,51,272.85,51,229.5	c0-66.3,43.35-122.4,102-145.35v-51C66.3,56.1,0,135.15,0,229.5z M459,25.5H306v153l56.1-56.1	c28.051,25.5,45.9,63.75,45.9,107.1c0,66.3-43.35,122.4-102,145.35V428.4c86.7-22.95,153-102,153-196.351	c0-56.1-22.95-107.1-61.2-142.8L459,25.5z"/></svg>';
 	var svgNot = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"	 viewBox="0 0 459 459" style="enable-background:new 0 0 459 459;" xml:space="preserve"><path class="log-s-fill" d="M0,229.5c0,56.1,22.95,107.1,61.2,142.8L0,433.5h153v-153l-56.1,56.1C68.85,311.1,51,272.85,51,229.5	c0-66.3,43.35-122.4,102-145.35v-51C66.3,56.1,0,135.15,0,229.5z M459,25.5H306v153l56.1-56.1	c28.051,25.5,45.9,63.75,45.9,107.1c0,66.3-43.35,122.4-102,145.35V428.4c86.7-22.95,153-102,153-196.351	c0-56.1-22.95-107.1-61.2-142.8L459,25.5z"/><path class="log-s-color" d=" M204,255h51V102h-51V255z M204,357h51v-51h-51V357z "/></svg>';
@@ -37,7 +38,8 @@ function logic_ui(options){
 		if(!options)						options = {};
 		if(_logic)							link.remove();
 
-		if(options.parent == undefined)		options.parent = null;
+		if(options.parent == undefined)			options.parent = null;
+		if(options.orientation == undefined)	options.orientation = 0;
 
 		functions = {};
 		setting = {};
@@ -53,16 +55,27 @@ function logic_ui(options){
 		link.change(options);	
 	}
 	link.change = function(options){
-		if(!options)						options = {};
+		if(!options)							options = {};
 
-		if(options.parent !== undefined)	change.parent(options);
-		if(options.tree !== undefined)		build.setLogic(options.tree);
+		if(options.parent !== undefined)		change.parent(options);
+		if(options.tree !== undefined)			build.setLogic(options.tree);
+		if(options.orientation !== undefined)	setting.orientation = options.orientation;
 
 		build.rebuild();
 	}
 	link.remove = function(options){
 	}
 
+	link.removeItems = function(items){
+		if(!Array.isArray(items))	items = [items];
+		for(var i = 0; i < items.length; i++)
+			change.tree.removeAll(items[i]);
+		build.rebuild();
+		return items;
+	}
+	link.clearSelect = function(){
+		select.removeAll();
+	}
 	link.test = function(){
 		 return _main;
 	}
@@ -72,9 +85,13 @@ function logic_ui(options){
 		move: {
 			canvas: function(e){
 				var node = get.branchByCoord(e);
-				if(node){
-										_canvas.html.draggable = true;
-				} else					_canvas.html.draggable = false;
+				var corn = get.corn(e);
+
+				if(corn)				_canvas.html.style.cursor = 'e-resize';
+				else					_canvas.html.style.cursor = '';
+
+				if(node && !corn)		_canvas.html.draggable = true;
+				else					_canvas.html.draggable = false;
 			}
 		},
 		click: {
@@ -88,11 +105,16 @@ function logic_ui(options){
 					display.canvas();
 				},
 				center: function(){
-					display.s.l = - (display.s.lp[0] + display.s.lp.last())/2 + display.s.vw/2;
-					display.s.t = - (display.s.tp[0] + display.s.tp.last())/2 + display.s.vh/2;
+					if(!display.s.lp[0]) return;
+					display.s.l = - ((setting.orientation) ? display.s.lp[0] : display.s.lp.last())/2 + display.s.vw/2;
+					display.s.t = - (_logic.tails.last().top)/2 + display.s.vh/2;
 					display.canvas();
 				},
 				swap: function(){
+					setting.orientation = !setting.orientation;
+					build.rebuild();
+				},
+				max: function(){
 
 				}
 			},
@@ -157,6 +179,13 @@ function logic_ui(options){
 		down: {
 			canvas: function(e){
 				var node = get.branchByCoord(e);
+				var corn = get.corn(e);
+
+				if(corn){
+					resize.down(e);
+					return;
+				}
+
 				if(node)	dragdrop.down(e, node);
 				else		scroll.down(e);
 			}
@@ -196,6 +225,13 @@ function logic_ui(options){
 					}
 					build.rebuild();
 				}
+				if(kc == 192 && e.ctrlKey && e.shiftKey){
+					console.log(link.test());
+				}
+				if(kc == 46 || kc == 192 || kc == 187){
+					tools.stopProp(e);
+					return false;
+				}
 			}
 		}
 	}
@@ -211,7 +247,7 @@ function logic_ui(options){
 				if(	node.top - defHeight/2 <= y &&
 					node.top + defHeight/2 >= y &&
 					display.s.lp[node.lvl] <= x &&
-					display.s.lp[node.lvl] + defWidth >= x)
+					display.s.lp[node.lvl] + _logic.width[node.lvl] >= x)
 					result = node;
 				if(node.children){
 					for(var i = 0; i < node.children.length; i++)
@@ -222,6 +258,22 @@ function logic_ui(options){
 				findBrunch(_logic.ahead.children[i]);
 
 			return result;
+		},
+		corn: function(e){
+			var result = false;
+			var x = (e.pageX - _canvas.coords.left)*(size.dpi/size.scale) - display.s.l;
+			var y = (e.pageY - _canvas.coords.top )*(size.dpi/size.scale) - display.s.t;
+			for(var i = 0; i < _logic.tails.length; i++){
+
+				if(	_logic.tails[i].top - defHeight/2 < y && 
+					_logic.tails[i].top + defHeight/2 > y &&
+					(display.s.lp[0] + _logic.width[0] - 4) < x &&
+					(display.s.lp[0] + _logic.width[0] + 4) > x ){
+					result = true;
+					break;
+				}
+			}
+			return result;
 		}
 	}
 	var set = {
@@ -229,80 +281,11 @@ function logic_ui(options){
 
 	var create = {
 		main: function(){
-			_main = { navigation: { }, controls: { } };
+			_main = { navigation: { }, controls: { }, display: display, select: select };
 			_main.html = tools.createHTML({		tag: 'div',
 												tabIndex: 0,
 												onkeydown: events.keydown.main,
 												className: 'log-main' });
-
-			_main.navigation.html = tools.createHTML({ tag: 'div',
-												parent: _main.html,
-												style: 'right: 10px; height: 123px',
-												className: 'log-panel'});
-			_main.navigation.plus = tools.createHTML({ tag: 'div',
-												style: 'top: 31px',
-												className: 'log-n-but',
-												onclick: events.click.navigation.plus,
-												innerHTML:  '<div class="log-svg">' + svgPlus + '</div>',
-												parent: _main.navigation.html });
-			_main.navigation.center = tools.createHTML({ tag: 'div',
-												className: 'log-n-but',
-												onclick: events.click.navigation.center,
-												style: 'top: 0',
-												innerHTML: '<div class="log-svg">' + svgCenter + '</div>',
-												parent: _main.navigation.html });
-			_main.navigation.minus = tools.createHTML({ tag: 'div',
-												className: 'log-n-but',
-												onclick: events.click.navigation.minus,
-												style: 'top: 62px',
-												innerHTML: '<div class="log-svg">' + svgMinus + '</div>',
-												parent: _main.navigation.html });
-			_main.navigation.swap = tools.createHTML({ tag: 'div',
-												className: 'log-n-but',
-												style: 'top: 93px',
-												innerHTML: '<div class="log-svg">' + svgSwap + '</div>',
-												parent: _main.navigation.html });
-
-			_main.controls.html  = tools.createHTML({ tag: 'div',
-												parent: _main.html,
-												style: 'right: 50px; height: 92px; width: 61px',
-												className: 'log-panel'});
-			_main.controls.change = tools.createHTML({ tag: 'div',
-												style: 'bottom: 0;',
-												onclick: events.click.controls.change,
-												className: 'log-n-but-inactive',
-												innerHTML:  '<div class="log-svg">' + svgChange + '</div>',
-												parent: _main.controls.html });
-			_main.controls.not = tools.createHTML({ tag: 'div',
-												style: 'bottom: 0; left: 31px',
-												onclick: events.click.controls.not,
-												className: 'log-n-but-inactive',
-												innerHTML:  '<div class="log-svg">' + svgNot + '</div>',
-												parent: _main.controls.html });
-			_main.controls.addNext = tools.createHTML({ tag: 'div',
-												style: 'bottom: 31px; left: 0',
-												onclick: events.click.controls.addNext,
-												className: 'log-n-but-inactive',
-												innerHTML:  '<div class="log-svg">' + svgAddNext + '</div>',
-												parent: _main.controls.html });
-			_main.controls.addPrev = tools.createHTML({ tag: 'div',
-												style: 'bottom: 31px; left: 31px',
-												onclick: events.click.controls.addPrev,
-												className: 'log-n-but-inactive',
-												innerHTML:  '<div class="log-svg">' + svgAddPrev + '</div>',
-												parent: _main.controls.html });
-			_main.controls.remove = tools.createHTML({ tag: 'div',
-												style: 'bottom: 62px; left: 0',
-												onclick: events.click.controls.remove,
-												className: 'log-n-but-inactive',
-												innerHTML:  '<div class="log-svg">' + svgRemove + '</div>',
-												parent: _main.controls.html });
-			_main.controls.removeAll = tools.createHTML({ tag: 'div',
-												style: 'bottom: 62px; left: 31px',
-												onclick: events.click.controls.removeAll,
-												className: 'log-n-but-inactive',
-												innerHTML:  '<div class="log-svg">' + svgRemoveAll + '</div>',
-												parent: _main.controls.html });
 		},
 		canvas: function(){
 			_canvas = _main._canvas = {};
@@ -311,7 +294,7 @@ function logic_ui(options){
 												className: 'log-canvas',
 												onwheel: events.wheel.canvas,
 												onmousemove: events.move.canvas,
-												onmousedown: events.down.canvas });
+												onmousedown: events.down.canvas	});
 
 			_canvas.html.ondragstart = dragdrop.start;
 			_canvas.html.ondragover = dragdrop.over;
@@ -320,15 +303,88 @@ function logic_ui(options){
 			_canvas.ctx = _canvas.html.getContext("2d");
 		},
 		edit: function(){
-			_edit = _main._edit = {};
-			_edit.html = tools.createHTML({		tag: 'div',
+			
+			_main.navigation.html = tools.createHTML({ tag: 'div',
 												parent: _main.html,
-												className: 'log-edit' });
+												style: 'right: 10px; height: 150px',
+												className: 'log-panel'});
+			_main.navigation.center = tools.createHTML({ tag: 'div',
+												className: 'log-n-but',
+												onclick: events.click.navigation.center,
+												style: 'top: 0',
+												innerHTML: '<div class="log-svg">' + svgCenter + '</div>',
+												parent: _main.navigation.html });
+			_main.navigation.max = tools.createHTML({ tag: 'div',
+												className: 'log-n-but',
+												onclick: events.click.navigation.max,
+												style: 'top: 30px',
+												innerHTML: '<div class="log-svg">' + svgMax + '</div>',
+												parent: _main.navigation.html });
+			_main.navigation.plus = tools.createHTML({ tag: 'div',
+												style: 'top: 60px',
+												className: 'log-n-but',
+												onclick: events.click.navigation.plus,
+												innerHTML:  '<div class="log-svg">' + svgPlus + '</div>',
+												parent: _main.navigation.html });
+			_main.navigation.minus = tools.createHTML({ tag: 'div',
+												className: 'log-n-but',
+												onclick: events.click.navigation.minus,
+												style: 'top: 90px',
+												innerHTML: '<div class="log-svg">' + svgMinus + '</div>',
+												parent: _main.navigation.html });
+			_main.navigation.swap = tools.createHTML({ tag: 'div',
+												className: 'log-n-but',
+												onclick: events.click.navigation.swap,
+												style: 'top: 120px',
+												innerHTML: '<div class="log-svg">' + svgSwap + '</div>',
+												parent: _main.navigation.html });
+
+			_main.controls.html  = tools.createHTML({ tag: 'div',
+												parent: _main.html,
+												style: 'right: 50px; height: 90px; width: 60px',
+												className: 'log-panel'});
+			_main.controls.change = tools.createHTML({ tag: 'div',
+												style: 'bottom: 0;',
+												onclick: events.click.controls.change,
+												className: 'log-n-but-inactive',
+												innerHTML:  '<div class="log-svg">' + svgChange + '</div>',
+												parent: _main.controls.html });
+			_main.controls.not = tools.createHTML({ tag: 'div',
+												style: 'bottom: 0; left: 30px',
+												onclick: events.click.controls.not,
+												className: 'log-n-but-inactive',
+												innerHTML:  '<div class="log-svg">' + svgNot + '</div>',
+												parent: _main.controls.html });
+			_main.controls.addNext = tools.createHTML({ tag: 'div',
+												style: 'bottom: 30px; left: 0',
+												onclick: events.click.controls.addNext,
+												className: 'log-n-but-inactive',
+												innerHTML:  '<div class="log-svg">' + svgAddNext + '</div>',
+												parent: _main.controls.html });
+			_main.controls.addPrev = tools.createHTML({ tag: 'div',
+												style: 'bottom: 30px; left: 30px',
+												onclick: events.click.controls.addPrev,
+												className: 'log-n-but-inactive',
+												innerHTML:  '<div class="log-svg">' + svgAddPrev + '</div>',
+												parent: _main.controls.html });
+			_main.controls.remove = tools.createHTML({ tag: 'div',
+												style: 'bottom: 60px; left: 0',
+												onclick: events.click.controls.remove,
+												className: 'log-n-but-inactive',
+												innerHTML:  '<div class="log-svg">' + svgRemove + '</div>',
+												parent: _main.controls.html });
+			_main.controls.removeAll = tools.createHTML({ tag: 'div',
+												style: 'bottom: 60px; left: 30px',
+												onclick: events.click.controls.removeAll,
+												className: 'log-n-but-inactive',
+												innerHTML:  '<div class="log-svg">' + svgRemoveAll + '</div>',
+												parent: _main.controls.html });
 		},
 		logic: function(){
 			_logic = _main._logic = {};
 			_logic.tails = [];
-			_logic.ahead = { head: true, children: []};
+			_logic.width = [150];
+			_logic.ahead = { head: true, type: 1, children: []};
 		}
 	}
 
@@ -354,7 +410,7 @@ function logic_ui(options){
 				}	
 			},
 			addNext: function(item){
-				var node = { type: 1, text: 'AND', children: [], parent: item };
+				var node = { type: 1, text: defType, children: [], parent: item };
 				var index = 0;
 				for(var j = item.children.length - 1; j >= 0; j--){
 					if(item.children[j].select){
@@ -403,6 +459,26 @@ function logic_ui(options){
 				} else {
 					item.not = true;
 				}
+			}, 
+			clone: function(items){
+				function clone(item, parent){
+					var node = { text: item.text };
+					if(parent)	node.parent = parent;
+					if(item.children){
+						node.children = [];
+						for(var i = 0; i < item.children.length; i++){
+							node.children.push(clone(item.children[i], item));
+						}
+					}
+					return node;
+				}
+
+				var result = [];
+				if(!Array.isArray(items))	items = [items];
+				for(var i = 0; i < items.length; i++){
+					result.push(clone(items[i]));
+				}
+				return result;
 			}
 		}
 	}
@@ -436,16 +512,15 @@ function logic_ui(options){
 			return node;
 		}
 
-
 		this.getDepthMod = function(tree){
-			var result = 1;
+			var result = 0;
 			if(tree.children){
 				var max = 0;
 				for(var i = 0; i < tree.children.length; i++){
 					var topical = build.getDepthMod(tree.children[i]);
 					if(topical > max)		max = topical;
 				}
-				result += max;
+				result += max + 1;
 			} else if(tree.type) {
 				result += 1;
 			}
@@ -453,49 +528,62 @@ function logic_ui(options){
 		}
 
 		this.rebuild = function(){
-			var lvls = _logic.lvls = build.getDepthMod(_logic.ahead) - 2;
-
 			_logic.tails = [];
+			_logic.linkLength = [];
 
 			for(var i = 0; i < _logic.ahead.children.length; i++){
-				buildBranch( _logic.ahead.children[i], lvls);
+				buildBranch( _logic.ahead.children[i] );
 			}
 
-			display.s.lp = [];
-			display.s.tp = [];
+			display.s.lp = [0];
 
-			for(var i = 0; i <= lvls; i++){
-				display.s.lp[i] = 100*i;
-			}
-			for(var i = 0; i <= _logic.tails.length; i++){
-				display.s.tp[i] = 50*i;
+			var lvl = build.getDepthMod(_logic.ahead);
+			for(var i = 1; i < lvl; i++){
+				_logic.width[i] = defWidth;
+				if(setting.orientation)		display.s.lp.splice(0, 0 , display.s.lp[0] + defWidth + 12 + ((_logic.linkLength[lvl - i - 1] > 3) ? (Math.round(_logic.linkLength[lvl - i - 1]/2)*4) : 0))
+				else						display.s.lp[i] = display.s.lp[i - 1] + _logic.width[i - 1] + 12 + ((_logic.linkLength[i - 1] > 3) ? (Math.round(_logic.linkLength[i - 1]/2)*4) : 0);
 			}
 
 			display.generate();
 		}
 
-		function buildBranch(node, lvl){
+		function buildBranch(node){
 			var positions = 0;
-			if(node.children){				
-				node.lvl = lvl;
+			node.cText = node.text;
+			if(node.children){
+				node.lvl = build.getDepthMod(node);
 				for(var i = 0; i < node.children.length; i++){
-					positions += buildBranch(node.children[i], lvl - 1);
+					positions += buildBranch(node.children[i]);
 				}
 				positions = positions/node.children.length;
+				if(_logic.linkLength[node.lvl - 1] === undefined)				_logic.linkLength[node.lvl - 1] = 0;
+				if(_logic.linkLength[node.lvl - 1] < node.children.length)		_logic.linkLength[node.lvl - 1] = node.children.length;
 			} else {
 				if(node.type){
-					node.lvl = lvl;
+					node.lvl = 1;
 				} else {
 					node.lvl = 0;
+					node.cText = cutText(node.text, ( _logic.width[0] - ( (node.not) ? 38 : 8 )));
 				}
 
 				node.i = _logic.tails.length;
-				positions = node.i*50;
+				positions = node.i*( defHeight + 8 );
 				_logic.tails.push(node);
 			}
 			node.top = positions;
 			return positions;
-		}	
+		}
+
+		function cutText(text, width){
+			var ntext = text;
+			if( _canvas.ctx.measureText(ntext).width > width ){
+				while( _canvas.ctx.measureText(ntext).width > width ){
+					ntext = ntext.substring(0, ntext.length - 1);
+				}
+				ntext = ntext.substring(0, ntext.length - 1) + '...';
+			}
+			return ntext;
+		}
 	}
 
 	var display = new function(){
@@ -536,74 +624,68 @@ function logic_ui(options){
 			c.shadowOffsetX = 0;
 			c.shadowOffsetY = 0;
 
-			function drowNode(node, parent, parallaxX, parallaxY){
+			function drowNode(node, parent, index){
 
-				c.fillStyle = "#666666";
+				c.fillStyle = "#999999";
 				if(node.select){
 					c.shadowBlur = 10;
-					c.fillStyle = '#358fe8';
+					c.fillStyle = '#135ea8';
 				}
 			
 				c.fillRect(
 						size.scale * (s.l + s.lp[node.lvl]),
 						size.scale * (s.t + node.top - defHeight/2),
-						size.scale * defWidth,
+						size.scale * _logic.width[node.lvl],
 						size.scale * defHeight );
 
 				c.shadowBlur = 0;				
 
-				if(node.text == 'AND')		c.fillStyle = '#d0e8a0';
-				else if(node.text =='OR')	c.fillStyle = '#add1f6';
+				if(node.text == 'AND')		c.fillStyle = '#e3fbb3';
+				else if(node.text =='OR')	c.fillStyle = '#cce5fe';
 				else						c.fillStyle = '#FFFFFF';
+
+				var width = (node.not) ? (_logic.width[node.lvl] - 32) : (_logic.width[node.lvl] - 2);
+				var left = (setting.orientation && node.not) ? (s.l + s.lp[node.lvl] + 31) : (s.l + s.lp[node.lvl] + 1);
+				var nleft = (setting.orientation && node.not) ? (s.l + s.lp[node.lvl] + 1) : (s.l + s.lp[node.lvl] + _logic.width[node.lvl] - 30);
+
 				c.fillRect(
-						size.scale * (s.l + s.lp[node.lvl] + 1 ),
+						size.scale * (left),
 						size.scale * (s.t + node.top - defHeight/2 + 1 ),
-						size.scale * (defWidth - 2),
+						size.scale * (width),
 						size.scale * (defHeight - 2) );
+
+				c.font = size.scale * 11 + 'px sans-serif';
+				c.textAlign = "center";
+				c.textBaseline = "middle";
+
 				if(node.not){
-					c.fillStyle = '#ff3b3b';
+					c.fillStyle = '#ffd8df';
 					c.fillRect(
-						size.scale * (s.l + s.lp[node.lvl] + defWidth - 3 ),
+						size.scale * (nleft ),
 						size.scale * (s.t + node.top - defHeight/2 + 1 ),
-						size.scale * (2),
+						size.scale * (29),
 						size.scale * (defHeight - 2) );
+					c.fillStyle = '#000000';
+					c.fillText(
+						"NOT",
+						size.scale * (nleft + 15 ),
+						size.scale * (s.t + node.top));
 				}
 
 				if(parent != undefined){
-					c.strokeStyle = '#777777';
-					if(parent.select)		c.strokeStyle = '#358fe8';
-
-					c.beginPath();
-					c.moveTo(
-						size.scale * (s.l + s.lp[node.lvl] + 62.5),
-						size.scale * (s.t + node.top + 0.5) );
-					c.lineTo(
-						size.scale * (s.l + s.lp[parent.lvl] - 24.5 - 3 * parallaxX) ,
-						size.scale * (s.t + node.top + 0.5) );
-					c.lineTo(
-						size.scale * (s.l + s.lp[parent.lvl] - 24.5 - 3 * parallaxX),
-						size.scale * (s.t + parent.top + 3 * parallaxY + 0.5) );					
-					c.lineTo(
-						size.scale * (s.l + s.lp[parent.lvl] - 2) ,
-						size.scale * (s.t + parent.top + 3 * parallaxY + 0.5) );
-					c.stroke();
+					drawLine(c, node, parent, index);
 				}
 
-				c.fillStyle = '#000000';
 				c.font = size.scale * 13 + 'px sans-serif';
-				c.textAlign = "center";
-				c.textBaseline = "middle";
+				c.fillStyle = '#000000';
 				c.fillText(
-						node.text,
-						size.scale * (s.l + s.lp[node.lvl] + 30),
+						node.cText,
+						size.scale * (left + (width + 2)/2),
 						size.scale * (s.t + node.top));
 
 				if(node.children){
-					for(var i = 0; i < node.children.length; i++){
-						if(node.top > node.children[i].top)		var paralX = i;
-						else									var paralX = node.children.length - i - 1;
-			
-						drowNode(node.children[i], node, paralX, i - (node.children.length - 1)/2 );
+					for(var i = 0; i < node.children.length; i++){			
+						drowNode(node.children[i], node, i );
 					}
 				}
 			}
@@ -611,7 +693,118 @@ function logic_ui(options){
 			for(var i = 0; i < _logic.ahead.children.length; i++){
 				drowNode(_logic.ahead.children[i]);
 			}
+		}
 
+		function drawLine(c, node, parent, index){
+			if(setting.orientation){
+				if(parent.select)		c.strokeStyle = '#135ea8';
+				else					c.strokeStyle = '#AAAAAA';
+				c.beginPath();
+
+				if(parent.children.length > 1 && index == 0){
+					c.moveTo(
+						size.scale * (s.l + s.lp[node.lvl] - 2),
+						size.scale * (s.t + node.top + 0.5) );	
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] + _logic.width[parent.lvl] - 2),
+						size.scale * (s.t + node.top + 0.5) );
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] + _logic.width[parent.lvl] - 2),
+						size.scale * (s.t + parent.top - defHeight/2 - 2) );
+
+				} else if(parent.children.length > 1 && index == parent.children.length - 1){
+					c.moveTo(
+						size.scale * (s.l + s.lp[node.lvl] - 2),
+						size.scale * (s.t + node.top + 0.5) );	
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] + _logic.width[parent.lvl] - 2),
+						size.scale * (s.t + node.top + 0.5) );
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] + _logic.width[parent.lvl] - 2),
+						size.scale * (s.t + parent.top + defHeight/2 + 2) );
+
+				} else if(parent.children.length == 1){
+					c.moveTo(
+						size.scale * (s.l + s.lp[node.lvl] - 2),
+						size.scale * (s.t + node.top + 0.5) );	
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl]  + _logic.width[parent.lvl] + 2),
+						size.scale * (s.t + node.top + 0.5) );
+				} else {
+					var length = (parent.children.length > 1) ? (parent.children.length - 2) : (parent.children.length);
+					if(defHeight/length > 4)			var paralY = ((defHeight + 1)*index)/(length + 1) - defHeight/2;
+					else								var paralY = - 4*(length/2 - index) - 1.5;	
+					if(parent.top > node.top)			var paralX = index;
+					else								var paralX = length - index + 1;
+					c.moveTo(
+						size.scale * (s.l + s.lp[node.lvl] - 2),
+						size.scale * (s.t + node.top + 0.5) );	
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] + _logic.width[parent.lvl] + 5 + 4 * paralX),
+						size.scale * (s.t + node.top + 0.5) );
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] + _logic.width[parent.lvl] + 5 + 4 * paralX),
+						size.scale * (s.t + parent.top + paralY) );					
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] + _logic.width[parent.lvl] + 2) ,
+						size.scale * (s.t + parent.top + paralY) );
+				}
+				c.stroke();
+			} else {
+				if(parent.select)		c.strokeStyle = '#135ea8';
+				else					c.strokeStyle = '#AAAAAA';
+				c.beginPath();
+
+				if(parent.children.length > 1 && index == 0){
+					c.moveTo(
+						size.scale * (s.l + s.lp[node.lvl] + _logic.width[node.lvl] + 2),
+						size.scale * (s.t + node.top + 0.5) );	
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] + 2),
+						size.scale * (s.t + node.top + 0.5) );
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] + 2),
+						size.scale * (s.t + parent.top - defHeight/2 - 2) );
+
+				} else if(parent.children.length > 1 && index == parent.children.length - 1){
+					c.moveTo(
+						size.scale * (s.l + s.lp[node.lvl] + _logic.width[node.lvl] + 2),
+						size.scale * (s.t + node.top + 0.5) );	
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] + 2),
+						size.scale * (s.t + node.top + 0.5) );
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] + 2),
+						size.scale * (s.t + parent.top + defHeight/2 + 2) );
+
+				} else if(parent.children.length == 1){
+					c.moveTo(
+						size.scale * (s.l + s.lp[node.lvl] + _logic.width[node.lvl]+ 2),
+						size.scale * (s.t + node.top + 0.5) );	
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] - 2),
+						size.scale * (s.t + node.top + 0.5) );
+				} else {
+					var length = (parent.children.length > 1) ? (parent.children.length - 2) : (parent.children.length);
+					if(defHeight/length > 4)			var paralY = ((defHeight + 1)*index)/(length + 1) - defHeight/2;
+					else								var paralY = - 4*(length/2 - index) - 1.5;	
+					if(parent.top > node.top)			var paralX = index;
+					else								var paralX = length - index + 1;
+					c.moveTo(
+						size.scale * (s.l + s.lp[node.lvl] + _logic.width[node.lvl] + 2),
+						size.scale * (s.t + node.top + 0.5) );	
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] - 5 - 4 * paralX),
+						size.scale * (s.t + node.top + 0.5) );
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] - 5 - 4 * paralX),
+						size.scale * (s.t + parent.top + paralY) );					
+					c.lineTo(
+						size.scale * (s.l + s.lp[parent.lvl] - 2) ,
+						size.scale * (s.t + parent.top + paralY) );
+				}
+				c.stroke();
+			}
 		}
 
 		this.menu = function(){
@@ -801,17 +994,34 @@ function logic_ui(options){
 		function up(e){
 			var node = get.branchByCoord(e);
 			if(node == s.node){
-				if(e.ctrlKey){
-					if(node.select)	select.remove(node);
-					else			select.add(node);
-				} else {
+
+				if(e.shiftKey && select.shift){
+					node = getLastLevel(node);
+					var start = (node.i > select.shift.i) ? select.shift.i : node.i;
+					var end = (node.i > select.shift.i) ? node.i : select.shift.i;
 					select.removeAll();
-					select.add(node);
+					for(var i = start; i <= end; i++) select.add(_logic.tails[i]);
+				} else {
+					select.shift = getLastLevel(node); 
+					if(e.ctrlKey){
+						if(node.select)	select.remove(node);
+						else			select.add(node);
+					} else {
+						select.removeAll();
+						select.add(node);
+					}
 				}
 				display.canvas();		
 			}
 			this.s = s = { };
 			window.removeEventListener('mouseup', up);
+		}
+		function getLastLevel(node){
+			var knode = node;
+			while( knode.children ){
+				knode = knode.children[0];
+			}
+			return knode;
 		}
 	
 		this.start = function(e) {
@@ -833,64 +1043,67 @@ function logic_ui(options){
 			if(typeof functions.drag == 'function')				var text = functions.drag(e, items, link);
 			else												var text = 'null';
 			
-			if(e.dataTransfer.setDragImage != undefined)		e.dataTransfer.setDragImage(avatar, -5, -5);
-		  	e.dataTransfer.effectAllowed = 'copy';				e.dataTransfer.setData('text', text);
+    		if(window.clipboardData){
+    			var image = new Image();
+    			image.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==';
+				e.dataTransfer.setDragImage( image, -5, -5);
+    		} else {
+				e.dataTransfer.setDragImage( avatar, -5, -5);
+    		}
 
-		  	window.customDrag = {avatar: avatar, input: link, log: true, items: select.items.concat() };
+		  	e.dataTransfer.effectAllowed = 'copy';
+		  	e.dataTransfer.setData('text', text);
+
+		  	window.customDragLogic = {avatar: avatar, input: link, log: true, items: select.items.concat() };
 
 		  	display.canvas();
 		  	tools.stopProp(e);
 		}
 
 		this.over = function(e){
-			if(window.customDrag){
-				var node = get.branchByCoord(e);
+			var node = get.branchByCoord(e);
 
-				if(node){
-					if(node.undrop || !node.type)		return true;
-					else								return false;
-				} else									return false;
-			}
-			return true;
-		}
-
-		this.enter = function(e){
-			if(window.customDrag){
-
-			}
-		}
-
-		this.leave = function(e){
-			if(window.customDrag){
-				
-			}
+			if(node){
+				if(node.undrop)						return true;
+				else								return false;
+			} else									return false;
 		}
 
 		this.drop = function(e){
 
-			if(e.preventDefault)	e.preventDefault();		tools.stopProp(e);
+			if(e.preventDefault)	e.preventDefault();
+			tools.stopProp(e);
 
-			if(window.customDrag){
-				var brach = get.branchByCoord(e);
-				if(!brach) brach = _logic.ahead;
-				if(brach == undefined){}
-				var items;
+			var branch = get.branchByCoord(e);
+			if(!branch) branch = _logic.ahead;
+			select.removeAll();
 
-				if(window.customDrag.log){
-					var items = window.customDrag.items;
-					for(var i = 0; i < items.length; i++){
-						change.tree.removeAll(items[i]);
-					}
+			if(window.customDragLogic){
+				if(e.ctrlKey){
+					var items = change.tree.clone(window.customDragLogic.items);
 				} else {
-					items = JSON.parse( e.dataTransfer.getData('text') );
+					var items = window.customDragLogic.input.removeItems(window.customDragLogic.items);
 				}
-
-				if(!brach.children)	brach.children = [];
-				for(var i = 0; i < items.length; i++){
-					items[i].parent = brach;
-					brach.children.push(items[i]);
-				}
+			} else {
+				var items = JSON.parse( e.dataTransfer.getData('text') );
 			}
+
+			if(!branch.type){
+				var nBranch = {type: 1, text: defType, parent: branch.parent, children: [branch]};
+				for(var i = 0; i < branch.parent.children.length; i++){
+					if(branch.parent.children[i] == branch){
+						branch.parent.children.splice(i, 1, nBranch);
+					}
+				}
+				branch = nBranch;
+			}
+			if(!branch.children)	branch.children = [];
+			for(var i = 0; i < items.length; i++){
+				items[i].parent = branch;
+				branch.children.push(items[i]);
+				select.add(items[i]);
+			}
+
 			dragdrop.end();
 			build.rebuild();
 		}
@@ -899,16 +1112,45 @@ function logic_ui(options){
 			function unsetUndrop(items){
 				for(var i = 0; i < items.length; i++){
 					items[i].undrop = undefined;
-					if(items[i].children)					unsetUndrop(items[i].children);
+					if(items[i].children)						unsetUndrop(items[i].children);
 				}	
 			}
 
-			if(window.customDrag){
-		  		if(window.customDrag.avatar.parentNode)		tools.destroyHTML(window.customDrag.avatar);
-		  		unsetUndrop(window.customDrag.items);
+			if(window.customDragLogic){
+		  		if(window.customDragLogic.avatar.parentNode)	tools.destroyHTML(window.customDragLogic.avatar);
+		  		unsetUndrop(window.customDragLogic.items);
 
-		  		window.customDrag = undefined;
+		  		window.customDragLogic = undefined;
 			}
+		}
+	}
+
+	var resize = new function(){
+		var s;
+		this.down = function(e){
+			var html = tools.createHTML({tag: 'div', className: 'log-resize', parent: _main.html})
+			s = {e: e, h: html}
+
+			_canvas.html.draggable = false;
+			window.addEventListener('mousemove', move);
+			window.addEventListener('mouseup', up);
+			move(e);
+		}
+		function move(e){
+			s.h.style.left = (e.pageX - _canvas.coords.left) + 'px';
+		}
+		function up(e){
+
+			_logic.width[0] = Math.round(_logic.width[0] + (e.pageX - s.e.pageX)*(size.dpi/size.scale) );
+			if(_logic.width[0] < 60)			_logic.width[0] = 60;
+			else if( _logic.width[0] > 500)		_logic.width[0] = 500;
+			build.rebuild();
+
+			tools.destroyHTML(s.h);
+			s = undefined;
+
+			window.removeEventListener('mousemove', move);
+			window.removeEventListener('mouseup', up);
 		}
 	}
 

@@ -810,7 +810,7 @@ function tree_ui(options){
 			if(typeof functions.drag == 'function')				var text = functions.drag(e, items, link);
 			else												var text = 'null';
 			
-			if(e.dataTransfer.setDragImage != undefined)		e.dataTransfer.setDragImage(htmlAvatar, -5, -5);
+			if(!window.clipboardData)							e.dataTransfer.setDragImage(htmlAvatar, -5, -5);
 		  	e.dataTransfer.effectAllowed = 'copy';				e.dataTransfer.setData('text', text);
 
 		  	window.customDrag = {avatar: htmlAvatar, items: items, input: link, drop: htmlDrop};
