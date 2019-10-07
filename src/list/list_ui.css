@@ -1,0 +1,147 @@
+.pvb-viewport {
+	position: absolute;
+
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+
+	overflow-y: scroll;
+	overflow-x: hidden;
+	transition: .2s;
+	background: #f1f1f1;
+}
+.pvb-viewport:focus	{		outline: none;			border: none;	}
+
+.pvb-content {
+	flex-direction: column;
+	align-items: center;
+	position: relative;
+	margin: auto;
+	height: 100%;
+	left: 0;
+	right: 0;
+}
+
+.pvb-item {
+	position: relative;
+	display: flex;
+	cursor: default;
+	box-sizing: border-box;
+	width: 100%;
+	padding: 4px 12px 4px 4px;
+}
+
+.pvb-indent {
+	position: relative;
+	display: block;
+	box-sizing: border-box;
+	padding: 10px 10px;
+	width: 100%;
+	height: 1px;
+}
+#pvb-dragdrop .pvb-indent-inner {
+	display: block;
+	height: 1px;
+	background: #135ea8;
+	box-shadow: 0 0 2px 2px rgba(19, 168, 84, 0.2);
+}
+
+.pvb-current .pvb-indent-inner {
+	display: block;
+	height: 1px;
+	background: #135ea8;
+	box-shadow: 0 0 2px 2px rgba(19, 84, 168, 0.2);
+}
+
+
+.pvb-item-iterator {
+	font-size: 12px;
+	font-weight: bold;
+	color: #444;
+	display: flex;
+	padding: 8px;
+	flex-grow: 1;
+}
+
+
+.pvb-no-iterator .pvb-item-iterator {
+	display: none;
+}
+	
+.pvb-item-wrapper {
+	display: flex;
+	margin-left: 3px;
+	flex-grow: 0;
+	width: 100%;
+}
+.pvb-old .pvb-item-container {
+	position: relative;
+	width: 100%;
+	padding-bottom: 56.25%;
+}
+.pvb-old .pvb-item-preview {
+	position: absolute;
+	left: 0;	top:0;
+	bottom: 0;	right: 0;
+	
+	opacity: 0.75;
+}
+
+.pvb-item-container {
+	position: relative;
+	width: 100%;
+}
+.pvb-item-preview {
+	
+	/*
+	min-height: 57px;
+	padding: 5px;
+	*/
+
+	line-height: 1.5;
+	background: white;
+
+	overflow: visible;
+	background-repeat: no-repeat;
+	background-position: right bottom;
+	box-sizing: content-box;
+
+	box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
+	border: 1px solid #8a8a8a;
+}
+
+/*
+.pvb-select .pvb-item-preview {
+	box-shadow: 0 0 2px 2px rgba(19, 84, 168, 0.4);
+	border: 1px solid #135ea8;
+	opacity: 1;
+}
+*/
+.pvb-select .pvb-item-preview {
+    box-shadow: none;
+    border: 1px solid #1976d2;
+    outline: 2px solid #1976d2;
+}
+
+
+.pvb-select .pvb-item-iterator {
+	color: #004990;
+}
+
+.pvb-avatar {
+	border: 1px solid #77A3D8;		white-space: nowrap;	
+	z-index: 9999;					position: absolute; 
+	left: -1000px; top: -1000px; 	background: white;
+}
+
+
+.pvb-prev-id {
+	padding: 4px;
+	font-size: 14px;
+}
+
+.pvb-prev-text {
+	padding: 4px;
+	font-size: 13px;
+}

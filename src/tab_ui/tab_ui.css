@@ -1,0 +1,141 @@
+.tbu-main {
+	position: absolute;
+	top: 0;		bottom: 0;
+	left: 0;	right: 0;
+}
+
+.tbu-tab, .tbu-pageTab, .tbu-title, .tbu-icon, .tbu-search, .tbu-loop, .tbu-searchInput {
+	position: relative;
+	box-sizing: border-box;
+	display: flex;					
+}
+/* header for tabs */
+.tbu-header {
+	position: absolute;				overflow: visible;
+	left: 9px;		right: 3px;		height: 31px;
+	display: flex;
+}
+.tbu-header:focus {	border: none; outline: none;}
+
+/* Container */
+.tbu-container {
+	position: absolute;
+	background: white;
+	box-sizing: border-box; 
+	z-index: 5;
+	left: 0;			right: 0;
+}
+
+.tbu-default {
+	position: absolute;
+	border: 1px solid #8eafc1;		border-top: 0;	
+	left: 0;		right: 0;
+	top: 0;			bottom: 0;
+}
+
+/* Tab and its children */
+.tbu-tab {	
+	overflow: hidden;				cursor: default;
+	border: 1px solid #1976d2;		margin-left: -6px; 
+	min-width: 30px;
+	font-weight: bold;
+	height: 29px;
+	color: #333;
+	z-index: 6;
+}
+
+.tbu-icon {	
+	margin: 2px;					flex-shrink: 1;
+	width: 12px;					height: 12px;
+	background-size: 12px; 			
+}
+.tbu-docket {
+	flex-shrink: 6;					flex-grow: 6;
+	overflow: hidden;				white-space: nowrap;
+	font-size: 13px;				
+}
+.tbu-close {
+	margin: 2px 0 2px 2px;			flex-shrink: 0;
+	width: 12px;					height: 12px;
+}
+.tbu-icon, .tbu-docket, .tbu-close {	display: flex;		position: relative;			z-index: 1;	}
+
+/* tabs behavior */
+.tbu-tab-inactive	{
+	transition: .3s;		border-color: #8AAED1; 	
+	z-index: 4;				color: #555;	
+	height: 27px;		
+}
+.tbu-tab-inactive::after {
+	background: #555;				content: '.';
+	position: absolute;				color: #555;
+	opacity: 0.1;					z-index: 0;
+	left: 0; right: 0; top: 0; bottom: 0;
+}
+
+/* New tab */
+.tbu-pageTab {	
+	flex-shrink: 0;					z-index: 4;
+	width: 24px;					height: 24px;
+	padding: 3px;					margin-left: 2px;
+}
+
+.tbu-top .tbu-pageTab {		top: 5px;	}
+.tbu-bot .tbu-pageTab {		top: 5px;	}
+
+/* Search tab */
+.tbu-searchTab {
+	flex-grow: 2;					flex-shrink: 0;
+	height: 28px;					display: none;
+}
+.tbu-loop {
+	float: right;					margin-top: 8px; 
+	height: 18px;					width: 18px;
+}
+
+.tbu-searchInput {
+	float: right;				padding: 1px 8px;
+	height: 22px;				width: 150px;
+	border: 1px solid #1976d2;	border-radius: 11px;	
+}
+.tbu-searchInput:focus { outline: none; }
+
+.tbu-top .tbu-header{	top: 0;	}
+.tbu-bot .tbu-header{	bottom: 0;}
+.tbu-top .tbu-container {	top: 30px;		bottom: 0;		border-top: 1px solid #1976d2;		}
+.tbu-bot .tbu-container {	top: 0;		bottom: 30px;		border-bottom: 1px solid #1976d2;	}
+
+
+.tbu-top .tbu-tab  {	border-radius: 8px 8px 0 0;	border-width: 1px 1px 0 1px; }
+.tbu-bot .tbu-tab  {	border-radius: 0 0 8px 8px;	border-width: 0 1px 1px 1px;	}
+
+.tbu-top .tbu-tab  {	padding: 7px 4px 0 6px;		top: 2px; }
+.tbu-bot .tbu-tab  {	padding: 5px 4px 0 6px;		top: 0px; }
+.tbu-top .tbu-tab-inactive {	padding: 4px 4px 0 6px;		top: 5px;	}
+.tbu-bot .tbu-tab-inactive {	padding: 4px 4px 0 6px;		top: 1px;	}
+
+.tbu-top .tbu-loop {		margin-top: 8px; 	}
+.tbu-bot .tbu-loop {		margin-top: 8px; 	}
+.tbu-top .tbu-searchInput {		margin: 6px 4px 0 4px;	}
+.tbu-bot .tbu-searchInput {		margin: 6px 4px 0 4px;	}
+
+/* SVG classes */
+
+.tbu-close			.tbu-cross{fill: #759db3;}
+.tbu-close:hover	.tbu-cross{fill: #E73C3C;}
+.tbu-close:active	.tbu-cross{fill: #E10C0C;}
+
+.tbu-loop			.tau-svg-fill,	.tbu-pageTab			.tau-svg-fill{fill: transparent; transition: .2s;}
+.tbu-loop:hover		.tau-svg-fill,	.tbu-pageTab:hover		.tau-svg-fill{fill: #8eafc1; }
+.tbu-loop:active	.tau-svg-fill,	.tbu-pageTab:active		.tau-svg-fill{fill: #1f5c7a; }
+.tbu-loop			.tau-svg-item,	.tbu-pageTab			.tau-svg-item{fill: #8eafc1; transition: .2s;}
+.tbu-loop:hover		.tau-svg-item,	.tbu-pageTab:hover		.tau-svg-item{fill: white; }
+.tbu-loop:active	.tau-svg-item,	.tbu-pageTab:active		.tau-svg-item{fill: white; }
+.tbu-loop			.tau-svg-sup,	.tbu-pageTab			.tau-svg-sup{fill: #edeef0; transition: .2s;}
+.tbu-loop:hover		.tau-svg-sup,	.tbu-pageTab:hover		.tau-svg-sup{fill: #8eafc1; }
+.tbu-loop:active	.tau-svg-sup,	.tbu-pageTab:active		.tau-svg-sup{fill: #1f5c7a; } 
+
+.tbu-loop			.tau-svg-close-fill{fill: #8eafc1; transition: .2s;}
+.tbu-loop:hover		.tau-svg-close-fill{fill: #1f5c7a;}
+.tbu-loop:active	.tau-svg-close-fill{fill: #E73C3C;}
+.tau-svg-close-cross {fill: white; }

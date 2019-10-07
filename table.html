@@ -1,100 +1,76 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>DataGrid UI</title>
+		<title>Table</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
 		
 		<!-- LINKS JS/CSS -->
-		<script type='text/javascript' src='tools/init_tools.js'></script>
-		<script type='text/javascript' src='tools/xlsx_saver.js'></script>
-		<script type='text/javascript' src='tools/FileSaver.js'></script>
-		<script type='text/javascript' src='tools/jszip.js'></script>
+		<script type='text/javascript' src='src/tools/init_tools.js'></script>
+		<script type='text/javascript' src='src/tools/xlsx_saver.js'></script>
+		<script type='text/javascript' src='src/tools/FileSaver.js'></script>
+		<script type='text/javascript' src='src/tools/jszip.js'></script>
 
-		<link rel="stylesheet" href="menu_ui/menu_ui.css"/>
-		<script type='text/javascript' src='menu_ui/menu_ui.js'></script>
-
-		<link rel="stylesheet" href="combobox_ui/combobox_ui.css"/>
-		<script type='text/javascript' src='combobox_ui/combobox_ui.js'></script>
-
-		<link rel="stylesheet" href="table_ui/table_ui.css"/>
-		<script type='text/javascript' src='table_ui/table_ui.js'></script>
-
-		<link rel="stylesheet" href="window_ui/window_ui.css"/>
-		<script type='text/javascript' src='window_ui/window_ui.js'></script>
-
-		<link rel="stylesheet" href="layout_ui/layout_ui.css"/>
-		<script type='text/javascript' src='layout_ui/layout_ui.js'></script>
-
-		<link rel="stylesheet" href="tree_ui/tree_ui.css"/>
-		<script type='text/javascript' src='tree_ui/tree_ui.js'></script>
-
-		<link rel="stylesheet" href="tab_ui/tab_ui.css"/>
-		<script type='text/javascript' src='tab_ui/tab_ui.js'></script>
-
+		<link rel="stylesheet" href="src/table_ui/table_ui.css"/>
+		<link rel="stylesheet" href="src/layout_ui/layout_ui.css"/>
+		<script type='text/javascript' src='src/table_ui/table_ui.js'></script>
+		<script type='text/javascript' src='src/layout_ui/layout_ui.js'></script>
 
   		<script src= "https://code.jquery.com/jquery-3.1.1.min.js"></script>	
-		<script type='text/javascript' src='table.js'></script>
+		<script type='text/javascript' src='ex/table.js'></script>
 
 	</head>
-	<body >
-		
+	<body>		
 		<style type="text/css">
-		body {
-			padding: 0; margin: 0;
-			width: 100%; height: 100%;
-			position: absolute; background: #EFF7FF;
-			overflow: hidden;
-		}
-		.but {
+			body {
+				font-family: -apple-system,BlinkMacSystemFont,Roboto,Open Sans,Helvetica Neue,sans-serif;
+				-webkit-user-select:	none;
+				-moz-user-select:		none;
+				-ms-user-select: 		none;
+				padding: 0; margin: 0;
+				width: 100%; height: 100%;
+				position: absolute; background: #EFF7FF;
+				overflow: hidden;
+			}
+			.but {
 			width: 			50px;
 			height: 		30px;
 			position: 		absolute;
 			top:			Calc(100% - 40px);
-		}
-		.block {
-			
-			-webkit-user-select:	none;
-			-moz-user-select:		none;
-			-ms-user-select: 		none;
-			width: 			Calc(100% - 20px);
-			height: 		Calc(100% - 160px);
-			position: 		absolute;
-			top:			10px;
-			left:			10px;
-			display: 		inline-block;
-		}
-		.first {
-			position: absolute;
-			margin: 0;
-			padding: 0;
-			float: left;
-			overflow: auto;
-
-		}
-		.second {
-			background: white;
-			box-sizing: border-box;
-			border: 1px solid #aaa;
-			position: absolute;
-			margin: 0;
-			padding: 0;
-			overflow: auto;
-
-		}
-		#justrec {
-			background: lightblue;
-		}
-		body {
-			font-family: -apple-system,BlinkMacSystemFont,Roboto,Open Sans,Helvetica Neue,sans-serif;
-			-webkit-user-select:	none;
-			-moz-user-select:		none;
-			-ms-user-select: 		none;
-		}
-		.default-img {
-			background-image: 		url(tree_ui/img/minus.png);
-		}
+			}
+			.block {
+				
+				-webkit-user-select:	none;
+				-moz-user-select:		none;
+				-ms-user-select: 		none;
+				width: 			Calc(100% - 20px);
+				height: 		Calc(100% - 120px);
+				position: 		absolute;
+				top:			10px;
+				left:			10px;
+				display: 		inline-block;
+			}
+			.first {
+				position: absolute;
+				margin: 0;
+				padding: 0;
+				float: left;
+				overflow: auto;
+	
+			}
+			.second {
+				background: white;
+				box-sizing: border-box;
+				border: 1px solid #aaa;
+				position: absolute;
+				margin: 0;
+				padding: 0;
+				overflow: auto;
+	
+			}
+			.default-img {
+				background-image: 		url(tree_ui/img/minus.png);
+			}
 		</style>
 		<!-- TABLE -->
 
@@ -105,10 +81,11 @@
 				<div class="second">
 				</div>
 			</div>
-			<div class="first" id='bor' >
-				<div id='justrec' style="width: 100%; height: 100%;"></div>
+			<div class="first" id='bor'>
 			</div>
 		</div>
+
+		<canvas id="c-to-generate" width="14px" height="14px" style=" left: 20px; top:	Calc(100% - 80px); display: block; position: absolute; width: 14px; height: 14px;"></canvas>
 
 		<div id="ccb" style='left: 20px; top: Calc(100% - 40px); position: absolute; width: 170px; height: 20px'></div>
 
@@ -117,36 +94,8 @@
 		<button class='but' style='left: 320px' onclick="xlsx()">export</button>
 		<button class='but' style='left: 380px' onclick="some()">some</button>
 		<button class='but' style='left: 440px' onclick="minus()">-</button>		
-		<div class='but' id='scale' style='left: 500px; text-align: center' onclick="plus()">1</div>
+		<div class='but' id='scale' style='left: 500px; text-align: center'>1</div>
 		<button class='but' style='left: 560px' onclick="plus()">+</button>
-
-		<select id="var_drop_function_combo" style='left: 20px; top: Calc(100% - 80px); position: absolute; width: 170px; height: 20px'>
-			<option value="">- - - - - - - -</option>
-			<optgroup label="&nbsp;"></optgroup>
-			<optgroup label="Case">
-				<option value="avg_" title="">avg</option>
-				<option value="cvl_" title="">cvl</option>
-				<option value="inc_" title="">inc</option>
-				<option value="max_" title="Maximum">max</option>
-				<option value="min_" title="Minimum">min</option>
-				<option value="net_" title="Or">net</option>
-				<option value="sum_" title="">sum</option>
-				<option value="vol_" title="">vol</option>
-			</optgroup>
-			<optgroup label="&nbsp;"></optgroup>
-			<optgroup label="Table">
-				<option value="avg#" title="">avg</option>
-				<option value="cmn#" title="Code mean">cmn</option>
-
-				<option value="csd#" title="Standard deviation">csd</option>
-				<option value="cse#" title="Standard error">cse</option>
-
-				<option value="sum#" title="">sum</option>
-			</optgroup>
-			<optgroup label="&nbsp;"></optgroup>
-		</select>
-
-		<div id="c-c-c-combo" style='left: 20px; top: Calc(100% - 40px); position: absolute; width: 170px; height: 20px'></div>
 
 		<button class='but' style='left: 200px; top:	Calc(100% - 80px);' onclick="set()">set</button>
 		<button class='but' id='t1' style='left: 260px; background: green; top:	Calc(100% - 80px);' onclick="t1()">t1</button>

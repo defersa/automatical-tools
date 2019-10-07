@@ -1,0 +1,58 @@
+.tu-viewport {
+	position: absolute;		overflow-y: auto;		overflow-x: hidden; 
+	font-size: 13px;		box-sizing:	border-box;
+	left: 0;				right: 0;
+	top: 0;					bottom: 0;	
+}
+.tu-content 		{		position: relative;	}
+.tu-viewport:focus	{	    outline: none;			border: none;	}
+
+.tu-viewport-focused:focus	{	    outline: 2px solid #a1c3fa;			border: none;	}
+.tu-item {
+    display: -ms-flex;
+	position: absolute;		display: flex;
+	overflow: hidden;		box-sizing: border-box;
+	border-radius: 3px;		width: 100%;
+	border: 1px solid transparent;
+}
+.tu-item:hover {																		border: 1px solid #B8D6FB;			background: linear-gradient(to top, #EBF3FD, #FCFDFE);		}
+.tu-select {																			border: 1px solid #D9D9D9;			background: linear-gradient(to top, #E5E5E5, #FAFAFA);		z-index: 5;		}
+.tu-viewport:focus	.tu-select {														border: 1px solid #77A3D8;			background: linear-gradient(to top, #CFE4FE, #FFFFFF);		}
+.tu-select:hover,	.tu-current.tu-select {												border: 1px solid #cfcfcf;			background: linear-gradient(to top, #dbdbdb, #f0f0f0);		}
+.tu-viewport:focus	.tu-current.tu-select,	.tu-viewport:focus	.tu-select:hover {		border: 1px solid #6f98c9;			background: linear-gradient(to top, #C1DBFC, #F1F7FE);		}
+.tu-viewport:focus	.tu-current {														border: 1px solid #B8D6FB;	}
+.tu-current {																			border: 1px solid #dddddd;	}
+
+.tu-drag-item { 
+	position: relative;				padding-left: 20px;
+	padding-right: 4px;				background-position: 1px 1px;
+	background-repeat: no-repeat;
+}
+.tu-avatar {
+	border: 1px solid #77A3D8;		white-space: nowrap;	
+	z-index: 9999;					position: absolute; 
+	left: -1000px; top: -1000px; 	background: white;
+}
+.tu-drop-close	{
+	position: absolute;				height: 2px;
+	display: none;					z-index: 6;
+	right: 0;						background: #30a201; 
+}
+#tu-item-into	{
+	border: 1px solid #71b62b;		border-radius: 3px;
+	background: linear-gradient(to top, #d9febc, #fafff5);
+}
+.tu-rectangle {
+	box-sizing: border-box;			position: absolute;
+	border: 1px solid #fff;			box-shadow: 0 0 10px #0a5dc7;
+	opacity: 0.3;					z-index: 8;
+	background: #3e8ff5;
+}
+.tu-expand-open		{	background-image: url(img/minus.png); }
+.tu-expand-close	{	background-image: url(img/plus.png); }
+.tu-TableIcon		{	background-image: url(img/flempty.png); }
+.tu-FolderOpen		{	background-image: url(img/openfl.png); }
+.tu-FolderClose		{	background-image: url(img/closefl.png); }
+
+.tu-expand		{	display: block;	height: 100%;	-ms-flex-shrink: 0;	flex-shrink: 0;	background-position: center center;		background-repeat: no-repeat;	width: 20px;}
+.tu-caption		{	display: block;	height: 100%;	-ms-flex-shrink: 0;	flex-shrink: 0;	background-position: 1px center;		background-repeat: no-repeat;	cursor: default;}

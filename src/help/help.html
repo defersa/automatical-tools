@@ -1,0 +1,633 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>StudyLab  - Manual</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<link rel="stylesheet" href="help.css"/>
+		<link rel="shortcut icon" type="image/png" href="http://dev.studylab.info/Content/images/flask16.png">
+		<script type='text/javascript' src='help.js'></script>
+		<script type='text/javascript' src='http://dev.studylab.info/Scripts/jquery-2.2.1.min.js'></script>
+	</head>
+	<body>
+
+		<div id="h-header"><svg xmlns="http://www.w3.org/2000/svg" width="86.25" height="24.38" viewBox="0 0 86.25 24.38"><defs><style>.cls-1{fill:#fff;}</style></defs><title>studylab_logo</title><g id="Слой_1" data-name="Слой 1"><path class="cls-1" d="M53.73,8.62a1,1,0,0,0-1,1v4a3,3,0,1,1-6,0v-4a1,1,0,0,0-2,0v4a5,5,0,0,0,8,4v4.28a1,1,0,0,0,2,0V9.58A1,1,0,0,0,53.73,8.62Z"/><path class="cls-1" d="M30.21,8.58a1,1,0,0,0-1,1v4a3,3,0,0,1-6,0v-4a1,1,0,0,0-2,0v4a5,5,0,0,0,10,0v-4A1,1,0,0,0,30.21,8.58Z"/><path class="cls-1" d="M19,16.44h0a3,3,0,0,1-3-3v-3h2.32a1,1,0,0,0,0-2H16V5.23a1,1,0,0,0-2,0v8.19a5,5,0,0,0,5,5,1,1,0,0,0,0-2Z"/><path class="cls-1" d="M41.89,4.28a1,1,0,0,0-1,1V9.57a5.24,5.24,0,0,0-3-1.05,5,5,0,1,0,5,5V5.24A1,1,0,0,0,41.89,4.28Zm-4,12.25a3,3,0,1,1,3-3A3,3,0,0,1,37.88,16.54Z"/><path class="cls-1" d="M61.55,16.54a1,1,0,0,1,0,2"/><path class="cls-1" d="M61.55,18.52h0"/><path class="cls-1" d="M61.55,18.52h0"/><path class="cls-1" d="M61.56,16.54a3,3,0,0,1-3-3V5.33a1,1,0,0,0-2,0v8.19a5,5,0,0,0,5,5"/><path class="cls-1" d="M75.17,5.29v8.28a5,5,0,1,0,5-5,5.24,5.24,0,0,0-3,1.05V5.29a1,1,0,0,0-2,0Zm2,8.28a3,3,0,1,1,3,3A3,3,0,0,1,77.15,13.57Z"/><path class="cls-1" d="M6.63,8.77h0c-1.58-.44-3-1.24-3-2.69a2.86,2.86,0,0,1,3-2.69A3,3,0,0,1,9.71,6.08a.93.93,0,0,0,1,.81,1,1,0,0,0,1-.85c0-2.43-2.38-4.39-5.09-4.42A4.75,4.75,0,0,0,1.65,6.08c0,2.47,2.39,3.82,5,4.48h0c1.73.46,3.33,1.36,3.33,3a3.1,3.1,0,0,1-3.19,2.92A3.22,3.22,0,0,1,3.4,13.51a1,1,0,0,0-1.07-.84,1,1,0,0,0-1.08.85h0c0,2.64,2.49,4.93,5.43,5s5.43-2.33,5.44-5S9.3,9.46,6.63,8.77Z"/><path class="cls-1" d="M73.39,17.67v-4a5,5,0,1,0-5,5,5.24,5.24,0,0,0,3-1.05h0a1.08,1.08,0,0,0,1,1.05A1,1,0,0,0,73.39,17.67Zm-2-4a3,3,0,1,1-3-3A3,3,0,0,1,71.41,13.62Z"/></g></svg></div>		
+		
+		<div id="h-body" class="h-body-open">
+			
+			<div id="h-panel">
+				<div id='h-panel-controls'>
+					<div class='in-row'>
+						<div id='h-panel-controls-title'>Меню</div>
+						<div id='h-panel-controls-button' onclick="document.getElementById('h-body').className = 'h-body-close';">
+							<svg version="1.1" xmlns="http://www.w3.org/2000/svg" class='svg-menu' xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width= "32px" height="32px" viewBox="0 0 32 32">	
+							<style>
+							.svg-menu 			.reg { fill: #B2B2B2;  transition: .2s;}
+							.svg-menu:hover		.reg { fill: #1976d2;  transition: .2s;}
+							.svg-menu:active	.reg { fill: #2F5F7F;  transition: .2s;}
+							</style>
+							<path class="reg" d="M 2,8 L 30,8 L 30,10 L 2,10"/>
+							<path class="reg" d="M 2,15 L 30,15 L 30,17 L 2,17"/>
+							<path class="reg" d="M 2,22 L 30,22 L 30,24 L 2,24"/>
+							</svg>
+						</div>
+					</div>
+					<div class='in-row'>
+						<input type="search" name=""  id='h-panel-controls-search' placeholder='Поиск'/>
+						<div id='h-panel-controls-loop'>
+							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg-loop' x="0px" y="0px" width="100%" height="100%" viewBox="0 0 18 18" xml:space="preserve">
+							<style type="text/css">
+							.svg-loop			.loop {fill: #B2B2B2; transition: .2s;}
+							.svg-loop:hover		.loop {fill: #1976d2; transition: .2s;}
+							.svg-loop:active	.loop {fill: #2F5F7F; transition: .2s;}
+							.sup {fill: white;}
+							</style>		
+							<path class="loop" d="M 9,8 L 15,14 L 14,15 L 8,9 z" />	
+							<circle class="loop" transform="translate(8,8)" r="5" />		
+							<circle class="sup" transform="translate(8,8)" r="3.5" />
+							</svg>
+						</div>
+					</div>
+				</div>
+
+				<div id="h-panel-list">
+					<div id='h-panel-list-back'>
+						<ul class="h-lvl-1">
+							<li onclick='jump(event, "fill-first")'>Вход в систему </li>
+							<li onclick='jump(event, "fill-second")'>Основная терминология</li>
+							<li onclick='jump(event, "fill-third")'>Выбор базы</li>
+							<li>Основные инструменты для работы с таблицами</li>
+							<li>Перемещение элементов базы</li>
+							<li>Дерево таблиц базы</li>
+	
+							<ul class="h-lvl-2">
+								<li>Уровни папок дерева таблиц базы</li>
+								<li>Операции над папками базы</li>
+								<li>Поиск по дереву таблиц базы</li>
+							</ul>
+	
+							<li>Поле работы с таблицами</li>
+	
+							<ul class="h-lvl-2">
+								<li>Панель инструментов таблицы</li>
+								<li>Редактирование таблицы</li>
+									
+								<ul class="h-lvl-3">
+									<li>Дерево переменных</li>
+									<li>Поле содержимого таблицы</li>
+									<li>Заполнение полей Filter и Weight</li>
+									<li>Режимы заполнения полей</li>
+									<li>Заполнение полей Top и Side</li>
+								</ul>                
+								
+								<li>Параметры настроек таблицы</li>
+								<li>Применение функционала Select</li>
+								<li>Сортировка значений таблицы</li>
+							</ul>
+	
+							<li>Экспорт данных</li>
+							<li>Спецификация таблицы</li>
+						</ul>
+					</div>
+					<div id='h-panel-scrollbar'><div id='h-panel-slider'></div></div>
+				</div>
+			</div>
+			
+			<div id="h-content">
+				<div id='h-content-button' onclick="document.getElementById('h-body').className = 'h-body-open';">
+					<svg version="1.1" xmlns="http://www.w3.org/2000/svg" class='svg-menu' xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width= "32px" height="32px" viewBox="0 0 32 32">	
+					<style>
+					.svg-menu 			.reg { fill: #B2B2B2;  transition: .2s;}
+					.svg-menu:hover		.reg { fill: #1976d2;  transition: .2s;}
+					.svg-menu:active	.reg { fill: #2F5F7F;  transition: .2s;}
+					</style>
+					<path class="reg" d="M 2,8 L 30,8 L 30,10 L 2,10"/>
+					<path class="reg" d="M 2,15 L 30,15 L 30,17 L 2,17"/>
+					<path class="reg" d="M 2,22 L 30,22 L 30,24 L 2,24"/>
+					</svg>
+				</div>
+
+
+				<div class='h-page' id='fill-first'>
+					<table class='h-table-s'>
+						<tr>
+							<td class='h-content-text'>
+								<p>В момент заполнения полей таблицы Top / Side, при <i>"переходе"</i> из дерева переменных <b><font color="#1976d2">Variables</font></b> в поля, переменная может принять одно из трех состояний:
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/c-pink.png" /></td>
+										<td class='h-content-description'> Переменная (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> ) </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_bot.png" /></td>
+										<td class='h-content-description'> Фильтр-переменная </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_top.png" /></td>
+										<td class='h-content-description'> Весовая переменная</td>
+									</tr>
+								</table>
+								<p>Состояние переносимой переменной зависит от включенного <u>режима заполнения поля</u>.
+								</p>
+
+							</td>
+							<td class='h-content-images'></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/b-green-brown-yellow-red-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Вектор</font></b>. При заполнении полей в данном режиме, переменные из дерева переменных переходят/добавляются в поля Top и Side не меняя своего состояния, то есть остаются переменными<img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">, (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png">). <br> Однако, в режиме <b><font color="#1976d2">Вектор</font></b> возможно применить ряд функций из списка <b>Function</b>, при этом переменная изменит свое состояние на функциональню переменную <img class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/c-blue-percent.png">
+										</td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Фильтр</font></b>. При данном режиме при добавлении переменной из дерева переменных в поля Top / Side добавляемая переменная изменяет свое состояние на фильтр переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">⇒<img  class="h-image" src="http://studylab.info/Content/images/ar_bot.png">. <br> Фильтр переменная накладывает соответствующий фильтр на все элементы поля, если при переходе было активно все поле, либо на конкретные переменные (одну или несколько), если при переходе были выделены определенные переменные. </td>
+									</tr>
+								</table>
+
+								<p>Также из дерева переменных одновременно можно добавлять несколько фильтр-переменных. В этом случаи фильтры объединяются через логическое <b>И</b>. Для того чтобы наложить на переменные (одну или несколько) несколько фильтр-переменных, объединенных через логическое <b>ИЛИ</b>, необходимо прописать перечисление фильтров через <b>ИЛИ</b> (|) в спецификации поля.
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/text_area16.png"></i></td>
+										<td class='h-content-description'> Открыть окно спецификации поля нужно кликнуть по соответствующей полю кнопке </td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-red.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Вес</font></b>. При данном режиме переменная из дерева переменных при добавлении в поля <b> Top / Side </b> преобразуется в весовую переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png">. <br> Аналогично фильтр-переменной, весовая переменная <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png"> может накладывать вес, в соответствии весовой переменной, на все элементы поля или некоторые из них, в зависимости что было активным во время добавления весовой переменной.</td>
+									</tr>
+								</table>
+
+								<p>А также, при выборе нескольких переменных в дереве переменных добавление нескольких весовых переменных, объединенных через логическое <b>И</b>, <b>ИЛИ</b>. По умолчанию, веса объединяются через <b>И</b>, для формировани яобъединия по <b>ИЛИ</b> требуется править код спецификации поля.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img width="100%" src="http://studylab.info/views/MANUAL/images/edit_table2.PNG"></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/hierarchic.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Иерархия</font></b>. Данный режим предназначен для группы переменных у которых значения переменных (ответы) являются одинаковыми по лейауту. <br>  При добавлении таких групп переменных в поле, в которое осуществляется переход, добавляются переменные <img class="h-image" src="http://studylab.info/Content/images/c-pink.png"> со ссылкой на значения переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png">, которые автоматически добавляются в противоположное поле в единственном экземпляре. Ссылка на переменные или на значения переменных обозначается как <b>?</b>.</td>
+									</tr>
+								</table>
+								<p>Если в дереве переменных элементы с одинаковыми значениями переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> собраны в одной папке, при заполнении полей достаточно выбрать/выделить их общую папку.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img src="http://studylab.info/views/MANUAL/images/hierarch.gif"></td>
+						</tr>
+					</table>
+				</div>
+
+
+				<div class='h-page' id='fill-second'>
+					<table class='h-table-s'>
+						<tr>
+							<td class='h-content-text'>
+								<p>В момент заполнения полей таблицы Top / Side, при <i>"переходе"</i> из дерева переменных <b><font color="#1976d2">Variables</font></b> в поля, переменная может принять одно из трех состояний:
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/c-pink.png" /></td>
+										<td class='h-content-description'> Переменная (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> ) </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_bot.png" /></td>
+										<td class='h-content-description'> Фильтр-переменная </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_top.png" /></td>
+										<td class='h-content-description'> Весовая переменная</td>
+									</tr>
+								</table>
+								<p>Состояние переносимой переменной зависит от включенного <u>режима заполнения поля</u>.
+								</p>
+
+							</td>
+							<td class='h-content-images'></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/b-green-brown-yellow-red-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Вектор</font></b>. При заполнении полей в данном режиме, переменные из дерева переменных переходят/добавляются в поля Top и Side не меняя своего состояния, то есть остаются переменными<img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">, (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png">). <br> Однако, в режиме <b><font color="#1976d2">Вектор</font></b> возможно применить ряд функций из списка <b>Function</b>, при этом переменная изменит свое состояние на функциональню переменную <img class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/c-blue-percent.png">
+										</td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Фильтр</font></b>. При данном режиме при добавлении переменной из дерева переменных в поля Top / Side добавляемая переменная изменяет свое состояние на фильтр переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/ar_bot.png">. <br> Фильтр переменная накладывает соответствующий фильтр на все элементы поля, если при переходе было активно все поле, либо на конкретные переменные (одну или несколько), если при переходе были выделены определенные переменные. </td>
+									</tr>
+								</table>
+
+								<p>Также из дерева переменных одновременно можно добавлять несколько фильтр-переменных. В этом случаи фильтры объединяются через логическое <b>И</b>. Для того чтобы наложить на переменные (одну или несколько) несколько фильтр-переменных, объединенных через логическое <b>ИЛИ</b>, необходимо прописать перечисление фильтров через <b>ИЛИ</b> (|) в спецификации поля.
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/text_area16.png"></i></td>
+										<td class='h-content-description'> Открыть окно спецификации поля нужно кликнуть по соответствующей полю кнопке </td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-red.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Вес</font></b>. При данном режиме переменная из дерева переменных при добавлении в поля <b> Top / Side </b> преобразуется в весовую переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png">. <br> Аналогично фильтр-переменной, весовая переменная <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png"> может накладывать вес, в соответствии весовой переменной, на все элементы поля или некоторые из них, в зависимости что было активным во время добавления весовой переменной.</td>
+									</tr>
+								</table>
+
+								<p>А также, при выборе нескольких переменных в дереве переменных добавление нескольких весовых переменных, объединенных через логическое <b>И</b>, <b>ИЛИ</b>. По умолчанию, веса объединяются через <b>И</b>, для формировани яобъединия по <b>ИЛИ</b> требуется править код спецификации поля.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img width="100%" src="http://studylab.info/views/MANUAL/images/edit_table2.PNG"></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/hierarchic.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Иерархия</font></b>. Данный режим предназначен для группы переменных у которых значения переменных (ответы) являются одинаковыми по лейауту. <br>  При добавлении таких групп переменных в поле, в которое осуществляется переход, добавляются переменные <img class="h-image" src="http://studylab.info/Content/images/c-pink.png"> со ссылкой на значения переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png">, которые автоматически добавляются в противоположное поле в единственном экземпляре. Ссылка на переменные или на значения переменных обозначается как <b>?</b>.</td>
+									</tr>
+								</table>
+								<p>Если в дереве переменных элементы с одинаковыми значениями переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> собраны в одной папке, при заполнении полей достаточно выбрать/выделить их общую папку.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img src="http://studylab.info/views/MANUAL/images/hierarch.gif"></td>
+						</tr>
+					</table>
+				</div>
+
+
+
+				<div class='h-page'  id='fill-third'>
+					<table class='h-table-s'>
+						<tr>
+							<td class='h-content-text'>
+								<p>В момент заполнения полей таблицы Top / Side, при <i>"переходе"</i> из дерева переменных <b><font color="#1976d2">Variables</font></b> в поля, переменная может принять одно из трех состояний:
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/c-pink.png" /></td>
+										<td class='h-content-description'> Переменная (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> ) </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_bot.png" /></td>
+										<td class='h-content-description'> Фильтр-переменная </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_top.png" /></td>
+										<td class='h-content-description'> Весовая переменная</td>
+									</tr>
+								</table>
+								<p>Состояние переносимой переменной зависит от включенного <u>режима заполнения поля</u>.
+								</p>
+
+							</td>
+							<td class='h-content-images'></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/b-green-brown-yellow-red-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Вектор</font></b>. При заполнении полей в данном режиме, переменные из дерева переменных переходят/добавляются в поля Top и Side не меняя своего состояния, то есть остаются переменными<img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">, (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png">). <br> Однако, в режиме <b><font color="#1976d2">Вектор</font></b> возможно применить ряд функций из списка <b>Function</b>, при этом переменная изменит свое состояние на функциональню переменную <img class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/c-blue-percent.png">
+										</td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Фильтр</font></b>. При данном режиме при добавлении переменной из дерева переменных в поля Top / Side добавляемая переменная изменяет свое состояние на фильтр переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/ar_bot.png">. <br> Фильтр переменная накладывает соответствующий фильтр на все элементы поля, если при переходе было активно все поле, либо на конкретные переменные (одну или несколько), если при переходе были выделены определенные переменные. </td>
+									</tr>
+								</table>
+
+								<p>Также из дерева переменных одновременно можно добавлять несколько фильтр-переменных. В этом случаи фильтры объединяются через логическое <b>И</b>. Для того чтобы наложить на переменные (одну или несколько) несколько фильтр-переменных, объединенных через логическое <b>ИЛИ</b>, необходимо прописать перечисление фильтров через <b>ИЛИ</b> (|) в спецификации поля.
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/text_area16.png"></i></td>
+										<td class='h-content-description'> Открыть окно спецификации поля нужно кликнуть по соответствующей полю кнопке </td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-red.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Вес</font></b>. При данном режиме переменная из дерева переменных при добавлении в поля <b> Top / Side </b> преобразуется в весовую переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png">. <br> Аналогично фильтр-переменной, весовая переменная <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png"> может накладывать вес, в соответствии весовой переменной, на все элементы поля или некоторые из них, в зависимости что было активным во время добавления весовой переменной.</td>
+									</tr>
+								</table>
+
+								<p>А также, при выборе нескольких переменных в дереве переменных добавление нескольких весовых переменных, объединенных через логическое <b>И</b>, <b>ИЛИ</b>. По умолчанию, веса объединяются через <b>И</b>, для формировани яобъединия по <b>ИЛИ</b> требуется править код спецификации поля.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img width="100%" src="http://studylab.info/views/MANUAL/images/edit_table2.PNG"></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/hierarchic.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Иерархия</font></b>. Данный режим предназначен для группы переменных у которых значения переменных (ответы) являются одинаковыми по лейауту. <br>  При добавлении таких групп переменных в поле, в которое осуществляется переход, добавляются переменные <img class="h-image" src="http://studylab.info/Content/images/c-pink.png"> со ссылкой на значения переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png">, которые автоматически добавляются в противоположное поле в единственном экземпляре. Ссылка на переменные или на значения переменных обозначается как <b>?</b>.</td>
+									</tr>
+								</table>
+								<p>Если в дереве переменных элементы с одинаковыми значениями переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> собраны в одной папке, при заполнении полей достаточно выбрать/выделить их общую папку.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img src="http://studylab.info/views/MANUAL/images/hierarch.gif"></td>
+						</tr>
+					</table>
+				</div>
+
+
+
+				<div class='h-page'  id='fill-third'>
+					<table class='h-table-s'>
+						<tr>
+							<td class='h-content-text'>
+								<p>В момент заполнения полей таблицы Top / Side, при <i>"переходе"</i> из дерева переменных <b><font color="#1976d2">Variables</font></b> в поля, переменная может принять одно из трех состояний:
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/c-pink.png" /></td>
+										<td class='h-content-description'> Переменная (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> ) </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_bot.png" /></td>
+										<td class='h-content-description'> Фильтр-переменная </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_top.png" /></td>
+										<td class='h-content-description'> Весовая переменная</td>
+									</tr>
+								</table>
+								<p>Состояние переносимой переменной зависит от включенного <u>режима заполнения поля</u>.
+								</p>
+
+							</td>
+							<td class='h-content-images'></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/b-green-brown-yellow-red-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Вектор</font></b>. При заполнении полей в данном режиме, переменные из дерева переменных переходят/добавляются в поля Top и Side не меняя своего состояния, то есть остаются переменными<img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">, (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png">). <br> Однако, в режиме <b><font color="#1976d2">Вектор</font></b> возможно применить ряд функций из списка <b>Function</b>, при этом переменная изменит свое состояние на функциональню переменную <img class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/c-blue-percent.png">
+										</td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Фильтр</font></b>. При данном режиме при добавлении переменной из дерева переменных в поля Top / Side добавляемая переменная изменяет свое состояние на фильтр переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/ar_bot.png">. <br> Фильтр переменная накладывает соответствующий фильтр на все элементы поля, если при переходе было активно все поле, либо на конкретные переменные (одну или несколько), если при переходе были выделены определенные переменные. </td>
+									</tr>
+								</table>
+
+								<p>Также из дерева переменных одновременно можно добавлять несколько фильтр-переменных. В этом случаи фильтры объединяются через логическое <b>И</b>. Для того чтобы наложить на переменные (одну или несколько) несколько фильтр-переменных, объединенных через логическое <b>ИЛИ</b>, необходимо прописать перечисление фильтров через <b>ИЛИ</b> (|) в спецификации поля.
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/text_area16.png"></i></td>
+										<td class='h-content-description'> Открыть окно спецификации поля нужно кликнуть по соответствующей полю кнопке </td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-red.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Вес</font></b>. При данном режиме переменная из дерева переменных при добавлении в поля <b> Top / Side </b> преобразуется в весовую переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png">. <br> Аналогично фильтр-переменной, весовая переменная <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png"> может накладывать вес, в соответствии весовой переменной, на все элементы поля или некоторые из них, в зависимости что было активным во время добавления весовой переменной.</td>
+									</tr>
+								</table>
+
+								<p>А также, при выборе нескольких переменных в дереве переменных добавление нескольких весовых переменных, объединенных через логическое <b>И</b>, <b>ИЛИ</b>. По умолчанию, веса объединяются через <b>И</b>, для формировани яобъединия по <b>ИЛИ</b> требуется править код спецификации поля.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img width="100%" src="http://studylab.info/views/MANUAL/images/edit_table2.PNG"></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/hierarchic.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Иерархия</font></b>. Данный режим предназначен для группы переменных у которых значения переменных (ответы) являются одинаковыми по лейауту. <br>  При добавлении таких групп переменных в поле, в которое осуществляется переход, добавляются переменные <img class="h-image" src="http://studylab.info/Content/images/c-pink.png"> со ссылкой на значения переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png">, которые автоматически добавляются в противоположное поле в единственном экземпляре. Ссылка на переменные или на значения переменных обозначается как <b>?</b>.</td>
+									</tr>
+								</table>
+								<p>Если в дереве переменных элементы с одинаковыми значениями переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> собраны в одной папке, при заполнении полей достаточно выбрать/выделить их общую папку.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img src="http://studylab.info/views/MANUAL/images/hierarch.gif"></td>
+						</tr>
+					</table>
+				</div>
+
+
+
+
+				<div class='h-page'  id='fill-third'>
+					<table class='h-table-s'>
+						<tr>
+							<td class='h-content-text'>
+								<p>В момент заполнения полей таблицы Top / Side, при <i>"переходе"</i> из дерева переменных <b><font color="#1976d2">Variables</font></b> в поля, переменная может принять одно из трех состояний:
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/c-pink.png" /></td>
+										<td class='h-content-description'> Переменная (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> ) </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_bot.png" /></td>
+										<td class='h-content-description'> Фильтр-переменная </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_top.png" /></td>
+										<td class='h-content-description'> Весовая переменная</td>
+									</tr>
+								</table>
+								<p>Состояние переносимой переменной зависит от включенного <u>режима заполнения поля</u>.
+								</p>
+
+							</td>
+							<td class='h-content-images'></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/b-green-brown-yellow-red-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Вектор</font></b>. При заполнении полей в данном режиме, переменные из дерева переменных переходят/добавляются в поля Top и Side не меняя своего состояния, то есть остаются переменными<img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">, (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png">). <br> Однако, в режиме <b><font color="#1976d2">Вектор</font></b> возможно применить ряд функций из списка <b>Function</b>, при этом переменная изменит свое состояние на функциональню переменную <img class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/c-blue-percent.png">
+										</td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Фильтр</font></b>. При данном режиме при добавлении переменной из дерева переменных в поля Top / Side добавляемая переменная изменяет свое состояние на фильтр переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/ar_bot.png">. <br> Фильтр переменная накладывает соответствующий фильтр на все элементы поля, если при переходе было активно все поле, либо на конкретные переменные (одну или несколько), если при переходе были выделены определенные переменные. </td>
+									</tr>
+								</table>
+
+								<p>Также из дерева переменных одновременно можно добавлять несколько фильтр-переменных. В этом случаи фильтры объединяются через логическое <b>И</b>. Для того чтобы наложить на переменные (одну или несколько) несколько фильтр-переменных, объединенных через логическое <b>ИЛИ</b>, необходимо прописать перечисление фильтров через <b>ИЛИ</b> (|) в спецификации поля.
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/text_area16.png"></i></td>
+										<td class='h-content-description'> Открыть окно спецификации поля нужно кликнуть по соответствующей полю кнопке </td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-red.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Вес</font></b>. При данном режиме переменная из дерева переменных при добавлении в поля <b> Top / Side </b> преобразуется в весовую переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png">. <br> Аналогично фильтр-переменной, весовая переменная <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png"> может накладывать вес, в соответствии весовой переменной, на все элементы поля или некоторые из них, в зависимости что было активным во время добавления весовой переменной.</td>
+									</tr>
+								</table>
+
+								<p>А также, при выборе нескольких переменных в дереве переменных добавление нескольких весовых переменных, объединенных через логическое <b>И</b>, <b>ИЛИ</b>. По умолчанию, веса объединяются через <b>И</b>, для формировани яобъединия по <b>ИЛИ</b> требуется править код спецификации поля.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img width="100%" src="http://studylab.info/views/MANUAL/images/edit_table2.PNG"></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/hierarchic.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Иерархия</font></b>. Данный режим предназначен для группы переменных у которых значения переменных (ответы) являются одинаковыми по лейауту. <br>  При добавлении таких групп переменных в поле, в которое осуществляется переход, добавляются переменные <img class="h-image" src="http://studylab.info/Content/images/c-pink.png"> со ссылкой на значения переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png">, которые автоматически добавляются в противоположное поле в единственном экземпляре. Ссылка на переменные или на значения переменных обозначается как <b>?</b>.</td>
+									</tr>
+								</table>
+								<p>Если в дереве переменных элементы с одинаковыми значениями переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> собраны в одной папке, при заполнении полей достаточно выбрать/выделить их общую папку.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img src="http://studylab.info/views/MANUAL/images/hierarch.gif"></td>
+						</tr>
+					</table>
+				</div>
+
+
+
+
+				<div class='h-page'  id='fill-third'>
+					<table class='h-table-s'>
+						<tr>
+							<td class='h-content-text'>
+								<p>В момент заполнения полей таблицы Top / Side, при <i>"переходе"</i> из дерева переменных <b><font color="#1976d2">Variables</font></b> в поля, переменная может принять одно из трех состояний:
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/c-pink.png" /></td>
+										<td class='h-content-description'> Переменная (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> ) </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_bot.png" /></td>
+										<td class='h-content-description'> Фильтр-переменная </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_top.png" /></td>
+										<td class='h-content-description'> Весовая переменная</td>
+									</tr>
+								</table>
+								<p>Состояние переносимой переменной зависит от включенного <u>режима заполнения поля</u>.
+								</p>
+
+							</td>
+							<td class='h-content-images'></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/b-green-brown-yellow-red-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Вектор</font></b>. При заполнении полей в данном режиме, переменные из дерева переменных переходят/добавляются в поля Top и Side не меняя своего состояния, то есть остаются переменными<img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">, (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png">). <br> Однако, в режиме <b><font color="#1976d2">Вектор</font></b> возможно применить ряд функций из списка <b>Function</b>, при этом переменная изменит свое состояние на функциональню переменную <img class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/c-blue-percent.png">
+										</td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Фильтр</font></b>. При данном режиме при добавлении переменной из дерева переменных в поля Top / Side добавляемая переменная изменяет свое состояние на фильтр переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/ar_bot.png">. <br> Фильтр переменная накладывает соответствующий фильтр на все элементы поля, если при переходе было активно все поле, либо на конкретные переменные (одну или несколько), если при переходе были выделены определенные переменные. </td>
+									</tr>
+								</table>
+
+								<p>Также из дерева переменных одновременно можно добавлять несколько фильтр-переменных. В этом случаи фильтры объединяются через логическое <b>И</b>. Для того чтобы наложить на переменные (одну или несколько) несколько фильтр-переменных, объединенных через логическое <b>ИЛИ</b>, необходимо прописать перечисление фильтров через <b>ИЛИ</b> (|) в спецификации поля.
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/text_area16.png"></i></td>
+										<td class='h-content-description'> Открыть окно спецификации поля нужно кликнуть по соответствующей полю кнопке </td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-red.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Вес</font></b>. При данном режиме переменная из дерева переменных при добавлении в поля <b> Top / Side </b> преобразуется в весовую переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png">. <br> Аналогично фильтр-переменной, весовая переменная <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png"> может накладывать вес, в соответствии весовой переменной, на все элементы поля или некоторые из них, в зависимости что было активным во время добавления весовой переменной.</td>
+									</tr>
+								</table>
+
+								<p>А также, при выборе нескольких переменных в дереве переменных добавление нескольких весовых переменных, объединенных через логическое <b>И</b>, <b>ИЛИ</b>. По умолчанию, веса объединяются через <b>И</b>, для формировани яобъединия по <b>ИЛИ</b> требуется править код спецификации поля.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img width="100%" src="http://studylab.info/views/MANUAL/images/edit_table2.PNG"></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/hierarchic.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Иерархия</font></b>. Данный режим предназначен для группы переменных у которых значения переменных (ответы) являются одинаковыми по лейауту. <br>  При добавлении таких групп переменных в поле, в которое осуществляется переход, добавляются переменные <img class="h-image" src="http://studylab.info/Content/images/c-pink.png"> со ссылкой на значения переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png">, которые автоматически добавляются в противоположное поле в единственном экземпляре. Ссылка на переменные или на значения переменных обозначается как <b>?</b>.</td>
+									</tr>
+								</table>
+								<p>Если в дереве переменных элементы с одинаковыми значениями переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> собраны в одной папке, при заполнении полей достаточно выбрать/выделить их общую папку.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img src="http://studylab.info/views/MANUAL/images/hierarch.gif"></td>
+						</tr>
+					</table>
+				</div>
+
+
+
+				<div class='h-page'  id='fill-third'>
+					<table class='h-table-s'>
+						<tr>
+							<td class='h-content-text'>
+								<p>В момент заполнения полей таблицы Top / Side, при <i>"переходе"</i> из дерева переменных <b><font color="#1976d2">Variables</font></b> в поля, переменная может принять одно из трех состояний:
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/c-pink.png" /></td>
+										<td class='h-content-description'> Переменная (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> ) </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_bot.png" /></td>
+										<td class='h-content-description'> Фильтр-переменная </td>
+									</tr><tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/ar_top.png" /></td>
+										<td class='h-content-description'> Весовая переменная</td>
+									</tr>
+								</table>
+								<p>Состояние переносимой переменной зависит от включенного <u>режима заполнения поля</u>.
+								</p>
+
+							</td>
+							<td class='h-content-images'></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/b-green-brown-yellow-red-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Вектор</font></b>. При заполнении полей в данном режиме, переменные из дерева переменных переходят/добавляются в поля Top и Side не меняя своего состояния, то есть остаются переменными<img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">, (либо значение переменной <img  class="h-image" src="http://studylab.info/Content/images/c-yellow.png">). <br> Однако, в режиме <b><font color="#1976d2">Вектор</font></b> возможно применить ряд функций из списка <b>Function</b>, при этом переменная изменит свое состояние на функциональню переменную <img class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/c-blue-percent.png">
+										</td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-blue.svg"></td>
+										<td class='h-content-description'> Режим заполнения <b><font color="#1976d2">Фильтр</font></b>. При данном режиме при добавлении переменной из дерева переменных в поля Top / Side добавляемая переменная изменяет свое состояние на фильтр переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/ar_bot.png">. <br> Фильтр переменная накладывает соответствующий фильтр на все элементы поля, если при переходе было активно все поле, либо на конкретные переменные (одну или несколько), если при переходе были выделены определенные переменные. </td>
+									</tr>
+								</table>
+
+								<p>Также из дерева переменных одновременно можно добавлять несколько фильтр-переменных. В этом случаи фильтры объединяются через логическое <b>И</b>. Для того чтобы наложить на переменные (одну или несколько) несколько фильтр-переменных, объединенных через логическое <b>ИЛИ</b>, необходимо прописать перечисление фильтров через <b>ИЛИ</b> (|) в спецификации поля.
+								</p>
+
+								<table class='h-table-s'>								
+									<tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/text_area16.png"></i></td>
+										<td class='h-content-description'> Открыть окно спецификации поля нужно кликнуть по соответствующей полю кнопке </td>
+									</tr><tr>
+										<td class='h-content-ico'><img  class="h-image" src="http://studylab.info/Content/images/t-red.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Вес</font></b>. При данном режиме переменная из дерева переменных при добавлении в поля <b> Top / Side </b> преобразуется в весовую переменную <img  class="h-image" src="http://studylab.info/Content/images/c-pink.png">  ⇒ <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png">. <br> Аналогично фильтр-переменной, весовая переменная <img  class="h-image" src="http://studylab.info/Content/images/ar_top.png"> может накладывать вес, в соответствии весовой переменной, на все элементы поля или некоторые из них, в зависимости что было активным во время добавления весовой переменной.</td>
+									</tr>
+								</table>
+
+								<p>А также, при выборе нескольких переменных в дереве переменных добавление нескольких весовых переменных, объединенных через логическое <b>И</b>, <b>ИЛИ</b>. По умолчанию, веса объединяются через <b>И</b>, для формировани яобъединия по <b>ИЛИ</b> требуется править код спецификации поля.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img width="100%" src="http://studylab.info/views/MANUAL/images/edit_table2.PNG"></td>
+						</tr><tr>
+							<td class='h-content-text'>
+								<table class='h-table-s'>
+									<tr>
+										<td class='h-content-ico'><img src="http://studylab.info/Content/images/hierarchic.svg"></td>
+										<td class='h-content-description'>Режим заполнения <b><font color="#1976d2">Иерархия</font></b>. Данный режим предназначен для группы переменных у которых значения переменных (ответы) являются одинаковыми по лейауту. <br>  При добавлении таких групп переменных в поле, в которое осуществляется переход, добавляются переменные <img class="h-image" src="http://studylab.info/Content/images/c-pink.png"> со ссылкой на значения переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png">, которые автоматически добавляются в противоположное поле в единственном экземпляре. Ссылка на переменные или на значения переменных обозначается как <b>?</b>.</td>
+									</tr>
+								</table>
+								<p>Если в дереве переменных элементы с одинаковыми значениями переменных <img class="h-image" src="http://studylab.info/Content/images/c-yellow.png"> собраны в одной папке, при заполнении полей достаточно выбрать/выделить их общую папку.
+								</p>
+
+							</td>
+							<td class='h-content-images'><img src="http://studylab.info/views/MANUAL/images/hierarch.gif"></td>
+						</tr>
+					</table>
+				</div>
+
+							
+			</div>
+		</div>
+
+	</body>
+</html>

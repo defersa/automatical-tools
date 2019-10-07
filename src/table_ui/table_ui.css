@@ -1,0 +1,53 @@
+.tau-parent {
+	position: absolute;	overflow: hidden;
+	left: 0;	right: 0;
+	top: 0;		bottom: 0;
+	background: #F1F1F1;
+}
+.tau-parent:focus {
+	outline: none;
+	border: none;
+}
+.tau-side {
+	position: absolute;
+	left: 0;	bottom: 0;
+}
+.tau-top {
+	position: absolute;
+	top: 0;		right: 0;
+}
+.tau-table {
+	position: absolute;
+	right: 0;	bottom: 0;
+	background: white;
+}
+.tau-corner {
+	position: absolute;
+	left: 0;	top: 0;
+	background: #F1F1F1;
+	border-right: 1px solid #555;
+	border-bottom: 1px solid #555;
+	z-index: 3;
+}
+.tau-corner-content {
+	position: absolute;
+	top:0;			bottom: 0;
+	left: 0; 		right: 0;
+}
+.tau-resize {
+	box-sizing: border-box;			position: absolute;
+	border: 1px solid #fff;			box-shadow: 0 0 10px #222;
+	opacity: 0.3;					z-index: 8;
+	background: #888;				display: none;
+}
+#tau-sort-arr-v, #tau-sort-arr-h {
+	position: absolute;
+	display: block;
+	color: black; 
+	bottom: 0;
+	right: 0;
+	font: 12px monospace;
+	margin-right: 1px;
+}
+#tau-sort-arr-h {	margin-bottom: 6px;	}
+#tau-sort-arr-v {	margin-right: 9px;	}

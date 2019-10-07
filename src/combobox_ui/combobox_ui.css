@@ -1,0 +1,55 @@
+.cbb-main {
+	position: absolute;
+	background: #FFFFFF;
+	font-size: 13px;
+	top: 0;			left: 0;
+	right: 0;		bottom: 0;
+}
+.cbb-main:focus {	outline: 0;			border: 0;	}
+.cbb-caption {
+	overflow: hidden;
+	box-sizing: border-box;				position: absolute;
+	border-radius: 3px 0 0 3px;			left: 0;
+	height: 100%;						width: Calc(100% - 18px);
+	display: flex;						padding-left: 2px; 
+	border-left: 1px solid #E2E3EA;		border-top: 1px solid #ABADB3;		border-bottom: 1px solid #E3E9EF;
+}
+.cbb-main:hover .cbb-caption, .cbb-main:focus .cbb-caption {
+	border-left: 1px solid #C5DAED;		border-top: 1px solid #5794BF;		border-bottom: 1px solid #C7E2F1;
+}
+.cbb-arrow {
+	position: absolute;					box-sizing: border-box;
+	height: 100%;						width: 18px;
+	left: Calc(100% - 18px);			padding: 0 0 0 1px;
+
+	display: flex;						border-radius: 0 3px 3px 0;
+	border-top: 1px solid #ABADB3;		border-right: 1px solid #E2E3EA;
+	border-bottom: 1px solid #E3E9EF;	border-left: 0;
+	align-items: center;				justify-content: center;
+}
+.cbb-panel {
+	position: absolute;
+	background: white;		border: 1px solid #BABABA;
+	overflow: auto;			box-sizing: border-box;
+	max-height: 450px;		min-width: 150px;
+	z-index: 10;			font-size: 13px;
+	padding: 2px;
+}
+.cbb-item, .cbb-unselect {
+    display: -ms-flex;
+	position: relative;		display: flex;
+	overflow: hidden;		box-sizing: border-box;
+	border-radius: 3px;		width: 100%;
+	height: 21px;			line-height: 21px;
+	border: 1px solid transparent; 
+
+}
+.cbb-item:hover	{							background: linear-gradient(to top, #EBF3FD, #FCFDFE);	border: 1px solid #B8D6FB;}
+.cbb-select, .cbb-select:hover {			background: linear-gradient(to top, #C1DBFC, #F1F7FE);	border: 1px solid #6f98c9;}
+.cbb-main:focus .cbb-arrow {				background: linear-gradient(to top, #cdeafa, #fcfeff);	border: 1px solid #5092c4;}
+.cbb-main:hover .cbb-arrow {				background: linear-gradient(to top, #A9DBF6, #EAF6FD);	border: 1px solid #3C7FB1;}
+.cbb-main:active .cbb-arrow {				background: linear-gradient(to top, #50b6ed, #c6e7fa);	border: 1px solid #285577;}
+.cbb-separator {				margin: 2px 0 2px 0;									border-top: 1px solid #ccc;}
+
+.cbb-icon {	display: block;	height: 100%;	flex-shrink: 0;	background-position: center center;		background-repeat: no-repeat;	width: 21px;}
+.cbb-text {	display: block;	height: 100%;	flex-shrink: 0;	background-position: 1px center;		background-repeat: no-repeat;	cursor: default; padding: 0 2px; line-height: 19px;}

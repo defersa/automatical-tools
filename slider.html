@@ -1,18 +1,15 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Calendar</title>
+		<title>Slider</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<link rel="stylesheet" href="src/calendar_ui/calendar_ui.css"/>
-		<link rel="stylesheet" href="src/window_ui/window_ui_alt.css"/>
-		<script type='text/javascript' src='src/calendar_ui/calendar_ui.js'></script>
-		<script type='text/javascript' src='src/calendar_ui/calendar_ui_old.js'></script>
-		<script type='text/javascript' src='src/window_ui/window_ui.js'></script>
+		<link rel="stylesheet" href="src/slider/slider_lib.css"/>
+		<script type='text/javascript' src='src/slider/slider_lib.js'></script>
 		<script type='text/javascript' src='src/tools/init_tools.js'></script>
 
-		<script type='text/javascript' src='ex/calendar.js'></script>
+		<script type='text/javascript' src='ex/slider.js'></script>
 
 		<style type="text/css">
 			body {
@@ -25,21 +22,40 @@
 				position: absolute; background: #EFF7FF;
 				overflow: hidden;
 			}
-
-			#example {
+			#cslider {
 				position: absolute;
-				width: 250px;
-				height: 90%;
-				left: 220px;
-				top: 50px;
+				width: 40%;
+				height: 50px;
+				left: 5%;
+				top: 5%;
 				background: white;
 				border: 1px solid #aaa;
+			}
+			#svalue {
+				position: absolute;
+				width: 10%;
+				height: 50px;
+				left: 50%;
+				top: 5%;
+				background: white;
+				border: 1px solid #aaa;
+			}
+			#csliderv {
+				position: absolute;
+				width: 60px;
+				height: 30%;
+				left: 50px;
+				top: 25%;
+				background: white;
+				border: 1px solid #aaa;
+
 			}
 		</style>
 
 	</head>
 	<body>
-		<div id='example'>			
-		</div>	
-	</body>
+		<div id='cslider'></div>
+		<div id='csliderv'></div>
+		<input id='svalue' value="0" min='0' max='10' type='number'>
+		</body>
 </html>

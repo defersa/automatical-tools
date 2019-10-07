@@ -1,0 +1,161 @@
+.te-main {
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	color: #000;
+}
+
+.te-bar {
+	position: absolute;	
+	display: flex;
+	flex-direction: row;
+	top: 0;		height: 32px;
+	left: 0;	right: 0;
+}
+
+.te-text {
+	position: absolute;
+	cursor: text;
+	overflow: auto;
+	border: 1px solid #bdbdbd;
+	padding: 5px;
+	max-width: none;
+	top: 32px;	left: 0;
+	right: 0;	bottom: 0;
+}
+.te-text img {
+	max-width: none;
+}
+.te-text:focus{
+	border: 1px solid #bdbdbd;
+	outline: none;
+}
+
+.te-bar-button, .te-bar-button-active {
+	position: relative;
+	display: flex;
+
+	align-items: center;
+	justify-content: center;
+
+	background: white;
+	border-radius: 3px; 
+
+	width: 28px;
+	height: 28px;
+	margin: 2px;
+}
+
+.te-bar-button:hover {	background: #eee; }
+.te-bar-button:active {	background: #ddd; }
+
+.te-bar-button-active		{	background: #ccc; }
+.te-bar-button-active:hover {	background: #bbb; }
+.te-bar-button-active:active {	background: #aaa; }
+
+.te-bar-sep {
+	width: 1px;
+	height: 28px;
+	margin: 2px;
+	background: #999;
+}
+
+.te-panel-node {
+	position: relative;
+	display: block;
+	height: 26px;
+	padding: 3px 16px;
+	line-height: 26px;
+	font-size: 15px;
+}
+.te-panel-node:hover {
+	background: #DDD;
+}
+.te-panel {
+	z-index: 999;
+	position: absolute;
+	width: 200px;
+	padding: 2px 0;
+	box-sizing: border-box;
+	background: white;
+	box-shadow: 0 0 5px hsla( 0,0%,0%,.2 );
+}
+
+.te-palette {
+	z-index: 999;
+	line-height: 15px;
+	font-size: 12px;
+	font-weight: bold;
+	color: #777;
+
+	padding: 4px;
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	background: white;
+	box-shadow: 0 0 5px hsla( 0,0%,0%,.2 );
+}
+.te-palette-row {
+	position: relative;
+	display: flex;
+	width: 100%;
+}
+.te-palette-cell {
+	position: relative;
+	width: 15px;
+	height: 15px;
+	margin: 2px;
+	box-sizing: border-box;
+	border: 1px solid #aaa;
+}
+.te-palette-cell:hover {
+	border: 1px solid #0a599d;
+}
+.te-image-resize {
+	position: absolute;
+	width: 10px;
+	height: 10px;
+	background: white;
+	border: 1px solid #0a599d;
+}
+
+.te-text img {	
+	resize: both;
+	cursor: default;
+}
+
+.te-rectangle {
+	box-sizing: border-box;			position: absolute;
+	border: 1px solid #fff;			box-shadow: 0 0 10px #000;
+	opacity: 0.5;					z-index: 8;
+	background: #666;
+}
+
+.te-bar-icon {
+	display: block;
+	width: 28px;
+	height: 28px;
+	box-sizing: border-box;
+	background-repeat: no-repeat;
+	background-size: 24px 24px;
+	background-position: center center;
+}
+
+.te-bar-image {
+	height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.te-bar-image
+input
+{
+	height: Calc(100% - 12px);
+	padding: 2px;
+	margin: 2px;
+	width: 50px;
+}

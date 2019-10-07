@@ -1,41 +1,23 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>DataGrid UI</title>
+		<title>Panel</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
 		
 		<!-- LINKS JS/CSS -->
-		<script type='text/javascript' src='tools/init_tools.js'></script>
-		<script type='text/javascript' src='tools/xlsx_saver.js'></script>
-		<script type='text/javascript' src='tools/FileSaver.js'></script>
-		<script type='text/javascript' src='tools/jszip.js'></script>
+		<script type='text/javascript' src='src/tools/init_tools.js'></script>
 
-		<link rel="stylesheet" href="menu_ui/menu_ui.css"/>
-		<script type='text/javascript' src='menu_ui/menu_ui.js'></script>
+		<link rel="stylesheet" href="src/dash_ui/dash_ui.css"/>
+		<link rel="stylesheet" href="src/window_ui/window_ui.css"/>
+		<link rel="stylesheet" href="src/layout_ui/layout_ui.css"/>
+		<link rel="stylesheet" href="src/tree_ui/tree_ui.css"/>
+		<script type='text/javascript' src='src/tree_ui/tree_ui.js'></script>
+		<script type='text/javascript' src='src/layout_ui/layout_ui.js'></script>
+		<script type='text/javascript' src='src/window_ui/window_ui.js'></script>
+		<script type='text/javascript' src='src/dash_ui/dash_ui.js'></script>
 
-		<link rel="stylesheet" href="combobox_ui/combobox_ui.css"/>
-		<script type='text/javascript' src='combobox_ui/combobox_ui.js'></script>
-
-		<link rel="stylesheet" href="dash_ui/dash_ui.css"/>
-		<script type='text/javascript' src='dash_ui/dash_ui.js'></script>
-
-		<link rel="stylesheet" href="window_ui/window_ui.css"/>
-		<script type='text/javascript' src='window_ui/window_ui.js'></script>
-
-		<link rel="stylesheet" href="layout_ui/layout_ui.css"/>
-		<script type='text/javascript' src='layout_ui/layout_ui.js'></script>
-
-		<link rel="stylesheet" href="tree_ui/tree_ui.css"/>
-		<script type='text/javascript' src='tree_ui/tree_ui.js'></script>
-
-		<link rel="stylesheet" href="tab_ui/tab_ui.css"/>
-		<script type='text/javascript' src='tab_ui/tab_ui.js'></script>
-
-
-  		<script src= "https://code.jquery.com/jquery-3.1.1.min.js"></script>	
-		<script type='text/javascript' src='panel.js'></script>
+		<script type='text/javascript' src='ex/panel.js'></script>
 
 	</head>
 	<body >
@@ -51,13 +33,6 @@
 			-moz-user-select:		none;
 			-ms-user-select: 		none;
 		}
-		.but {
-			width: 			50px;
-			height: 		30px;
-			position: 		absolute;
-			top:			Calc(100% - 40px);
-			box-sizing: border-box;
-		}
 		.panel {
 			background: white;
 			border: 1px solid #bbb;
@@ -69,14 +44,12 @@
 			-moz-user-select:		none;
 			-ms-user-select: 		none;
 			width: 			Calc(100% - 20px);
-			height: 		Calc(100% - 100px);
+			height: 		Calc(100% - 20px);
 			position: 		absolute;
 			top:			10px;
 			left:			10px;
 			display: 		inline-block;
 		}
-		.fRow {		top: Calc(100% - 80px);		}
-		.sRow {		top: Calc(100% - 40px);		}
 		.default-img {
 			background-image: 		url(tree_ui/img/minus.png);
 		}
@@ -94,17 +67,5 @@
 			</div>
 		</div>
 
-		<button class='but sRow' style='left: 10px;'>empty</button>	
-		<button class='but sRow' style='left: 70px;'>empty</button>	
-		<button class='but sRow' style='left: 130px;'>empty</button>	
-		<button class='but sRow' style='left: 190px;'>empty</button>	
-		<button class='but sRow' style='left: 250px;'>empty</button>	
-		<button class='but sRow' style='left: 310px;'>empty</button>
-		<button class='but fRow' style='left: 10px;' onclick='addPanel()'>add</button>
-
-
-		<button class='but fRow' onclick='plus()' style='left: Calc(100% - 60px);'>+</button>		
-		<div class='but fRow' id='scale' style='background: white; border: 1px solid #eee; line-height: 28px; text-align:center; left: Calc(100% - 120px);'>1</div>
-		<button class='but fRow' onclick='minus()' style='left: Calc(100% - 180px);'>-</button>
 	</body>
 </html>

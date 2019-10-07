@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>numberinput</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		
+		<!-- LINKS JS/CSS -->
+		<script type='text/javascript' src='src/tools/init_tools.js'></script>
+
+		<link rel="stylesheet" href="src/numberinput/numberinput_ui.css"/>
+		<script type='text/javascript' src='src/numberinput/numberinput_ui.js'></script>
+
+		<script type='text/javascript' src='ex/numberinput.js'></script>
+		<script type='text/javascript' src='ex/example.js'></script>
+
+	</head>
+	<body >
+		
+		<style type="text/css">
+		body {
+			padding: 0;
+			margin: 0;
+			
+			width: 100%;
+			height: 100%;
+			
+			position: absolute;
+			overflow: hidden;
+			background: #fff6ff;
+			font-family: -apple-system,BlinkMacSystemFont,Roboto,Open Sans,Helvetica Neue,sans-serif;
+			
+			-webkit-user-select:	none;
+			-moz-user-select:		none;
+			-ms-user-select: 		none;
+		}
+		#bar, #content {
+			background: white;
+			border: 1px solid #777;
+			box-sizing: border-box;
+
+			height: 100%;
+			display: flex;
+			position: relative;
+			
+		}
+		#bar {
+			width: 20%;
+			margin-right: 10px;
+		}
+		#content {
+			width: 80%;
+		}
+		.block {
+			
+			-webkit-user-select:	none;
+			-moz-user-select:		none;
+			-ms-user-select: 		none;
+
+			padding: 20px;
+			box-sizing: border-box;
+			width: 			100%;
+			height: 		100%;
+			position: 		absolute;
+			display: 		flex;
+			flex-direction: row;
+		}
+		.default-img {
+			background-image: 		url(tree_ui/img/minus.png);
+		}
+		</style>
+		<!-- TABLE -->
+
+		<div class="block">	
+			
+			<div id='bar'>
+				<div id='NI'style="width: 100px; position: absolute; height: 36px; left: 20px; top: 20px; border: 1px solid #777; box-sizing: border-box;">
+					
+				</div>
+
+				<div id='NI2'style="width: 80px; position: absolute; height: 36px; left: 20px; top: 120px; border: 1px solid #AAA; border-radius: 5px; box-sizing: border-box;">
+					
+				</div>
+
+				<div id='NI3'style="width: 80px; position: absolute; height: 36px; left: 20px; top: 220px; border: 1px solid #AAA; border-radius: 5px; box-sizing: border-box;">
+					
+				</div>
+			</div>
+			
+			<div id="content">
+				<div id='t1' tabindex="1" style="  position: absolute; left: 100px; top: 100px; width: 100px; height: 100px; background: pink;"></div>
+				<textarea id="t2" style=" position: absolute; left: 100px; top: 250px; width: 100px; height: 100px;"></textarea>
+
+			</div>
+
+			<input type='number' />
+				
+		</div>
+
+	</body>
+</html>

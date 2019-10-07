@@ -1,0 +1,73 @@
+.log-main {
+	position: absolute;
+	left: 0;	top: 0;
+	right: 0;	bottom: 0;
+	background: white;
+}
+.log-main:focus {	border: 0;	outline: 0;	}
+.log-canvas {
+	position: absolute;
+	top: 0;		left: 0;
+	right: 0;	bottom: 0;
+}
+.log-avatar {
+	padding: 5px 10px;
+	border: 1px solid #77A3D8;		white-space: nowrap;	
+	z-index: 9999;					position: absolute; 
+	left: -1000px; top: -1000px; 	background: white;
+}
+.log-resize {
+	position: absolute;
+	width: 1px;
+	height: 100%;
+	top: 0;
+	background: #77A3D8;
+}
+
+.log-panel {
+	z-index: 2;
+	position: absolute;
+	top: 10px;
+	width: 30px;		height: 92px;
+	background: #fff;
+	box-shadow: 0px 1px 4px rgba(0,0,0,0.3);
+}
+.log-n-but, .log-n-but-inactive{
+	position: absolute;			display: flex;
+    justify-content: center;	align-items: center;
+	height: 30px;				width: 30px;
+}
+
+.log-n-but:hover {		background: #eee;		}
+.log-n-but:active {		background: #777;		}
+
+.log-svg {
+	width: 16px;
+	height: 16px;
+}
+.log-s-fill {	fill: #777777;	}
+.log-s-back {	stroke: #777777;	fill: transparent;	}
+
+.log-n-but:hover .log-s-fill {	fill: #444444;	}
+.log-n-but:hover .log-s-back {	stroke: #444444;	fill: transparent;	}
+
+.log-n-but:active .log-s-fill {	fill: #FFFFFF;	}
+.log-n-but:active .log-s-back {	stroke: #FFFFFF;	fill: transparent;	}
+
+.log-n-but-inactive	.log-s-fill,
+.log-n-but-inactive	.log-s-color,
+.log-n-but-inactive	.log-s-plus,
+.log-n-but-inactive	.log-s-remove {		fill: #ccc;		}
+
+.log-n-but 		.log-s-plus {			fill: #86d15a;	}
+.log-n-but 		.log-s-remove {			fill: #ff3b3b;	}
+.log-n-but:hover	.log-s-plus {		fill: #48a313;	}
+.log-n-but:hover	.log-s-remove {		fill: #b10000;	}
+.log-n-but:active	.log-s-plus {		fill: #eafbe1;	}
+.log-n-but:active	.log-s-remove {		fill: #ffebeb;	}
+
+.log-n-but		.log-s-color {		fill: #ccc;		}
+
+.log-n-blue		.log-s-color {		fill: #5faaf5;		} 
+.log-n-green	.log-s-color {		fill: #96d813;		}
+.log-n-not		.log-s-color {		fill: #ff3b3b;		} 

@@ -1,18 +1,17 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Calendar</title>
+		<title>Logic</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<link rel="stylesheet" href="src/calendar_ui/calendar_ui.css"/>
-		<link rel="stylesheet" href="src/window_ui/window_ui_alt.css"/>
-		<script type='text/javascript' src='src/calendar_ui/calendar_ui.js'></script>
-		<script type='text/javascript' src='src/calendar_ui/calendar_ui_old.js'></script>
-		<script type='text/javascript' src='src/window_ui/window_ui.js'></script>
+		<link rel="stylesheet" href="src/logic_ui/logic_ui.css"/>
+		<link rel="stylesheet" href="src/tree_ui/tree_ui.css"/>
+		<script type='text/javascript' src='src/logic_ui/logic_ui.js'></script>
+		<script type='text/javascript' src='src/tree_ui/tree_ui.js'></script>
 		<script type='text/javascript' src='src/tools/init_tools.js'></script>
 
-		<script type='text/javascript' src='ex/calendar.js'></script>
+		<script type='text/javascript' src='ex/logic.js'></script>
 
 		<style type="text/css">
 			body {
@@ -25,21 +24,28 @@
 				position: absolute; background: #EFF7FF;
 				overflow: hidden;
 			}
-
-			#example {
+			#tree {
 				position: absolute;
 				width: 250px;
 				height: 90%;
-				left: 220px;
+				left: 20px;
 				top: 50px;
 				background: white;
+				border: 1px solid #aaa;
+			}
+			#logic {
+				position: absolute;
+				left: 280px;
+				width: 70%;
+				height: 90%;
+				top: 50px;
 				border: 1px solid #aaa;
 			}
 		</style>
 
 	</head>
 	<body>
-		<div id='example'>			
-		</div>	
+		<div id='tree'>	</div>	
+		<div id='logic'> </div>
 	</body>
 </html>
